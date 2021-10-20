@@ -6,7 +6,7 @@
         {
             "label": "Cocos Effect Checker",
             "type": "shell",
-            "command": ".vscode\\CocosEffectChecker.exe",
+            "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
                 "${file}",
             ],
