@@ -1,2 +1,1 @@
-将engine整个复制engine下
-将tasks.json中的command改成CocosEffectChecker.exe路径即可
+将engine文件夹中的内容复制到ts引擎文件夹中即可
