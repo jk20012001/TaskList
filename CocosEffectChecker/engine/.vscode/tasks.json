@@ -23,7 +23,8 @@
             "type": "shell",
             "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
-                "${fileDirname}\\",
+                //"${fileDirname}\\",
+                "${workspaceFolder}\\editor\\assets\\effects\\",
             ],
             "group": "build",
             "presentation": {
