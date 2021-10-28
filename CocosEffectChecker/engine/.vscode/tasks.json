@@ -9,6 +9,7 @@
             "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
                 "${file}",
+				"${workspaceFolder}\\",
             ],
             "group": "build",
             "presentation": {
