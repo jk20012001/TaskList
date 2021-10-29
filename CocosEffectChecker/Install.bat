@@ -6,5 +6,5 @@ exit
 )
 cd /d %~dp0
 @echo on
-xcopy /s /y engine\*.* "%1\"
+xcopy /s /y engine\*.* "%1"
 pause
