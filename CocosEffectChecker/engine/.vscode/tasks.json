@@ -26,6 +26,7 @@
             "args": [
                 //"${fileDirname}\\",
                 "${workspaceFolder}\\editor\\assets\\effects\\",
+                "${workspaceFolder}\\",
             ],
             "group": "build",
             "presentation": {
