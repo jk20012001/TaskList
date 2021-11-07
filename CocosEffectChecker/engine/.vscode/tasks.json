@@ -17,7 +17,14 @@
             },
             "presentation": {
                 // Reveal the output only if unrecognized errors occur.
-                "reveal": "silent"
+                //"reveal": "silent"
+                "reveal": "always",
+                "echo": true,
+                //"focus": false,
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
             },
             // Use the standard MS compiler pattern to detect errors, warnings and infos
             "problemMatcher": "$msCompile"
@@ -37,7 +44,14 @@
             },
             "presentation": {
                 // Reveal the output only if unrecognized errors occur.
-                "reveal": "silent"
+                //"reveal": "silent"
+                "reveal": "always",
+                "echo": true,
+                //"focus": false,
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
             },
             // Use the standard MS compiler pattern to detect errors, warnings and infos
             "problemMatcher": "$msCompile"
