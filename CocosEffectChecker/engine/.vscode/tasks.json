@@ -9,9 +9,12 @@
             "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
                 "${file}",
-				"${workspaceFolder}\\",
+                "${workspaceFolder}\\"
             ],
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "presentation": {
                 // Reveal the output only if unrecognized errors occur.
                 "reveal": "silent"
@@ -26,9 +29,12 @@
             "args": [
                 //"${fileDirname}\\",
                 "${workspaceFolder}\\editor\\assets\\effects\\",
-                "${workspaceFolder}\\",
+                "${workspaceFolder}\\"
             ],
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
             "presentation": {
                 // Reveal the output only if unrecognized errors occur.
                 "reveal": "silent"
