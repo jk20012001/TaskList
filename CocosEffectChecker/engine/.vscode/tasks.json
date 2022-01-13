@@ -56,5 +56,28 @@
             // Use the standard MS compiler pattern to detect errors, warnings and infos
             "problemMatcher": "$msCompile"
         }
+		{
+            "label": "Cocos Effect Editor",
+            "type": "shell",
+            "command": ".vscode\\ShaderCompilerIDE\\ShaderCompilerIDE.sln",
+            "args": [
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "silent"
+                "echo": true,
+                //"focus": false,
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        }
     ]
 }

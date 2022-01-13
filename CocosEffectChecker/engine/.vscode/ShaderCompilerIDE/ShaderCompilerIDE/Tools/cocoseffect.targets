@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <PropertyPageSchema
+      Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
+    <AvailableItemName
+      Include="Cocos_Effect">
+      <Targets>_Cocos_Effect</Targets>
+    </AvailableItemName>
+  </ItemGroup>
+  <UsingTask
+    TaskName="Cocos_Effect"
+    TaskFactory="XamlTaskFactory"
+    AssemblyName="Microsoft.Build.Tasks.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <Task>$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml</Task>
+  </UsingTask>
+  <Target
+    Name="_Cocos_Effect"
+    BeforeTargets="$(Cocos_EffectBeforeTargets)"
+    AfterTargets="$(Cocos_EffectAfterTargets)"
+    Condition="'@(Cocos_Effect)' != ''"
+    DependsOnTargets="$(Cocos_EffectDependsOn);ComputeCocos_EffectOutput"
+    Outputs="%(Cocos_Effect.Outputs)"
+    Inputs="%(Cocos_Effect.Identity);%(Cocos_Effect.AdditionalDependencies);$(MSBuildProjectFile)">
+    <ItemGroup
+      Condition="'@(SelectedFiles)' != ''">
+      <Cocos_Effect
+        Remove="@(Cocos_Effect)"
+        Condition="'%(Identity)' != '@(SelectedFiles)'" />
+    </ItemGroup>
+    <ItemGroup>
+      <Cocos_Effect_tlog
+        Include="%(Cocos_Effect.Outputs)"
+        Condition="'%(Cocos_Effect.Outputs)' != '' and '%(Cocos_Effect.ExcludedFromBuild)' != 'true'">
+        <Source>@(Cocos_Effect, '|')</Source>
+      </Cocos_Effect_tlog>
+    </ItemGroup>
+    <Message
+      Importance="High"
+      Text="%(Cocos_Effect.ExecutionDescription)" />
+    <WriteLinesToFile
+      Condition="'@(Cocos_Effect_tlog)' != '' and '%(Cocos_Effect_tlog.ExcludedFromBuild)' != 'true'"
+      File="$(TLogLocation)$(ProjectName).write.1u.tlog"
+      Lines="^%(Cocos_Effect_tlog.Source);@(Cocos_Effect_tlog-&gt;'%(Fullpath)')"
+      Encoding="Unicode" />
+    <Cocos_Effect
+      Condition="'@(Cocos_Effect)' != '' and '%(Cocos_Effect.ExcludedFromBuild)' != 'true'"
+      CommandLineTemplate="%(Cocos_Effect.CommandLineTemplate)"
+      AdditionalOptions="%(Cocos_Effect.AdditionalOptions)"
+      Inputs="%(Cocos_Effect.Identity)" />
+  </Target>
+  <PropertyGroup>
+    <ComputeLinkInputsTargets>
+            $(ComputeLinkInputsTargets);
+            ComputeCocos_EffectOutput;
+          </ComputeLinkInputsTargets>
+    <ComputeLibInputsTargets>
+            $(ComputeLibInputsTargets);
+            ComputeCocos_EffectOutput;
+          </ComputeLibInputsTargets>
+  </PropertyGroup>
+  <Target
+    Name="ComputeCocos_EffectOutput"
+    Condition="'@(Cocos_Effect)' != ''">
+    <ItemGroup>
+      <Cocos_EffectDirsToMake
+        Condition="'@(Cocos_Effect)' != '' and '%(Cocos_Effect.ExcludedFromBuild)' != 'true'"
+        Include="%(Cocos_Effect.Outputs)" />
+      <Link
+        Include="%(Cocos_EffectDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+      <Lib
+        Include="%(Cocos_EffectDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+      <ImpLib
+        Include="%(Cocos_EffectDirsToMake.Identity)"
+        Condition="'%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib'" />
+    </ItemGroup>
+    <MakeDir
+      Directories="@(Cocos_EffectDirsToMake-&gt;'%(RootDir)%(Directory)')" />
+  </Target>
+</Project>

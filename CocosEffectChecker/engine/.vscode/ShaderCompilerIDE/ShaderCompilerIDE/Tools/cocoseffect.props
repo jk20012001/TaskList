@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup
+    Condition="'$(Cocos_EffectBeforeTargets)' == '' and '$(Cocos_EffectAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
+    <Cocos_EffectBeforeTargets>Midl</Cocos_EffectBeforeTargets>
+    <Cocos_EffectAfterTargets>CustomBuild</Cocos_EffectAfterTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Cocos_EffectDependsOn
+      Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(Cocos_EffectDependsOn)</Cocos_EffectDependsOn>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Cocos_Effect>
+      <CommandLineTemplate>..\..\EffectChecker\CocosEffectChecker.exe %(FullPath)</CommandLineTemplate>
+      <Outputs>TestOutput</Outputs>
+      <ExecutionDescription>---------------------Compiling Cocos Effect [inputs]---------------------</ExecutionDescription>
+      <AdditionalDependencies></AdditionalDependencies>
+    </Cocos_Effect>
+  </ItemDefinitionGroup>
+</Project>
