@@ -13,7 +13,7 @@
     <Cocos_Effect>
       <CommandLineTemplate>..\..\EffectChecker\CocosEffectChecker.exe %(FullPath)</CommandLineTemplate>
       <Outputs>TestOutput</Outputs>
-      <ExecutionDescription>---------------------Compiling Cocos Effect [inputs]---------------------</ExecutionDescription>
+      <ExecutionDescription>---------------------Compiling %(Filename).%(Extension)---------------------</ExecutionDescription>
       <AdditionalDependencies></AdditionalDependencies>
     </Cocos_Effect>
   </ItemDefinitionGroup>

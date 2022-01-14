@@ -11,6 +11,8 @@ pause
 
 @echo off
 cd /d "%1\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\"
+copy /y ..\ShaderCompilerIDE.vcxproj ..\ShaderCompilerIDE_template.vcxproj
+copy /y ..\ShaderCompilerIDE.vcxproj.filters" ..\ShaderCompilerIDE_template.vcxproj.filters
 dllfunc goldfx.dll CocosShaderCompilerIDEGenerator "%1\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\ShaderCompilerIDE.vcxproj" "%1"
 @echo
 @echo --------------------------------------------------------------------------------------------------------------------

@@ -2,7 +2,6 @@
 #ifdef __cplusplus
 #pragma once
 #include "windows.h"
-#include "MiscInclude\d3dx\d3dx9.h"
 #undef IN
 #undef OUT
 
@@ -10,28 +9,23 @@
 #ifndef _BASE_TYPE_DEFINED
 #define _BASE_TYPE_DEFINED
 #define __info
-typedef D3DXMATRIX float3x3;
-typedef D3DXMATRIX float3x4;
-typedef D3DXMATRIX float4x3;
-typedef D3DXMATRIX float4x4;
-typedef D3DXMATRIX Matrix;
-typedef D3DXMATRIX matrix;
-typedef D3DXMATRIX Matrix4;
-typedef D3DXMATRIX Matrix3;
-typedef D3DXMATRIX matrix4;
-typedef D3DXMATRIX matrix3;
 
-struct _GRAMMARVECTOR2 : D3DXVECTOR2
-{float r,g; D3DXVECTOR2 rr,gg,xx,yy,	rg,gr,xy,yx;};
-struct _GRAMMARVECTOR3 : D3DXVECTOR3, _GRAMMARVECTOR2
-{float b;	D3DXVECTOR2 bb,zz,	rb,br,xz,zx,	gb,bg,yz,zy;	D3DXVECTOR3 rrr,ggg,bbb,xxx,yyy,zzz,	rgb,rbg,xyz,xzy,	grb,gbr,yxz,yzx,	brg,bgr,zxy,zyx;};
-struct _GRAMMARVECTOR4 : D3DXVECTOR4, _GRAMMARVECTOR3
+struct _VECTOR2 { float x, y;float operator [](uint index) { return 0; } };
+struct _VECTOR3 : _VECTOR2 { float z;};
+struct _VECTOR4 : _VECTOR3 { float w;};
+
+struct _GRAMMARVECTOR2 : _VECTOR2
+{float r,g; _GRAMMARVECTOR2(float v1, float v2); _VECTOR2 rr,gg,xx,yy,	rg,gr,xy,yx;};
+struct _GRAMMARVECTOR3 : _GRAMMARVECTOR2
+{float b; _GRAMMARVECTOR3(float v1, float v2, float v3); _VECTOR2 bb,zz,	rb,br,xz,zx,	gb,bg,yz,zy;	_VECTOR3 rrr,ggg,bbb,xxx,yyy,zzz,	rgb,rbg,xyz,xzy,	grb,gbr,yxz,yzx,	brg,bgr,zxy,zyx;};
+struct _GRAMMARVECTOR4 : _GRAMMARVECTOR3
 {
-	float a;	D3DXVECTOR2 ra, ar, xw, wx, ga, ag, yw, wy, ba, ab, zw, wz, aa, ww;
-	D3DXVECTOR3	rrr, ggg, bbb, xxx, yyy, zzz, rgb, rbg, xyz, xzy, grb, gbr, yxz, yzx, brg, bgr, zxy, zyx;
-	D3DXVECTOR3	rba, rab, xzw, xwz, rga, rag, xyw, xwy, gba, gab, yzw, ywz, gra, gar, yxw, ywx, bra, bar, zxw, zwx, bga, bag, zyw, zwy,
+	float a;  _GRAMMARVECTOR4(float v1, float v2, float v3, float v4);
+	_VECTOR2 ra, ar, xw, wx, ga, ag, yw, wy, ba, ab, zw, wz, aa, ww;
+	_VECTOR3	rrr, ggg, bbb, xxx, yyy, zzz, rgb, rbg, xyz, xzy, grb, gbr, yxz, yzx, brg, bgr, zxy, zyx;
+	_VECTOR3	rba, rab, xzw, xwz, rga, rag, xyw, xwy, gba, gab, yzw, ywz, gra, gar, yxw, ywx, bra, bar, zxw, zwx, bga, bag, zyw, zwy,
 		arg, agr, wxy, wyx, agb, abg, wyz, wzy, arb, abr, wxz, wzx, aaa, www;
-	D3DXVECTOR4	rgba, rgab, xyzw, xywz, rbga, rbag, xzyw, xywy, ragb, rabg, xwyz, xwzy,
+	_VECTOR4	rgba, rgab, xyzw, xywz, rbga, rbag, xzyw, xywy, ragb, rabg, xwyz, xwzy,
 		grba, grab, yxzw, yxwz, gbra, gbar, yzxw, yzwx, garb, gabr, ywxz, ywzx,
 		brga, brag, zxyw, zxwy, bgra, bgar, zyxw, zywx, barg, bagr, zwxy, zwyx,
 		argb, arbg, wxyz, wxzy, agrb, agbr, wyxz, wyzx, abrg, abgr, wzxy, wzyx,
@@ -56,10 +50,21 @@ typedef _GRAMMARVECTOR4 float4;
 typedef _GRAMMARVECTOR4 int4;
 typedef _GRAMMARVECTOR4 uint4;
 
+struct float3x3 { _VECTOR3 operator [](uint index); };
+struct float3x4 { _VECTOR3 operator [](uint index); };
+struct float4x3 { _VECTOR4 operator [](uint index); };
+struct float4x4 { _VECTOR4 operator [](uint index); };
+typedef float4x4 Matrix;
+typedef float4x4 matrix;
+typedef float4x4 Matrix4;
+typedef float3x3 Matrix3;
+typedef float4x4 matrix4;
+typedef float3x3 matrix3;
+
 typedef float fixed;
 typedef float half;
-typedef int* sampler1D;
-typedef int* sampler2D;
+typedef float* sampler1D;
+typedef float* sampler2D;
 typedef float* samplerCUBE;
 #endif
 
@@ -188,20 +193,20 @@ anytype texCUBEgrad(Sampler_State ss, float3 v3TextureCoord, float3 ddx, float3 
 //内部函数,anytype表示任意类型任意元素数量的数据,VEC表示任意类型但必须是向量
 anytype ddx(anytype ShaderInputData);
 anytype ddy(anytype ShaderInputData);
-anytype ddx_coarse(anytype ShaderInputData, __info 低精度);
-anytype ddy_coarse(anytype ShaderInputData, __info 低精度);
-anytype ddx_fine(anytype ShaderInputData, __info 高精度);
-anytype ddy_fine(anytype ShaderInputData, __info 高精度);
+anytype ddx_coarse(anytype ShaderInputData, const char *_info = "低精度");
+anytype ddy_coarse(anytype ShaderInputData, const char *_info = "低精度");
+anytype ddx_fine(anytype ShaderInputData, const char *_info = "高精度");
+anytype ddy_fine(anytype ShaderInputData, const char *_info = "高精度");
 //数值变换
 anytype saturate(anytype 限制在0和1之间);
-anytype clamp(anytype Data, anytype MinValue, anytype MaxValue, __info 要特别小心UINT型的变量,必须转成int型的再传入);
+anytype clamp(anytype Data, anytype MinValue, anytype MaxValue, const char *_info = "要特别小心UINT型的变量,必须转成int型的再传入");
 anytype frac(anytype 取其小数部分);
 anytype trunc(anytype 取整数部分);
 anytype round(anytype 取四舍五入);
 UINTVECType ceil(anytype 取大于等于它且最接近它的整数);
 UINTVECType floor(anytype 取小于等于它且最接近它的整数);
-floatVECType fmod(floatVECType Data, floatVECType 除数, __info 浮点数专用的求余函数,相当于Data % 除数);
-floatVECType modf(anytype Data, __out INTVECType OutData, __info 返回小数部分,参数2为输出的整数部分,这两部分的符号将与输入数值相同);
+floatVECType fmod(floatVECType Data, floatVECType 除数, const char *_info = "浮点数专用的求余函数,相当于Data % 除数");
+floatVECType modf(anytype Data, __out INTVECType OutData, const char *_info = "返回小数部分,参数2为输出的整数部分,这两部分的符号将与输入数值相同");
 anytype degrees(anytype 把弧度变成度);
 anytype radians(anytype 把度变成弧度);
 
@@ -214,44 +219,44 @@ anytype max(anytype A, anytype B);
 bool isnan(anytype 是否为无理数);
 bool isinf(anytype 是否为无限大或无限小);
 bool isfinite(anytype 是否为有限的,去掉了无理数和无限大小值的可能,主要用于判有效);
-float step(anytype A, anytype B, __info 返回A<=B或B>=A的浮点数,去掉bool值转换);
+float step(anytype A, anytype B, const char *_info = "返回A<=B或B>=A的浮点数,去掉bool值转换");
 
 //矩阵和向量运算
 VECType normalize(VECType Data);
 float dot(VECType Data1, VECType Data2);
-VECType cross(VECType Data1, VECType Data2, __info 左手定则);
-float determinant(Matrix 矩阵求秩);
-Matrix transpose(Matrix 矩阵求逆);
+VECType cross(VECType Data1, VECType Data2, const char *_info = "左手定则");
+float determinant(MAT4 矩阵求秩);
+MAT4 transpose(MAT4 矩阵转置);
 anytype mul(anytype Data1, anytype Data2);
 float length(VECType Data);
 anytype lerp(anytype Data1_Left, anytype Data2_Right, anytype Coef_DirectMulToData2);
 VECType reflect(VECType IncidentDirection从别处到像素, VECType Normal);
 VECType refract(VECType IncidentDirection从别处到像素, VECType Normal, float 折射率之比);
-float noise(VECType param, __info 只能用在ShaderModel1);
-double fma(double a, double b, double c, __info double类型并且安全的计算a*b+c);
+float noise(VECType param, const char *_info = "只能用在ShaderModel1");
+double fma(double a, double b, double c, const char *_info = "double类型并且安全的计算a*b+c");
 
 //数据类型转换与位操作
-UINTVECType f32tof16(floatVECType Data, __info fp16类型为了方便位操作,其本质就是uint);
-floatVECType f16tof32(UINTVECType fp16Data, __info fp16类型为了方便位操作,其本质就是uint);
-UINTVEC4 D3DCOLORtoUBYTE4(VEC4 浮点数转换为颜色值整数);
-double asdouble(anytype lowbits, anytype highbits, __info 逐bit将两个32位值读取为浮点数,不改变bit值);
-float2 asfloat(type64bit value, __info 逐bit将64位值读取为两个浮点数,不改变bit值);
-VECType asfloat(anytype value, __info 逐bit将32位值读取为浮点数,不改变bit值);
-int2 asint(type64bit value, __info 逐bit将64位值读取为两个int数,不改变bit值);
-INTVECType asint(anytype value, __info 逐bit将32位值读取为int数,不改变bit值，注意half会自动隐式转换为float再做逐bit转换,请先使用f16tof32再传入该函数);
-void asuint(type64bit value, __out UINT HighBits, __out UINT LowBits, __info 逐bit将64位值读取为两个UINT数,不改变bit值);
-UINTVECType asuint(anytype value, __info 逐bit将32位值读取为UINT数,不改变bit值，注意half会自动隐式转换为float再做逐bit转换,请先使用f16tof32再传入该函数);
+UINTVECType f32tof16(floatVECType Data, const char *_info = "fp16类型为了方便位操作,其本质就是uint");
+floatVECType f16tof32(UINTVECType fp16Data, const char *_info = "fp16类型为了方便位操作,其本质就是uint");
+uint4 D3DCOLORtoUBYTE4(float4 color);
+double asdouble(anytype lowbits, anytype highbits, const char *_info = "逐bit将两个32位值读取为浮点数,不改变bit值");
+float2 asfloat(type64bit value, const char *_info = "逐bit将64位值读取为两个浮点数,不改变bit值");
+VECType asfloat(anytype value, const char *_info = "逐bit将32位值读取为浮点数,不改变bit值");
+int2 asint(type64bit value, const char *_info = "逐bit将64位值读取为两个int数,不改变bit值");
+INTVECType asint(anytype value, const char *_info = "逐bit将32位值读取为int数,不改变bit值，注意half会自动隐式转换为float再做逐bit转换,请先使用f16tof32再传入该函数");
+void asuint(type64bit value, __out UINT HighBits, __out UINT LowBits, const char *_info = "逐bit将64位值读取为两个UINT数,不改变bit值");
+UINTVECType asuint(anytype value, const char *_info = "逐bit将32位值读取为UINT数,不改变bit值，注意half会自动隐式转换为float再做逐bit转换,请先使用f16tof32再传入该函数");
 
 //注意HLSL中对UINT移位>=32bit的话,将对移动的位数取余
 	//iValue>>32相当于iValue>>0,即等于iValue原值,而非像C++中一样变成0
 	//移位超过32bit的话,如iValue>>36,等于iValue>>4
-UINTVECType firstbitlow(INTVECType Data, __info 返回第一个等于一的二进制位序号,从低位向高位搜索,逐分量独立进行);
-UINTVECType firstbithi(INTVECType Data, __info 返回第一个等于一的二进制位序号,从高位向低位搜索,逐分量独立进行);
-UINTVECType countbits(UINTVECType Data, __info 返回等于一的二进制位数量,逐分量独立进行);
+UINTVECType firstbitlow(INTVECType Data, const char *_info = "返回第一个等于一的二进制位序号,从低位向高位搜索,逐分量独立进行");
+UINTVECType firstbithi(INTVECType Data, const char *_info = "返回第一个等于一的二进制位序号,从高位向低位搜索,逐分量独立进行");
+UINTVECType countbits(UINTVECType Data, const char *_info = "返回等于一的二进制位数量,逐分量独立进行");
 UINTVECType reversebits(UINTVECType Data);
 
 //数学运算
-anytype mad(anytype A, anytype B, anytype C, __info 返回A*B+C);
+anytype mad(anytype A, anytype B, anytype C, const char *_info = "返回A*B+C");
 anytype sqrt(anytype 平方根);
 anytype rcp(anytype 倒数);
 anytype rsqrt(anytype 平方根的倒数);
@@ -259,10 +264,10 @@ anytype sin(anytype 弧度);
 anytype asin(anytype 反正弦);
 anytype cos(anytype 弧度);
 anytype acos(anytype 反余弦);
-void sincos(anytype Data, out anytype Sin, out anytype Cos, __info 同时返回正弦和余弦);
+void sincos(anytype Data, out anytype Sin, out anytype Cos, const char *_info = "同时返回正弦和余弦");
 anytype tan(anytype 弧度);
 anytype atan(anytype 反正切);
-anytype atan2(anytype Var1, anytype Var2, __info 同时计算两个数的反正切,互不影响);
+anytype atan2(anytype Var1, anytype Var2, const char *_info = "同时计算两个数的反正切,互不影响");
 anytype log(anytype 以自然对数为底);
 anytype log10(anytype 以10为底);
 anytype log2(anytype 以2为底);
@@ -273,8 +278,8 @@ anytype exp2(anytype 以2为底的指数);
 //返回输入数据的偏导绝对值之和,即对两个偏导分别取绝对值后的和,相当于在内部先取了绝对值再相加的梯度 return abs(ddx)+abs(ddy)
 anytype fwidth(anytype 参数说明见注释);
 anytype cosh(anytype 双曲正弦);
-anytype frexp(anytype Data, __out anytype OutData, __info 分解一个数字,返回其尾数,参数2为输出的指数,以10为底);
-anytype ldexp(anytype 参数说明见注释, anytype 以二为底的指数, __info 先根据参数2计算以2为底的幂再乘参数1);
+anytype frexp(anytype Data, __out anytype OutData, const char *_info = "分解一个数字,返回其尾数,参数2为输出的指数,以10为底");
+anytype ldexp(anytype 参数说明见注释, anytype 以二为底的指数, const char *_info = "先根据参数2计算以2为底的幂再乘参数1");
 //对指定的参数3做Hermite平滑修正,使其由线性变为曲线,若参数3落在min和max范围外,则Clamp,注意它并非真正的Hermite曲线,不牵扯切线向量,没有太多的可控性,只能视为做了一种典型的Hermite曲线性平滑而已
 anytype smoothstep(anytype min, anytype max, anytype 参数说明见注释);
 
@@ -297,11 +302,11 @@ void abort();
 
 
 //////////////////////////////////////////////////////////////////////////OpenGL
-typedef D3DXMATRIX mat3;
-typedef D3DXMATRIX mat4;
-typedef D3DXVECTOR4 vec4;
-typedef D3DXVECTOR3 vec3;
-typedef D3DXVECTOR2 vec2;
+typedef float3x3 mat3;
+typedef float4x4 mat4;
+typedef _GRAMMARVECTOR4 vec4;
+typedef _GRAMMARVECTOR3 vec3;
+typedef _GRAMMARVECTOR2 vec2;
 #define uniform //C++->Shader
 #define attribute //IA->VS
 #define varying //VS->PS
