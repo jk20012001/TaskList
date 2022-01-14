@@ -1,6 +1,6 @@
 //该文件在stdafx.h里包含
 
-#define CCProgram CCPROGRAM{
+#define CCProgram class
 #define layout struct
 
 //所有的宏
