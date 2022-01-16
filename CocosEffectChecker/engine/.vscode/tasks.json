@@ -91,7 +91,7 @@
             },
             "presentation": {
                 // Reveal the output only if unrecognized errors occur.
-                "reveal": "silent"
+                "reveal": "always"
                 "echo": true,
                 //"focus": false,
                 "focus": true,
