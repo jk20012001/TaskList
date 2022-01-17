@@ -7,7 +7,6 @@ exit
 cd /d %~dp0
 @echo on
 xcopy /s /y engine\*.* "%1"
-pause
 
 @echo off
 cd /d "%1\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\"
