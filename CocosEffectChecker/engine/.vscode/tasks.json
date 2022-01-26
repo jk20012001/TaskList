@@ -69,9 +69,8 @@
             "presentation": {
                 // Reveal the output only if unrecognized errors occur.
                 "reveal": "silent"
-                "echo": true,
-                //"focus": false,
-                "focus": true,
+                "echo": false,
+                "focus": false,
                 "panel": "shared",
                 "showReuseMessage": true,
                 "clear": false
@@ -92,8 +91,7 @@
             "presentation": {
                 // Reveal the output only if unrecognized errors occur.
                 "reveal": "always"
-                "echo": true,
-                //"focus": false,
+                "echo": false,
                 "focus": true,
                 "panel": "shared",
                 "showReuseMessage": true,
