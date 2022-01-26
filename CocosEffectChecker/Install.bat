@@ -1,18 +1,15 @@
 @echo off
-if "%1"=="" (
-@echo 请拖engine文件夹到bat上
-pause
-exit
-)
 cd /d %~dp0
-@echo on
-xcopy /s /y engine\*.* "%1"
+call CopyFiles.bat "%1"
+if not "%2"=="" (
+cd /d %~dp0
+call CopyFiles.bat "%2"
+)
+if not "%3"=="" (
+cd /d %~dp0
+call CopyFiles.bat "%3"
+)
 
-@echo off
-cd /d "%1\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\"
-copy /y ..\ShaderCompilerIDE.vcxproj ..\ShaderCompilerIDE_template.vcxproj
-copy /y ..\ShaderCompilerIDE.vcxproj.filters ..\ShaderCompilerIDE_template.vcxproj.filters
-dllfunc goldfx.dll CocosShaderCompilerIDEGenerator "%1\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\ShaderCompilerIDE.vcxproj" "%1"
 
 cls
 If not exist "%localappdata%\Microsoft\VisualStudio\" (
