@@ -1,5 +1,8 @@
 安装或更新: 将ts引擎所在文件夹整个拖到install.bat上即可
-用VSCode打开引擎文件夹,选Terminal-->Run Task...
+用VSCode打开引擎文件夹,选Terminal-->Run Task...或按Ctrl+F7或Ctrl+Shift+B
 
-VSCode键盘快捷键设置:	任务-运行任务		设为Ctrl+Shift+B, 会弹出菜单,可以选择Single或All
-						任务-运行生成任务	设为Ctrl+F7, 可绑定为默认的Single
+
+
+
+手动设置VSCode键盘快捷键:	任务-运行任务		设为Ctrl+Shift+B, 会弹出菜单,可以选择Single或All
+							任务-运行生成任务	设为Ctrl+F7, 可绑定为默认的Single
