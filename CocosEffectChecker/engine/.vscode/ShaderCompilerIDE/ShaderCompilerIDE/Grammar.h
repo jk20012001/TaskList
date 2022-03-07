@@ -1,5 +1,7 @@
+#ifndef Include_Once_Grammar
+#define Include_Once_Grammar
 //该头文件中包含HLSL中使用的类或函数在C++中的定义,仅仅用于VC中的语法着色和快速输入提示或纠正,绝对不能参与HLSL编译
-#ifdef __cplusplus
+#ifdef WIN32
 #pragma once
 #include "windows.h"
 #undef IN
@@ -8,7 +10,6 @@
 //先是基本数据类型
 #ifndef _BASE_TYPE_DEFINED
 #define _BASE_TYPE_DEFINED
-#define __info
 
 struct _VECTOR2 { float x, y;float operator [](uint index) { return 0; } };
 struct _VECTOR3 : _VECTOR2 { float z;};
@@ -66,6 +67,7 @@ typedef float half;
 typedef float* sampler1D;
 typedef float* sampler2D;
 typedef float* samplerCUBE;
+typedef int* sampler;
 #endif
 
 //通用数据类型
@@ -80,7 +82,43 @@ typedef int4 INTVECType; //INT向量
 typedef __int64 type64bit; //64位数据,可为浮点,整型或其他
 
 //再是关键字
-typedef int* sampler;
+#define interface class
+#define SV_Position 128
+#define SV_VertexId 32
+#define SV_PrimitiveId 32
+#define SV_InstanceId 32
+
+#define SV_GSInstanceId 32
+#define SV_RenderTargetArrayIndex 8
+#define SV_ViewportArrayIndex  8
+
+#define SV_IsFrontFace 8
+#define SV_Target 32
+#define SV_Target0 32
+#define SV_Target1 32
+#define SV_Target2 32
+#define SV_Target3 32
+#define SV_Target4 32
+#define SV_Target5 32
+#define SV_Target6 32
+#define SV_Target7 32
+#define SV_Depth 32
+#define SV_DepthGreaterEqual 8 //这两个用于取代SV_Depth输出,可以在输出oDepth的情况下,仍然使用EarlyZ
+#define SV_DepthLessEqual 8
+#define SV_SampleIndex 8 //UINT型,ps输入参数,表示当前ps是在哪个子采样点上执行的,值范围从0到AA总数量-1
+#define SV_Coverage 8 //UINT型,每个bit表示一个sample的输出掩码,1为允许写入,0为不允许,通常最多一个byte有效(8bit对应8AA)
+										//配合EvaluateAttributeXXX函数来获取子像素的覆盖值
+
+#define SV_DispatchThreadID 32
+#define SV_GroupThreadID 16
+#define SV_GroupID 16
+#define SV_GroupIndex 16
+
+#define SV_DomainLocation 32
+#define SV_InsideTessFactor 32
+#define SV_OutputControlPointID 32
+#define SV_TessFactor 32
+
 #define technique
 #define pass
 #define in
@@ -88,6 +126,7 @@ typedef int* sampler;
 #define inout
 #define unroll(MaxLoopCount)
 #define loop
+#define allow_uav_condition
 #define flatten
 #define branch
 #define if_f if
@@ -97,8 +136,8 @@ typedef int* sampler;
 #define for_f(maxloopcount) for
 #define for_d for
 #define for_opt for
-#define One
-#define Zero
+#define One 0
+#define Zero 1
 
 //下来是用途及自定义变量关键字
 //根据FVF的VB元素分量存放顺序定义,Declaration中无此限制
@@ -200,33 +239,33 @@ anytype ddy_fine(anytype ShaderInputData, const char *_info = "高精度");
 //数值变换
 anytype saturate(anytype 限制在0和1之间);
 anytype clamp(anytype Data, anytype MinValue, anytype MaxValue, const char *_info = "要特别小心UINT型的变量,必须转成int型的再传入");
-anytype frac(anytype 取其小数部分);
-anytype trunc(anytype 取整数部分);
-anytype round(anytype 取四舍五入);
-UINTVECType ceil(anytype 取大于等于它且最接近它的整数);
-UINTVECType floor(anytype 取小于等于它且最接近它的整数);
+anytype frac(anytype Data, const char *_info = "取其小数部分");
+anytype trunc(anytype Data, const char *_info = "取整数部分");
+anytype round(anytype Data, const char *_info = "取四舍五入");
+UINTVECType ceil(anytype Data, const char *_info = "取大于等于它且最接近它的整数");
+UINTVECType floor(anytype Data, const char *_info = "取小于等于它且最接近它的整数");
 floatVECType fmod(floatVECType Data, floatVECType 除数, const char *_info = "浮点数专用的求余函数,相当于Data % 除数");
 floatVECType modf(anytype Data, __out INTVECType OutData, const char *_info = "返回小数部分,参数2为输出的整数部分,这两部分的符号将与输入数值相同");
-anytype degrees(anytype 把弧度变成度);
-anytype radians(anytype 把度变成弧度);
+anytype degrees(anytype Data, const char *_info = "把弧度变成度");
+anytype radians(anytype Data, const char *_info = "把度变成弧度");
 
 //数值判断
 INTVECType sign(anytype GetSign_LessThanZero_Or_MoreThanZero_Or_Zero);
-bool all(anytype 所有元素非0才返回TRUE);
-bool any(anytype 任意一个元素非0就返回TRUE);
+bool all(anytype Data, const char *_info = "所有元素非0才返回TRUE");
+bool any(anytype Data, const char *_info = "任意一个元素非0就返回TRUE");
 anytype min(anytype A, anytype B);
 anytype max(anytype A, anytype B);
-bool isnan(anytype 是否为无理数);
-bool isinf(anytype 是否为无限大或无限小);
-bool isfinite(anytype 是否为有限的,去掉了无理数和无限大小值的可能,主要用于判有效);
+bool isnan(anytype Data, const char *_info = "是否为无理数");
+bool isinf(anytype Data, const char *_info = "是否为无限大或无限小");
+bool isfinite(anytype Data, const char *_info = "是否为有限的,去掉了无理数和无限大小值的可能,主要用于判有效");
 float step(anytype A, anytype B, const char *_info = "返回A<=B或B>=A的浮点数,去掉bool值转换");
 
 //矩阵和向量运算
 VECType normalize(VECType Data);
 float dot(VECType Data1, VECType Data2);
 VECType cross(VECType Data1, VECType Data2, const char *_info = "左手定则");
-float determinant(MAT4 矩阵求秩);
-MAT4 transpose(MAT4 矩阵转置);
+float determinant(MAT4 Data, const char *_info = "矩阵求秩");
+MAT4 transpose(MAT4 Data);
 anytype mul(anytype Data1, anytype Data2);
 float length(VECType Data);
 anytype lerp(anytype Data1_Left, anytype Data2_Right, anytype Coef_DirectMulToData2);
@@ -292,13 +331,6 @@ void printf(string FormattedMessage, ...);
 void abort();
 #endif //GRAMMAR_PERCEPTION_ONLY
 
-
-
-//////////////////////////////////////////////////////////////////////////D3D10
-#define SV_POSITION 128
-#define SV_RENDERTARGETARRAYINDEX 8
-#define SV_ISFRONTFACE 8
-#define SV_TARGET 32
 
 
 //////////////////////////////////////////////////////////////////////////OpenGL
@@ -382,17 +414,17 @@ anytype texture2D(sampler2D ss, float2 v2TextureCoord);
 anytype textureCUBE(samplerCUBE ss, float3 v3TextureCoord);
 anytype texture2DLodEXT(sampler2D ss, float2 v2TextureCoord, float lod);
 anytype textureCUBELodEXT(samplerCUBE ss, float3 v3TextureCoord, float lod);
-//新版,推荐
+//新版,推荐,__VERSION__>=130
 anytype texture(sampler any_type_tex, floatVECType vTextureCoord, __opt float bias);
 anytype textureOffset(sampler any_type_tex, floatVECType vTextureCoord, INTVECType vOffset, __opt float bias);
 anytype textureLod(sampler any_type_tex, floatVECType vTextureCoord, float lod);
 anytype textureLodOffset(sampler any_type_tex, floatVECType vTextureCoord, float lod, INTVECType vOffset);
 
-#define textureQueryLod //CalcLevelOfDetail
-#define texelFetch //Load两个
+#define textureQueryLod //CalcLevelOfDetail, __VERSION__>=400
+#define texelFetch //Load两个, __VERSION__>=300
 #define texelFetchOffset
-#define textureSize //GetDimensions三个
-#define textureQueryLevels
+#define textureSize //GetDimensions三个, __VERSION__>=130
+#define textureQueryLevels //__VERSION__>=400
 #define textureSamples
 #define textureGather //Garther三个
 #define textureGatherOffset
@@ -401,17 +433,17 @@ anytype textureLodOffset(sampler any_type_tex, floatVECType vTextureCoord, float
 #define samplerGrad //SampleGrad
 #define samplerGradOffset
 
-
+//__VERSION__ >= 400
 anytype dFdx(anytype ShaderInputData);
 anytype dFdy(anytype ShaderInputData);
-anytype dFdxCoarse(anytype ShaderInputData, __info 低精度);
-anytype dFdyCoarse(anytype ShaderInputData, __info 低精度);
-anytype dFdxFine(anytype ShaderInputData, __info 高精度);
-anytype dFdyFine(anytype ShaderInputData, __info 高精度);
+anytype dFdxCoarse(anytype ShaderInputData, const char *_info = "低精度");
+anytype dFdyCoarse(anytype ShaderInputData, const char *_info = "低精度");
+anytype dFdxFine(anytype ShaderInputData, const char *_info = "高精度");
+anytype dFdyFine(anytype ShaderInputData, const char *_info = "高精度");
 //数值变换
-anytype fract(anytype 取其小数部分);
+anytype fract(anytype Data, const char *_info = "取其小数部分");
 anytype mix(anytype Data1_Left, anytype Data2_Right, anytype Coef_DirectMulToData2);
-floatVECType mod(floatVECType Data, floatVECType 除数, __info 浮点数专用的求余函数, 相当于Data % 除数);
+floatVECType mod(floatVECType Data, floatVECType 除数, const char *_info = "浮点数专用的求余函数, 相当于Data % 除数");
 //modf floor ceil round trunc和HLSL相同
 //没有saturate,可以定义一个宏用clamp来计算
 
@@ -444,3 +476,5 @@ floatVECType mod(floatVECType Data, floatVECType 除数, __info 浮点数专用的求余函
 #endif
 
 #endif
+
+#endif //Include_Once_Grammar
