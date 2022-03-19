@@ -8,6 +8,34 @@
             "type": "shell",
             "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
+				"0",
+                "${file}",
+                "${workspaceFolder}\\"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                //"reveal": "silent"
+                "reveal": "always",
+                "echo": true,
+                //"focus": false,
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Cocos Effect Checker With Performance",
+            "type": "shell",
+            "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
+            "args": [
+				"1",
                 "${file}",
                 "${workspaceFolder}\\"
             ],
@@ -35,6 +63,7 @@
             "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
                 //"${fileDirname}\\",
+				"0",
                 "${workspaceFolder}\\editor\\assets\\effects\\",
                 "${workspaceFolder}\\"
             ],
