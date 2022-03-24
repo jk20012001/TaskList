@@ -18,7 +18,8 @@ default-function中有Get/ModifySurfaceData的函数
 	如果surface结构体变了,相应的default-function也要变,可以使用完全不同的名称和输出参数的default-function,可以参考toon的用法
 	其中唯一一个特殊的函数是SurfacesFragmentModifyBaseColorAndTransparency,无论什么情况下都必须要实现一份,并在函数内做alphatest, 因为render-to-shadowmap要用alphaclip是通过它来完成的
 	
-module-function中是定义主函数中用到的surface / lighting / debugview / shading模块相关计算
+module-function中是定义主函数中用到的vsoutput / surface / lighting / debugview / shading模块相关计算
+	目前VS的变化都不大，都走的common，如果需要的话也可以像ps一样重写
 
 effect-macros是将effect中的USE_XXX宏转成CC_SURFACES_USE_XXX,也可以根据effect用途来屏蔽某些宏
 	映射不同用户effect中用到的宏到Surface系统内定宏
@@ -34,10 +35,10 @@ includes是effect中使用的头文件,用于简化effect的包含代码
 	
 特殊材质说明:
 VS扩展方法: 也可以重写module-function和default-function,新增VSIntermediateData和VSOutput/PSInput的项并包在宏里
-	比如地形:VSInput不用改, 要新加一堆UV项,包在terrain宏里
-			然后在module-function中输出这些项到IntermediateData和VSOutput, PS中直接用FSInput_XXX宏来获取新增的这些数据即可
-			当然也可以用macro强行开启texcoord1,使用texcoord1的VSOutput来存localPos.xz, 这一堆UV直接在PS里算,这样就不用新增VSOutput项了
-			然后在PS的surface函数中采各种图的时候根据texcoord1动态计算四层uv就好
+	比如地形: 需要clippos.xz作为uv来采图, 那么需要添加VS输出项,方法有两种:
+		1. 专用: 添加vs对应的module-function和surface function输出这些UV项到IntermediateData和VSOutput, PS中直接用FSInput_XXX宏来获取新增的这些数据即可
+		2. 通用: 新加一个macro添加VS输出新项clipPos, 这一堆UV直接在PS里采图之前根据FSInput_clipPos动态计算
+				需要新加别的项都可以包在宏里控制,这样不会影响其他材质的性能
 PS扩展方法: 预计算的皮肤
 			渲染到XXX
 			卡通描边

@@ -44,3 +44,7 @@
 #if !CC_USE_ACCURATE_FOG
   #define VSOutput_fogFactor v_fogFactor
 #endif
+
+#if CC_SURFACES_TRANSFER_LOCAL_POS
+  #define VSOutput_localPos v_localPos
+#endif

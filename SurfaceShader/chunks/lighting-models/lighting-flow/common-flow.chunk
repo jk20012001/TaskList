@@ -38,7 +38,6 @@
           angleAtt = CCSurfacesLightingCalculateAngleAttenuation(lightingData, cc_lightSizeRangeAngle[i], -cc_lightDir[i].xyz);
         }
 
-        //todo: different to shading-additive: 应该和平行光保持一致不乘PI
         float multiplier = distAtt * angleAtt * shadow;
 
         lightingResult.directDiffuse += diffuseLighting * multiplier;
@@ -59,7 +58,7 @@
 
       CCSurfacesLightingCalculateDirect(lightingResult.directDiffuse, lightingResult.directSpecular, lightingData, cc_mainLitColor);
       
-      // CCSurfacesLightingCalculateShadow
+      // CCSurfacesLightingCalculateShadow:
       lightingResult.shadow = 1.0;
     #if CC_RECEIVE_SHADOW
       if (cc_mainLitDir.w > 0.0) {

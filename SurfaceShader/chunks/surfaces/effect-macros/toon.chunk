@@ -5,10 +5,6 @@
 #pragma define-meta USE_INSTANCING
 #pragma define-meta USE_BATCHING
 #pragma define-meta USE_NORMAL_MAP
-#pragma define-meta USE_VERTEX_COLOR
-#pragma define-meta HAS_SECOND_UV
-#pragma define-meta USE_TWOSIDE
-#pragma define-meta USE_LIGHTMAP
 
 #define CC_SURFACES_USE_INSTANCING USE_INSTANCING
 #define CC_SURFACES_USE_BATCHING USE_BATCHING
@@ -17,6 +13,9 @@
 #define CC_SURFACES_HAS_SECOND_UV 0
 #define CC_SURFACES_USE_TWO_SIDED 0
 #define CC_SURFACES_USE_REFLECTION_DENOISE 0
+
+// vs-fs varing addon data
+#define CC_SURFACES_TRANSFER_LOCAL_POS 0
 
 //todo：Lightmap宏待修改
 #define CC_USE_LIGHT_MAP USE_LIGHTMAP

@@ -13,5 +13,8 @@
 #define CC_SURFACES_USE_TWO_SIDED 0
 #define CC_SURFACES_USE_REFLECTION_DENOISE 0
 
+// vs-fs varing addon data
+#define CC_SURFACES_TRANSFER_LOCAL_POS 0
+
 //todo：Lightmap宏待修改
 #define CC_USE_LIGHT_MAP 0
