@@ -1,0 +1,44 @@
+概念:
+shading是组合材质参数和光照结果用的逻辑
+surface主要和shading逻辑有关,和材质类型有一定的关系,可能多个材质共用一个surface,但是如果shading逻辑变了,surface就一定要变(如basic和adv PBR逻辑是相同的, 但pbr和toon就完全不同)	
+shading-entry只和effect用途有关,比如rendertoXXX, forward, deferred
+main()
+{
+	多个module functions用于计算surface / lighting / debugview / shading等各模块的数据
+}
+
+
+
+文件夹说明:
+Surface文件夹中的文件不可以使用任何effect中定义的参数
+
+struct可以有多个,但数量尽量少,可以多个相似的surf共享一个struct
+
+default-function中有Get/ModifySurfaceData的函数
+	如果surface结构体变了,相应的default-function也要变,可以使用完全不同的名称和输出参数的default-function,可以参考toon的用法
+	其中唯一一个特殊的函数是SurfacesFragmentModifyBaseColorAndTransparency,无论什么情况下都必须要实现一份,并在函数内做alphatest, 因为render-to-shadowmap要用alphaclip是通过它来完成的
+	
+module-function中是定义主函数中用到的surface / lighting / debugview / shading模块相关计算
+
+effect-macros是将effect中的USE_XXX宏转成CC_SURFACES_USE_XXX,也可以根据effect用途来屏蔽某些宏
+	映射不同用户effect中用到的宏到Surface系统内定宏
+	如果用户effect中用到的宏名集合变了,这里就要新添加一个头文件
+	common头文件要最早包含
+
+includes是effect中使用的头文件,用于简化effect的包含代码
+	common是公共数据
+	其他的是PS专用的针对不同材质和光照模型的surface相关数据include
+	
+	
+	
+	
+特殊材质说明:
+VS扩展方法: 也可以重写module-function和default-function,新增VSIntermediateData和VSOutput/PSInput的项并包在宏里
+	比如地形:VSInput不用改, 要新加一堆UV项,包在terrain宏里
+			然后在module-function中输出这些项到IntermediateData和VSOutput, PS中直接用FSInput_XXX宏来获取新增的这些数据即可
+			当然也可以用macro强行开启texcoord1,使用texcoord1的VSOutput来存localPos.xz, 这一堆UV直接在PS里算,这样就不用新增VSOutput项了
+			然后在PS的surface函数中采各种图的时候根据texcoord1动态计算四层uv就好
+PS扩展方法: 预计算的皮肤
+			渲染到XXX
+			卡通描边
+			卡通光照模型

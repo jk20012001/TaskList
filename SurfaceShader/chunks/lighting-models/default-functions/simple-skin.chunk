@@ -1,0 +1,7 @@
+#ifndef CC_SURFACES_LIGHTING_MODIFY_SKIN_DIFFUSE_LIGHTING
+  vec3 SurfacesLightingModifySkinDiffuseLighting(in LightingIntermediateData lightingData, in float ssssCurvature)
+  {
+	//用户需要采PreIntegratedSSS图,否则就退回普通光照模型
+    return vec3(lightingData.NoL);
+  }
+#endif

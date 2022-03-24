@@ -1,0 +1,13 @@
+此处的文件只和纯光照有关,尽量与surfaceMaterialData,材质颜色等解耦, 这样对不同的surface+shading可以切换不同的light-model
+intermediatedata除了计算光照中间数据节省性能之外,还可以存放一些surfaceMaterial相关数据, 这样model-function中使用它就可以跟surface完全解耦
+
+lighting-flow是光照流程,是整个光照计算的架子,一般用common即可,除非很特别的材质才要新加,尽量避免这种情况
+	光照流程函数属于module-function,供shader主函数调用
+这里的model-functions都是一些计算光照不同部分的单函数(直接光,环境光,等等),相对独立,供光照流程调用
+
+default-function: 
+如果某种光照模型的逐光源照明计算中一定要用到额外的材质颜色/贴图数据,那么可以定义一些带独立参数的Surface相关函数并放在default-function和用户surface函数中(绝对不能传SurfacesMaterialData结构体)
+	这些函数被对应module-functions中的CCSurfacesLightingInit/CalculateIntermediateData函数中调用以修改IntermediateData中的数据(必要的时候也可以添加到该结构体中)
+	这些头文件和surfaces的default-function一起include
+	换light-model也是可以的,毕竟通用模型是不会调用这些特殊函数的,相当于被忽略
+	比如Skin需要采用户指定的预积分图, 体渲染射线跟踪需要采一个Tex3D等等

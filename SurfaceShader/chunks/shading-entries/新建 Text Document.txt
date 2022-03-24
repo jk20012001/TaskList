@@ -1,0 +1,2 @@
+此处的文件和和surface无关
+主函数只和shader用途有关,每种用途只能有一个文件,都是流程化调用的代码,不牵扯具体计算,必须和surfacedata与lightingmodel解耦

@@ -1,0 +1,26 @@
+// Copyright (c) 2017-2022 Xiamen Yaji Software Co., Ltd.
+
+// Rename some user macros to surface internal macros
+
+#pragma define-meta USE_INSTANCING
+#pragma define-meta USE_BATCHING
+#pragma define-meta USE_NORMAL_MAP
+#pragma define-meta USE_VERTEX_COLOR
+#pragma define-meta HAS_SECOND_UV
+#pragma define-meta USE_TWOSIDE
+#pragma define-meta USE_LIGHTMAP
+
+#define CC_SURFACES_USE_INSTANCING USE_INSTANCING
+#define CC_SURFACES_USE_BATCHING USE_BATCHING
+#define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
+#define CC_SURFACES_USE_VERTEX_COLOR USE_VERTEX_COLOR
+#define CC_SURFACES_HAS_SECOND_UV HAS_SECOND_UV
+#define CC_SURFACES_USE_TWO_SIDED USE_TWOSIDE
+
+#if USE_REFLECTION_DENOISE
+  #define CC_SURFACES_USE_REFLECTION_DENOISE USE_REFLECTION_DENOISE
+#else
+  #define CC_SURFACES_USE_REFLECTION_DENOISE 0
+#endif
+//todo：Lightmap宏待修改
+#define CC_USE_LIGHT_MAP USE_LIGHTMAP

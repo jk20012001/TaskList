@@ -1,0 +1,18 @@
+struct SurfacesMaterialData
+{
+  HIGHP_VALUE_STRUCT_DEFINE(vec3, worldPos);
+
+  vec4 baseColor;
+  vec3 worldNormal;
+  vec3 emissive;
+
+  float specularIntensity;
+  float roughness;
+  float metallic;
+  float ao;
+
+  // for advanced PBR
+  vec3 worldTangent;
+  // float transmittanceFactor;
+  // float sssCurvature;
+};

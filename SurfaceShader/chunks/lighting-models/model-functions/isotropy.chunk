@@ -1,0 +1,73 @@
+#include <common/lighting/brdf>
+#include <common/lighting/functions>
+
+bool CCSurfacesLightingEnableShadow(in float NoL)
+{
+  return NoL > 0.0;
+}
+
+float CCSurfacesLightingCalculateDistanceAttenuation(in LightingIntermediateData lightingData, in vec4 lightSizeRangeAngle)
+{
+  return CalculateDistanceAttenuation(lightingData.distToLightSqr, lightSizeRangeAngle.x, lightSizeRangeAngle.y);
+}
+
+float CCSurfacesLightingCalculateAngleAttenuation(in LightingIntermediateData lightingData, in vec4 lightSizeRangeAngle, in vec3 spotLightDir)
+{
+  return CalculateAngleAttenuation(spotLightDir, lightingData.L, lightSizeRangeAngle.z);
+}
+
+void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lightingSpecular, in LightingIntermediateData lightingData, in vec4 lightSourceColorAndIntensity)
+{
+    vec3 irradiance = vec3(lightingData.NoLSat) * lightSourceColorAndIntensity.rgb * lightSourceColorAndIntensity.w;
+    
+    lightingDiffuse = irradiance * DiffuseCoefficient_EnergyConservation;
+
+    float roughness = lightingData.specularParam;
+    //todo: 去掉这里的trick?
+    float calcSpec = (roughness * 0.25 + 0.25) * D_GGXMobile(roughness, lightingData.NoHSat, lightingData.H, lightingData.N);
+    lightingSpecular = irradiance * calcSpec;
+}
+
+void CCSurfacesLightingCalculateEnvironment(out LightingResult lightingResult, in LightingIntermediateData lightingData)
+{
+  float roughness = lightingData.specularParam;
+  float fAmb = 0.5 - lightingData.N.y * 0.5;
+  vec3 ambDiff = mix(cc_ambientSky.rgb, cc_ambientGround.rgb, fAmb);
+  vec3 envSpec = vec3(0.0);
+
+  #if CC_USE_IBL
+    #if CC_USE_DIFFUSEMAP
+      // Diffuse reflection irradiance
+      vec4 diffuseMap = texture(cc_diffuseMap, lightingData.N);
+      #if CC_USE_DIFFUSEMAP == IBL_RGBE
+        ambDiff = unpackRGBE(diffuseMap);
+      #else
+        ambDiff = SRGBToLinear(diffuseMap.rgb);
+      #endif
+    #endif
+
+    vec3 R = normalize(reflect(-lightingData.V, lightingData.N));
+
+    #if CC_SURFACES_USE_REFLECTION_DENOISE
+      envSpec = EnvReflectionWithMipFiltering(R, roughness, cc_ambientGround.w, 0.6);
+    #else
+      vec4 envmap = fragTextureLod(cc_environment, R, roughness * cc_ambientGround.w);
+
+      #if CC_USE_IBL == IBL_RGBE
+        envSpec = unpackRGBE(envmap);
+      #else
+        envSpec = SRGBToLinear(envmap.rgb);
+      #endif
+    #endif
+  #endif
+
+  lightingResult.environmentDiffuse = ambDiff.rgb * cc_ambientSky.w;;
+  lightingResult.environmentSpecular = envSpec * cc_ambientSky.w;;
+}
+
+void CCSurfacesLightingCalculateTransmittence(out LightingResult lightingResult, in LightingIntermediateData lightingData, vec3 shadowPos)
+{
+    vec3 irradiance = vec3(lightingData.NoLSat);// * lightSourceColorAndIntensity.rgb * lightSourceColorAndIntensity.w;
+    
+    vec3 transmittence = irradiance * DiffuseCoefficient_EnergyConservation;
+}

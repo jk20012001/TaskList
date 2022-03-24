@@ -1,0 +1,43 @@
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_BASECOLOR_AND_TRANSPARENCY
+vec4 SurfacesFragmentModifyBaseColorAndTransparency()
+{
+    return FSInput_vertexColor;
+}
+#endif
+
+
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_WORLD_NORMAL
+vec3 SurfacesFragmentModifyWorldNormal()
+{
+    return normalize(FSInput_worldNormal);
+}
+#endif
+
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_WORLD_TANGENT
+vec3 SurfacesFragmentModifyWorldTangent()
+{
+    return normalize(FSInput_worldTangent);
+}
+#endif
+
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_EMISSIVE
+vec3 SurfacesFragmentModifyEmissive()
+{
+    return vec3(0.0, 0.0, 0.0);
+}
+#endif
+
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_PBRPARAMS
+vec4 SurfacesFragmentModifyPBRParams()
+{
+    // ao, roughness, metallic, ao, specularIntensity
+    return vec4(1.0, 0.5, 0.0, 0.5);
+}
+#endif
+
+/*todo: 扩展?有没有必要
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_OTHER_MATERIAL_DATA
+void SurfacesFragmentModifyOtherMaterialData(inout SurfacesMaterialData surfaceData)
+{
+}
+#endif*/

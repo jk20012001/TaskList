@@ -1,0 +1,38 @@
+// Surface
+#include <shading-entries/data-structures/vs-input>
+#include <shading-entries/data-structures/vs-output>
+#include <shading-entries/data-structures/vs-intermediate>
+
+// UBO
+#include <cc-global>
+#include <cc-local-batch>
+
+/*#if !USE_INSTANCING
+  #if USE_BATCHING
+    #pragma define BATCHING_COUNT 10
+    #pragma builtin(local)
+    layout(set = 2, binding = 0) uniform CCLocalBatched {
+      highp mat4 cc_matWorlds[BATCHING_COUNT];
+    };
+  #else
+    #include <cc-local>
+  #endif
+#endif*/
+
+// Functional
+// #include <common/internal-functions/local-batch>
+#include <common>
+
+#if CC_USE_MORPH
+  #include <morph>
+#endif
+
+#if CC_USE_SKINNING
+  #include <cc-skinning>
+#endif
+
+#if !CC_USE_ACCURATE_FOG
+  #include <cc-fog-base>
+#endif
+
+#include <cc-shadow>
