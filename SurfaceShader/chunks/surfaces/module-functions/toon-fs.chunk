@@ -109,7 +109,7 @@ vec4 CCSurfacesShading(in SurfacesMaterialData surfaceData, in LightingResult li
   // #endif
   
   color.xyz += (
-    mix(lightingResult.directDiffuse * lightingResult.diffuseColorWithLighting, lightingResult.lightmapColor, lightmapCoef)
+    mix(lightingResult.directDiffuse, lightingResult.lightmapColor, lightmapCoef) * lightingResult.diffuseColorWithLighting
     + lightingResult.directSpecular * lightingResult.specularColorWithLighting)
     * lightingResult.shadow;
 
