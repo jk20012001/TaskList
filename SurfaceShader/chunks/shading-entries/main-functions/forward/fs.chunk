@@ -49,6 +49,36 @@ void main()  {
     #endif
   #endif
 
+  /*uniform形式
+  #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE_MODE
+    vec4 debugColor = vec4(0.0, 0.0, 0.0, 1.0);
+    #if !CC_FORWARD_ADD
+      CCSurfacesDebugViewMeshData(debugColor);
+      CCSurfacesDebugViewSurfaceData(debugColor, surfaceData);
+      CCSurfacesDebugViewLightingResult(debugColor, lightingResult);
+      if (cc_debug_view_mode == CC_SURFACES_DEBUG_VIEW_FOG)
+      {
+        fogFactor = 1.0 - fogFactor;
+        debugColor = vec4(fogFactor, fogFactor, fogFactor, 1.0);
+      }
+    #endif
+
+    // only base pass or direct lighting is enabled in add pass
+    #if CC_FORWARD_ADD
+      if(cc_debug_view_mode == CC_SURFACES_DEBUG_VIEW_DIRECT_DIFFUSE || cc_debug_view_mode == CC_SURFACES_DEBUG_VIEW_DIRECT_SPECULAR || cc_debug_view_mode == CC_SURFACES_DEBUG_VIEW_DIRECT_ALL)
+    #endif
+      CCSurfacesDebugViewLightingResult(debugColor, lightingResult);
+
+    fragColorX = debugColor;
+    return;
+  #elif CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
+      #if CC_FORWARD_ADD
+        if(cc_debug_view_composite_enable_direct_diffuse > 0.0 || cc_debug_view_composite_enable_direct_specular > 0.0)
+      #endif
+      CCSurfacesDebugViewCompositeLightingResult(lightingResult);
+    #endif
+  #endif*/
+
   // Shading
   vec4 color = CCSurfacesShading(surfaceData, lightingResult);
 
@@ -78,6 +108,20 @@ void main()  {
   #if !CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE || (CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_GAMMA_CORRECTION)
     color.rgb = LinearToSRGB(color.rgb);
   #endif
+
+/*uniform形式  todo: silhouette-edge-fs也需要同步修改
+  #if CC_USE_HDR
+    #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
+      if (cc_debug_view_composite_enable_tone_mapping > 0.0)
+    #endif
+      color.rgb = ACESToneMap(color.rgb);
+    #endif
+  #endif
+  #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
+    if (cc_debug_view_composite_enable_gamma_correction > 0.0)
+  #endif
+  color.rgb = LinearToSRGB(color.rgb);
+*/
   CCSurfaceDebugDisplayInvalidNumber(color);
 #endif
 
