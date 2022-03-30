@@ -119,8 +119,10 @@ void CCSurfacesVertexTransferShadow(inout SurfacesStandardVertexIntermediate In)
 
     #if USE_INSTANCING
       In.shadowBias = vec2(a_localShadowBias.x + cc_shadowWHPBInfo.w, a_localShadowBias.y + cc_shadowLPNNInfo.z);
-    #else
+    #elif !USE_BATCHING
       In.shadowBias = vec2(cc_localShadowBias.x + cc_shadowWHPBInfo.w, cc_localShadowBias.y + cc_shadowLPNNInfo.z);
+    #else
+      In.shadowBias = vec2(0.0);
     #endif
   #endif
 }

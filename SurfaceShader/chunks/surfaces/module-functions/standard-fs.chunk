@@ -99,7 +99,7 @@ vec4 CCSurfacesShading(in SurfacesMaterialData surfaceData, in LightingResult li
 #else
   #if USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
     float lum = FSInput_lightMapUV.z;
-    float lightmapCoef = step(lum, 0.0001);
+    float lightmapCoef = step(lum, EPSILON_LOWP);
   #else
     float lightmapCoef = 0.0;
   #endif
