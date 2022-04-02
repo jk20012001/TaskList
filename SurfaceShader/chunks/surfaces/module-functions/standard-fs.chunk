@@ -18,6 +18,8 @@ void CCSurfacesFragmentGetMaterialData(out SurfacesMaterialData surfaceData)
   surfaceData.metallic = pbr.z;
   surfaceData.specularIntensity = pbr.w;
 
+  SurfacesFragmentModifySharedData(surfaceData);
+
 #if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE && !(CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_NORMAL_MAP)
   surfaceData.worldNormal = FSInput_worldNormal;
   surfaceData.worldTangent = FSInput_worldTangent;

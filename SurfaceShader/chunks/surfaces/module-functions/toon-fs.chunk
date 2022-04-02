@@ -20,6 +20,9 @@ void CCSurfacesFragmentGetMaterialData(out SurfacesMaterialData surfaceData)
   surfaceData.shadeStep = shadeParams.z;
   surfaceData.shadeFeather = shadeParams.w;
 
+  SurfacesFragmentModifySharedData(surfaceData);
+
+
 #if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE && !(CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_NORMAL_MAP)
   surfaceData.worldNormal = FSInput_worldNormal;
 #endif

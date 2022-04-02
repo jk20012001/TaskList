@@ -35,9 +35,10 @@ vec4 SurfacesFragmentModifyPBRParams()
 }
 #endif
 
-/*todo: 扩展?有没有必要
-#ifndef CC_SURFACES_FRAGMENT_MODIFY_OTHER_MATERIAL_DATA
-void SurfacesFragmentModifyOtherMaterialData(inout SurfacesMaterialData surfaceData)
+// some material datas use shared raw data, avoid sample / calculate same raw data multiply times, use this function for better performance
+// this function invokes at last
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_SHARED_DATA
+void SurfacesFragmentModifySharedData(inout SurfacesMaterialData surfaceData)
 {
 }
-#endif*/
+#endif
