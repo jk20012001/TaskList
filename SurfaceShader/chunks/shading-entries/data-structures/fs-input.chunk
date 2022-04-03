@@ -26,7 +26,7 @@
   vec2 texcoord1;
 #endif
 
-#if CC_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
+#if CC_SURFACES_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
   vec3 lightMapUV;
 #endif
 
@@ -70,7 +70,7 @@ void CCSurfacesGetFragmentInput(out SurfacesStandardFragmentInput fsInput)
   #define FSInput_texcoord1 v_uv1
 #endif
 
-#if CC_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
+#if CC_SURFACES_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
   #define FSInput_lightMapUV v_luv
 #endif
 

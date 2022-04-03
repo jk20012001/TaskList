@@ -1,0 +1,6 @@
+#pragma define-meta USE_INSTANCING editor(elevated: true)
+#pragma define-meta USE_BATCHING editor(elevated: true)
+
+#define CC_SURFACES_USE_INSTANCING USE_INSTANCING
+#define CC_SURFACES_USE_BATCHING USE_BATCHING
+

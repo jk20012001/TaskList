@@ -96,6 +96,20 @@ CCProgram shared-ubos %{
     vec4 emissiveScaleAndStrenth;
   };}%
 
+CCProgram macro-remapping %{
+  #pragma define-meta USE_NORMAL_MAP
+  #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
+  
+  #define CC_SURFACES_USE_VERTEX_COLOR 0
+  #define CC_SURFACES_HAS_SECOND_UV 0
+  #define CC_SURFACES_USE_TWO_SIDED 0
+  #define CC_SURFACES_USE_REFLECTION_DENOISE 0
+  #define CC_SURFACES_USE_LIGHT_MAP 0
+  
+  // vs-fs varing addon data
+  #define CC_SURFACES_TRANSFER_LOCAL_POS 0
+}%
+
 CCProgram surface-vertex %{
   #define CC_SURFACES_VERTEX_MODIFY_UV
   void SurfacesVertexModifyUV(inout SurfacesStandardVertexIntermediate In)
@@ -234,8 +248,9 @@ CCProgram surface-fragment %{
 CCProgram toon-vs %{
   precision highp float;
 
-  // 1. surface internal macros with corresponding shading-model
-  #include <surfaces/effect-macros/toon>
+  // 1. surface internal macros, for technique usage or remapping some user (material) macros to surface internal macros
+  #include <surfaces/effect-macros/common>
+  #include <macro-remapping>
 
   // 2. common include with corresponding shader stage
   #include <surfaces/includes/common-vs>
@@ -269,13 +284,14 @@ CCProgram toon-fs %{
   // technique usage/type : render-to-scene
 
   precision highp float;
-  // 1. surface internal macros with corresponding shading-model
-  #include <surfaces/effect-macros/toon>
+  // 1. surface internal macros, for technique usage or remapping some user (material) macros to surface internal macros
+  #include <surfaces/effect-macros/common>
+  #include <macro-remapping>
 
   // 2. common include with corresponding shader stage
   #include <surfaces/includes/common-fs>
 
-  // 4. user surface functions that can use user (effect) parameters (ubo Constants)
+  // 3. user surface functions that can use user (effect) parameters (ubo Constants)
   //    see surfaces/default-functions/xxx.chunk
   #include <shared-ubos>
   #include <surface-fragment>

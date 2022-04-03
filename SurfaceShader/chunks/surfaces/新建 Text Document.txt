@@ -23,6 +23,7 @@ module-function中是定义主函数中用到的vsoutput / surface / lighting / 
 
 effect-macros是将effect中的USE_XXX宏转成CC_SURFACES_USE_XXX,也可以根据effect用途来屏蔽某些宏
 	映射不同用户effect中用到的宏到Surface系统内定宏
+	有些系统内定宏可能也需要转换为Surface系统内定宏, 如开启ReflectProbe的宏, 在烘焙Probe的Pass时也会走公共光照流程, 但此时需要临时禁用使用Probe的功能, 又不能更改系统宏的值, 只能将其临时定义为Surface系统宏来代替了, Surface内部就使用这个新宏来处理Probe的事情
 	如果用户effect中用到的宏名集合变了,这里就要新添加一个头文件
 	common头文件要最早包含
 
