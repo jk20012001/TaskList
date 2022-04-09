@@ -250,7 +250,7 @@ CCProgram standard-vs %{
   precision highp float;
 
   // 1. surface internal macros, for technique usage or remapping some user (material) macros to surface internal macros
-  #include <surfaces/effect-macros/common>
+  #include <surfaces/effect-macros/common-macros>
   #include <macro-remapping>
 
   // 2. common include with corresponding shader stage
@@ -288,7 +288,7 @@ CCProgram standard-fs %{
 
   precision highp float;
   // 1. surface internal macros, for technique usage or remapping some user (material) macros to surface internal macros
-  #include <surfaces/effect-macros/common>
+  #include <surfaces/effect-macros/common-macros>
   #include <macro-remapping>
 
   // 2. common include with corresponding shader stage

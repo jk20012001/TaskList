@@ -2,7 +2,7 @@
 
 // Rename some user macros to surface internal macros
 
-#include <surfaces/effect-macros/common>
+#include <surfaces/effect-macros/common-macros>
 
 #pragma define-meta USE_NORMAL_MAP
 #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
