@@ -52,10 +52,14 @@ void CCSurfaceDebugDisplayInvalidNumber(inout vec4 color)
   #endif
   
   #if CC_SURFACES_DEBUG_VIEW_MODE == CC_SURFACES_DEBUG_VIEW_UV1
-    #if CC_SURFACES_HAS_SECOND_UV
-      color = vec4(FSInput_texcoord1.xy, 0.0, 1.0);
+    color = vec4(FSInput_texcoord1.xy, 0.0, 1.0);
+  #endif
+
+  #if CC_SURFACES_DEBUG_VIEW_MODE == CC_SURFACES_DEBUG_VIEW_UVLIGHTMAP
+    #if CC_SURFACES_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
+      color = vec4(FSInput_lightMapUV.xy, 0.0, 1.0);
     #else
-      color = black;
+      color = vec4(0.0, 0.0, 0.0, 1.0);
     #endif
   #endif
 

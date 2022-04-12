@@ -10,6 +10,9 @@ CCEffect %{
         mainTexture:          { value: grey, target: albedoMap, editor: { displayName: DiffuseMap }}
         mainColor:            { value: [1.0,1.0,1.0,1.0], target: diffuseColor, linear: true, editor: { displayName: DiffuseColor, type: color }}   
         diffuseFactor:        { value: 1.0 }
+        alphaThreshold:       { value: 0.5, target: albedoScaleAndCutoff.w, editor: { parent: USE_ALPHA_TEST } }
+        emissive:             { value: [0.0, 0.0, 0.0, 1.0], linear: true, editor: { type: color } }
+        emissiveMap:          { value: grey }
         shininessExponentMap: { value: grey, editor: { parent: '!HAS_EXPORTED_GLOSSINESS' } }
         shininessExponent:    { value: 100.0, editor: { parent: '!HAS_EXPORTED_GLOSSINESS' } }
         specularColor:        { value: [0.0,0.0,0.0,0.0], linear: true, editor: { displayName: SpecularColor, type: color }} 
@@ -80,6 +83,8 @@ CCProgram shared-ubos %{
   
     vec4  diffuseColor;
     vec4  specularColor;
+    vec4  emissive;
+    float alphaThreshold;
     float shininessExponent;
     float glossiness;
     float metallic;
@@ -215,7 +220,10 @@ CCProgram standard-fs %{
     uniform sampler2D normalMap;
   #endif
  
-  
+  #if USE_EMISSIVE_MAP
+    uniform sampler2D emissiveMap;
+  #endif
+
 bool GetMetallicAlbedoFromDiffuseSpecularWithoutColor(out float metallic, out vec3 albedo, vec3 diffuse, vec3 specular, float f0 /*= 0.04*/)
 {
 	float d = max(max(diffuse.x, diffuse.y), diffuse.z);
@@ -293,10 +301,17 @@ bool GetMetallicAlbedoFromDiffuseSpecularWithoutColor(out float metallic, out ve
     baseColor.rgb *= diffuseScale;
     
     #if USE_TRANSPARENT_MAP
-      baseColor.a = texture(transparencyMap,TEXTURE_UV).a * transparencyFactor;
+      baseColor.a = texture(transparencyMap, TEXTURE_UV).a * transparencyFactor;
     #endif
+
+    #if USE_ALPHA_TEST
+      if (baseColor.a < albedoScaleAndCutoff.w) discard;
+    #endif
+
+    vec4 specularColorAndFactor = getSpecularColorAndFactor();
+
     //glossiness
-    float inGlossiness = 0.0, inSpecularIntensity1 = 1.0;
+    float inGlossiness = 0.0, inSpecularIntensity = specularColorAndFactor.w;
     #if HAS_EXPORTED_GLOSSINESS
       inGlossiness = glossiness;
     #else
@@ -309,18 +324,17 @@ bool GetMetallicAlbedoFromDiffuseSpecularWithoutColor(out float metallic, out ve
       #else
         inGlossiness = convertShininessExponent(shininessExponent);
       #endif
-      inSpecularIntensity1 = getSpecularIntensityFromRoughness(1.0 - inGlossiness);
+      inSpecularIntensity *= getSpecularIntensityFromRoughness(1.0 - inGlossiness);
     #endif
 
-    vec4 specularColorAndFactor = getSpecularColorAndFactor();
     //metallic
-    float inMetallic = 0.0, inSpecularIntensity2 = 1.0;
+    float inMetallic = 0.0;
     vec4 albedo = baseColor;
     #if HAS_EXPORTED_METALLIC
       inMetallic = metallic;
     #else
       GetMetallicAlbedoFromDiffuseSpecularWithoutColor(inMetallic, albedo.rgb, baseColor.rgb, specularColorAndFactor.rgb, 0.04);
-      inSpecularIntensity2 = specularColorAndFactor.w * inMetallic; //simulate specular color is black
+      inSpecularIntensity *= inMetallic; //simulate specular color is black
     #endif
 
     s.normal = v_normal;
@@ -338,8 +352,11 @@ bool GetMetallicAlbedoFromDiffuseSpecularWithoutColor(out float metallic, out ve
     s.occlusion = 1.0;
     s.roughness = 1.0 - inGlossiness;
     s.metallic = inMetallic;
-    s.specularIntensity = inSpecularIntensity1 * inSpecularIntensity2 * 0.5;
+    s.specularIntensity = inSpecularIntensity * 0.5;
     s.emissive = vec3(0.0);
+  #if USE_EMISSIVE_MAP
+    s.emissive = texture(emissiveMap, TEXTURE_UV).xyz;
+  #endif
 
     #if USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
       vec4 lightColor = texture(cc_lightingMap, v_luv.xy);
@@ -406,19 +423,23 @@ CCProgram shadow-caster-fs %{
     uniform sampler2D albedoMap;
   #endif
 
-  #if USE_ALPHA_TEST
-    #pragma define-meta  ALPHA_TEST_CHANNEL options([a, r])
+  #if USE_TRANSPARENT_MAP
+    uniform sampler2D transparencyMap;
   #endif
 
   vec4 frag () {
-    vec4 baseColor = albedo;
-
+    vec4 baseColor = diffuseColor;
     #if USE_ALBEDO_MAP
-      baseColor *= texture(albedoMap, TEXTURE_UV);
+      vec4 texColor = texture(albedoMap, TEXTURE_UV);
+      baseColor *= texColor;
+    #endif
+    
+    #if USE_TRANSPARENT_MAP
+      baseColor.a = texture(transparencyMap, TEXTURE_UV).a * transparencyFactor;
     #endif
 
     #if USE_ALPHA_TEST
-      if (baseColor.ALPHA_TEST_CHANNEL < albedoScaleAndCutoff.w) discard;
+      if (baseColor.a < albedoScaleAndCutoff.w) discard;
     #endif
 
     // spot use linear

@@ -66,8 +66,10 @@ void CCSurfacesGetFragmentInput(out SurfacesStandardFragmentInput fsInput)
   #define FSInput_mirrorNormal 1.0
 #endif
 
-#if CC_SURFACES_HAS_SECOND_UV
+#if CC_SURFACES_HAS_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
   #define FSInput_texcoord1 v_uv1
+#else
+  #define FSInput_texcoord1 vec2(0.0, 0.0)
 #endif
 
 #if CC_SURFACES_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
