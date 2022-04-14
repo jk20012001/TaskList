@@ -1,20 +1,15 @@
 // Copyright (c) 2017-2020 Xiamen Yaji Software Co., Ltd.
 
-#pragma define-meta USE_INSTANCING editor(elevated: true)
-#pragma define-meta USE_BATCHING editor(elevated: true)
-
-#include <cc-local>
-
 void CCGetWorldMatrix(out mat4 matWorld)
 {
-  #if USE_INSTANCING
+  #if CC_SURFACES_USE_INSTANCING
     matWorld = mat4(
       vec4(a_matWorld0.xyz, 0.0),
       vec4(a_matWorld1.xyz, 0.0),
       vec4(a_matWorld2.xyz, 0.0),
       vec4(a_matWorld0.w, a_matWorld1.w, a_matWorld2.w, 1.0)
     );
-  #elif USE_BATCHING
+  #elif CC_SURFACES_USE_BATCHING
     matWorld = cc_matWorlds[int(a_dyn_batch_id)];
   #else
     matWorld = cc_matWorld;
@@ -23,7 +18,7 @@ void CCGetWorldMatrix(out mat4 matWorld)
 
 void CCGetWorldMatrixFull(out mat4 matWorld, out mat4 matWorldIT)
 {
-  #if USE_INSTANCING
+  #if CC_SURFACES_USE_INSTANCING
     matWorld = mat4(
       vec4(a_matWorld0.xyz, 0.0),
       vec4(a_matWorld1.xyz, 0.0),
@@ -31,7 +26,7 @@ void CCGetWorldMatrixFull(out mat4 matWorld, out mat4 matWorldIT)
       vec4(a_matWorld0.w, a_matWorld1.w, a_matWorld2.w, 1.0)
     );
     matWorldIT = matWorld;
-  #elif USE_BATCHING
+  #elif CC_SURFACES_USE_BATCHING
     matWorld = cc_matWorlds[int(a_dyn_batch_id)];
     matWorldIT = matWorld;
   #else

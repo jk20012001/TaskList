@@ -5,9 +5,9 @@
 
 // UBO
 #include <cc-global>
-#include <cc-local-batch>
+//#include <cc-local-batch>
 
-/*#if !CC_SURFACES_USE_INSTANCING
+#if !CC_SURFACES_USE_INSTANCING
   #if CC_SURFACES_USE_BATCHING
     #pragma define BATCHING_COUNT 10
     #pragma builtin(local)
@@ -17,10 +17,10 @@
   #else
     #include <cc-local>
   #endif
-#endif*/
+#endif
 
 // Functional
-// #include <common/internal-functions/local-batch>
+#include <common/internal-functions/local-batch>
 #include <common>
 
 #if CC_USE_MORPH

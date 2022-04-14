@@ -130,13 +130,13 @@ void CCSurfacesVertexTransferShadow(inout SurfacesStandardVertexIntermediate In)
 
 void CCSurfacesVertexTransferLightMapUV(inout SurfacesStandardVertexIntermediate In)
 {
-#if CC_USE_LIGHTMAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
-  #if !CC_SURFACES_USE_INSTANCING
-    In.lightmapUV.xy = cc_lightingMapUVParam.xy + a_texCoord1 * cc_lightingMapUVParam.z;
-    In.lightmapUV.z = cc_lightingMapUVParam.w;
-  #else
+#if CC_SURFACES_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
+  #if CC_SURFACES_USE_INSTANCING
     In.lightmapUV.xy = a_lightingMapUVParam.xy + a_texCoord1 * a_lightingMapUVParam.z;
     In.lightmapUV.z = a_lightingMapUVParam.w;
+  #else
+    In.lightmapUV.xy = cc_lightingMapUVParam.xy + a_texCoord1 * cc_lightingMapUVParam.z;
+    In.lightmapUV.z = cc_lightingMapUVParam.w;
   #endif
 #endif
 }
