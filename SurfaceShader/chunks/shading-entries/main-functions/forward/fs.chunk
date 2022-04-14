@@ -14,7 +14,13 @@ void main()  {
   vec2 shadowBias = vec2(0.0);
   #if CC_RECEIVE_SHADOW
     shadowPos = FSInput_shadowPos;
-    shadowBias = FSInput_shadowBias;
+
+    shadowBias = vec2(cc_shadowWHPBInfo.w, cc_shadowLPNNInfo.z);
+    #if CC_SURFACES_USE_INSTANCING
+      shadowBias = FSInput_shadowBias;
+    #elif !CC_SURFACES_USE_BATCHING
+      shadowBias += cc_localShadowBias.xy;
+    #endif
   #endif
 
   LightingResult lightingResult;

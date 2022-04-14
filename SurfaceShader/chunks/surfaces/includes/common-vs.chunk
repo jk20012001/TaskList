@@ -7,8 +7,8 @@
 #include <cc-global>
 #include <cc-local-batch>
 
-/*#if !USE_INSTANCING
-  #if USE_BATCHING
+/*#if !CC_SURFACES_USE_INSTANCING
+  #if CC_SURFACES_USE_BATCHING
     #pragma define BATCHING_COUNT 10
     #pragma builtin(local)
     layout(set = 2, binding = 0) uniform CCLocalBatched {

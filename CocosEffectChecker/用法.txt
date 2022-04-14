@@ -5,3 +5,6 @@
    Ctrl+Alt+F7: 指令数统计
    Ctrl+Shift+F7: 调用VS编辑
    Ctrl+Shift+B: 显示所有任务
+
+
+install之后, 搜索屏蔽的功能需要重启VSCode才能生效, 如果没生效的话就把C/C++和Better C++ Syntax插件屏蔽

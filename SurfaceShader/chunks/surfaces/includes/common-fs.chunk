@@ -44,7 +44,7 @@
 #include <cc-shadow-map-base>
 #include <cc-fog-base>
 
-#if USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
+#if CC_SURFACES_USE_LIGHTMAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
   #include <common/lighting/lightmap>
 #endif
 

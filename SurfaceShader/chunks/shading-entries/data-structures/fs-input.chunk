@@ -78,7 +78,9 @@ void CCSurfacesGetFragmentInput(out SurfacesStandardFragmentInput fsInput)
 
 #if CC_RECEIVE_SHADOW
   #define FSInput_shadowPos v_shadowPos
-  #define FSInput_shadowBias v_shadowBias
+  #if CC_SURFACES_USE_INSTANCING
+    #define FSInput_shadowBias v_shadowBias
+  #endif
 #endif
 
 #if !CC_USE_ACCURATE_FOG
