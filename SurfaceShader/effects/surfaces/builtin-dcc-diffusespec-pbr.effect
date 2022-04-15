@@ -21,7 +21,7 @@ CCEffect %{
         transparencyMap:      { value: grey, editor: { displayName: TransparencyMap} } 
         transparencyFactor:   { value: 0.0 }
         tilingOffset:         { value: [1.0, 1.0, 0.0, 0.0] }
-        bumpFactor:           { value: 1.0, target: normalScale, editor: { parent: USE_NORMAL_MAP, slide: true, range: [0, 1.0], step: 0.001 } }       
+        normalStrength:       { value: 1.0, target: normalScale, editor: { displayName: bumpFactor, parent: USE_NORMAL_MAP, slide: true, range: [0, 5.0], step: 0.001 } }
         normalMap:            { value: normal }
         glossiness:           { value: 0.0, editor: { parent: HAS_EXPORTED_GLOSSINESS, slide: true, range: [0, 1.0], step: 0.001 }}   
         metallic:             { value: 0.0, editor: { parent: HAS_EXPORTED_METALLIC, slide: true, range: [0, 1.0], step: 0.001 }}
