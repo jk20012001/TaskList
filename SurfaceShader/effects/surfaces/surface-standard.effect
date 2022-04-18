@@ -85,15 +85,13 @@ CCProgram shared-ubos %{
 }%
 
 CCProgram macro-remapping %{
-  #pragma define-meta USE_NORMAL_MAP
-  #pragma define-meta USE_VERTEX_COLOR
+  // macros not used in this effect file
   #pragma define-meta HAS_SECOND_UV
   #pragma define-meta USE_TWOSIDE
-  
-  #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
-  #define CC_SURFACES_USE_VERTEX_COLOR USE_VERTEX_COLOR
+  #pragma define-meta USE_REFLECTION_DENOISE
   #define CC_SURFACES_HAS_SECOND_UV HAS_SECOND_UV
   #define CC_SURFACES_USE_TWO_SIDED USE_TWOSIDE
+  #define CC_SURFACES_USE_REFLECTION_DENOISE USE_REFLECTION_DENOISE
   
   //todo：Lightmap宏待修改
   #pragma define-meta USE_LIGHTMAP
@@ -102,11 +100,9 @@ CCProgram macro-remapping %{
   // vs-fs varing addon data
   #define CC_SURFACES_TRANSFER_LOCAL_POS 0
   
-  #if USE_REFLECTION_DENOISE
-    #define CC_SURFACES_USE_REFLECTION_DENOISE USE_REFLECTION_DENOISE
-  #else
-    #define CC_SURFACES_USE_REFLECTION_DENOISE 0
-  #endif
+  // macros used in this effect file
+  #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
+  #define CC_SURFACES_USE_VERTEX_COLOR USE_VERTEX_COLOR
 }%
 
 CCProgram surface-vertex %{
@@ -203,9 +199,10 @@ CCProgram surface-fragment %{
       vec3 normal = FSInput_worldNormal;
     #if USE_NORMAL_MAP
       vec3 nmmp = texture(normalMap, NORMAL_UV).xyz - vec3(0.5);
+      vec3 binormal = cross(normal.xyz, FSInput_worldTangent) * FSInput_mirrorNormal;
       normal =
         (nmmp.x * emissiveScaleParam.w) * normalize(FSInput_worldTangent) +
-        (nmmp.y * emissiveScaleParam.w) * normalize(FSInput_worldBitangent) +
+        (nmmp.y * emissiveScaleParam.w) * normalize(binormal) +
         nmmp.z * normalize(normal);
     #endif
 

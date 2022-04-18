@@ -27,7 +27,7 @@ void CCSurfacesVertexOutput(in SurfacesStandardVertexIntermediate In)
 
 #if CC_SURFACES_USE_NORMAL_MAP
   VSOutput_worldTangent = In.worldTangent.xyz;
-  VSOutput_worldBitangent = In.worldBinormal;
+  // VSOutput_worldBitangent = In.worldBinormal;
   VSOutput_mirrorNormal = In.tangent.w;
 #endif
 

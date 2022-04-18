@@ -19,7 +19,7 @@
 
 #if CC_SURFACES_USE_NORMAL_MAP
   #define VSOutput_worldTangent v_tangent.xyz
-  #define VSOutput_worldBitangent v_bitangent
+  // #define VSOutput_worldBitangent v_bitangent
   #define VSOutput_mirrorNormal v_tangent.w
 #endif
 

@@ -58,11 +58,11 @@ void CCSurfacesGetFragmentInput(out SurfacesStandardFragmentInput fsInput)
 
 #if CC_SURFACES_USE_NORMAL_MAP
   #define FSInput_worldTangent v_tangent.xyz
-  #define FSInput_worldBitangent v_bitangent
+  // #define FSInput_worldBitangent v_bitangent
   #define FSInput_mirrorNormal v_tangent.w
 #else
   #define FSInput_worldTangent vec3(1.0, 0.0, 0.0)
-  #define FSInput_worldBitangent vec3(0.0, 0.0, 1.0)
+  // #define FSInput_worldBitangent vec3(0.0, 0.0, 1.0)
   #define FSInput_mirrorNormal 1.0
 #endif
 
