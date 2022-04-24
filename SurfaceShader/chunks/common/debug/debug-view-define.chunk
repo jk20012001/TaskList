@@ -36,7 +36,7 @@
 
 #define CC_SURFACES_DEBUG_VIEW_FOG CC_SURFACES_DEBUG_VIEW_AO + 1
 
-// composite sign
+// composite sign: base lighting functionality, all switches on == non debug mode
 #define CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_DIFFUSE 1
 #define CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_SPECULAR CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_DIFFUSE * 2
 #define CC_SURFACES_DEBUG_VIEW_COMPOSITE_ENV_DIFFUSE CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_SPECULAR * 2
@@ -55,11 +55,12 @@
 //todo: Debug view UI and macros
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_MODE range([0, 19])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO range([0, 1])
+// #pragma define-meta CC_SURFACES_DEBUG_VIEW_CSM_LAYER range([0, 1])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE range([0, 16])
 
 /* todo: use uniforms for fast toggling
 //逻辑: 只要单项调试开启，此宏即为1
-        当单项调试关闭时：复合开关全开时此宏为0，只要有一项没开，此宏为2
+        当单项调试关闭时：复合开关全开且csmlayer关时此宏为0，否则此宏为2
 // #pragma define-meta CC_SURFACES_ENABLE_DEBUG_VIEW range([0, 2])
 #define CC_SURFACES_DEBUG_VIEW_SINGLE_MODE 1
 #define CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE 2
@@ -67,8 +68,9 @@
 #if CC_SURFACES_ENABLE_DEBUG_VIEW
   #pragma builtin(global)
   layout(set = 0, binding = 0) uniform CCDebugView {
-    float cc_debug_view_mode;
-    float cc_debug_view_enable_lighting_with_albedo;
+    float cc_debug_view_mode; // single debug
+    float cc_debug_view_enable_lighting_with_albedo; // misc debug
+    float cc_debug_view_enable_csm_layer; // misc debug
     float cc_debug_view_composite_enable_direct_diffuse;
     float cc_debug_view_composite_enable_direct_specular;
     float cc_debug_view_composite_enable_env_diffuse;

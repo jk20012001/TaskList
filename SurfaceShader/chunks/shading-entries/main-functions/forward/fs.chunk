@@ -12,6 +12,7 @@ void main()  {
   // Lighting
   highp vec4 shadowPos = vec4(0.0);
   vec2 shadowBias = vec2(0.0);
+  vec3 colDebugCSMLayer = vec3(1.0);
   #if CC_RECEIVE_SHADOW
     shadowPos = FSInput_shadowPos;
     shadowBias = vec2(cc_shadowWHPBInfo.w, cc_shadowLPNNInfo.z);
@@ -19,6 +20,22 @@ void main()  {
       shadowBias = FSInput_shadowBias;
     #elif !CC_SURFACES_USE_BATCHING
       shadowBias += cc_localShadowBias.xy;
+    #endif
+    #if !CC_FORWARD_ADD
+      #if CC_SURFACES_DEBUG_VIEW_CSM_LAYER
+        int CSMLayer = 0;
+        if (CSMLayer == 0)
+          colDebugCSMLayer = vec3(1.0, 0.0, 0.0);
+        else if (CSMLayer == 1)
+            colDebugCSMLayer = vec3(0.0, 1.0, 0.0);
+        else if (CSMLayer == 2)
+            colDebugCSMLayer = vec3(0.0, 0.0, 1.0);
+        else
+            colDebugCSMLayer = vec3(0.0, 1.0, 1.0);
+      #endif
+      /*uniform形式  todo: silhouette-edge-fs也需要同步修改
+      #if CC_SURFACES_ENABLE_DEBUG_VIEW
+        if (cc_debug_view_enable_csm_layer > 0.0)*/
     #endif
   #endif
 
@@ -99,10 +116,20 @@ void main()  {
     #if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE && !(CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_FOG)
       fogFactor = 0.0;
     #endif
+    /*uniform形式
+    #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
+      if (cc_debug_view_composite_enable_fog < EPSILON)
+        fogFactor = 0.0;
+    #endif
+    */
     
     CC_APPLY_FOG_BASE(color, fogFactor);
   #endif
 
+  // CSM Debug
+  #if CC_SURFACES_DEBUG_VIEW_CSM_LAYER
+    color.rgb *= colDebugCSMLayer.rgb;
+  #endif
   
   // Color output
   #if CC_USE_HDR
@@ -115,6 +142,11 @@ void main()  {
   #endif
 
 /*uniform形式  todo: silhouette-edge-fs也需要同步修改
+  #if CC_SURFACES_ENABLE_DEBUG_VIEW
+    if (cc_debug_view_enable_csm_layer > 0.0)
+      color.rgb *= colDebugCSMLayer.rgb;
+  #endif
+  
   #if CC_USE_HDR
     #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
       if (cc_debug_view_composite_enable_tone_mapping > 0.0)

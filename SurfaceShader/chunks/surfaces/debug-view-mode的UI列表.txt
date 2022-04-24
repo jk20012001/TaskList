@@ -1,6 +1,7 @@
 物理调试->	
 
 x 光照信息带固有色
+x CSM Layer染色
 渲染单项调试->	关闭
 				模型信息->	顶点色
 							世界空间顶点法线
@@ -47,5 +48,6 @@ x 光照信息带固有色
 							x 法线贴图
 							x 阴影
 							x AO
-				其他功能->	x ToneMapping
+				其他功能->	x Fog
+							x ToneMapping
 							x GammaCorrection(ToSRGB)
