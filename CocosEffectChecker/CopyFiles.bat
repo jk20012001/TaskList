@@ -9,11 +9,10 @@ cd /d %~dp0
 xcopy /s /y engine\*.* "%1"
 
 @echo off
-cd /d "%1\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\"
-copy /y ..\ShaderCompilerIDE.vcxproj ..\ShaderCompilerIDE_template.vcxproj
-copy /y ..\ShaderCompilerIDE.vcxproj.filters ..\ShaderCompilerIDE_template.vcxproj.filters
-dllfunc tool.dll CocosShaderCompilerIDEGenerator "%1\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\ShaderCompilerIDE.vcxproj" "%1" 1
+cd /d "%1\.vscode\ShaderCompilerIDE\"
+call BuildProject.bat
 
+cd /d "%1\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\"
 dllfunc tool.dll toolVSCodeAddKeyBinding "ctrl+f7 keyincomposition" "-workbench.action.tasks.build"
 dllfunc tool.dll toolVSCodeAddKeyBinding_RunTask "ctrl+f7" "Cocos Effect Checker"
 dllfunc tool.dll toolVSCodeAddKeyBinding_RunTask "ctrl+alt+f7" "Cocos Effect Checker With Performance"
