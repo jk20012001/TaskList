@@ -54,9 +54,9 @@
 
 //todo: Debug view UI and macros
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_MODE range([0, 19])
-// #pragma define-meta CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO range([0, 1])
-// #pragma define-meta CC_SURFACES_DEBUG_VIEW_CSM_LAYER range([0, 1])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE range([0, 16])
+// #pragma define-meta CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO range([0, 1])
+// #pragma define-meta CC_SURFACES_DEBUG_VIEW_MISC_CSM_LAYER range([0, 1])
 
 /* todo: use uniforms for fast toggling
 //逻辑: 只要单项调试开启，此宏即为1
@@ -69,8 +69,8 @@
   #pragma builtin(global)
   layout(set = 0, binding = 0) uniform CCDebugView {
     float cc_debug_view_mode; // single debug
-    float cc_debug_view_enable_lighting_with_albedo; // misc debug
-    float cc_debug_view_enable_csm_layer; // misc debug
+    float cc_debug_view_lighting_enable_with_albedo; // misc debug
+    float cc_debug_view_misc_enable_csm_layer; // misc debug
     float cc_debug_view_composite_enable_direct_diffuse;
     float cc_debug_view_composite_enable_direct_specular;
     float cc_debug_view_composite_enable_env_diffuse;

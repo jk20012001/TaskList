@@ -22,20 +22,22 @@ void main()  {
       shadowBias += cc_localShadowBias.xy;
     #endif
     #if !CC_FORWARD_ADD
-      #if CC_SURFACES_DEBUG_VIEW_CSM_LAYER
+      #if CC_SURFACES_DEBUG_VIEW_MISC_CSM_LAYER
         int CSMLayer = 0;
-        if (CSMLayer == 0)
+        if (OutOfRange)
+            colDebugCSMLayer = vec3(1.0);
+        else if (CSMLayer == 0)
           colDebugCSMLayer = vec3(1.0, 0.0, 0.0);
         else if (CSMLayer == 1)
             colDebugCSMLayer = vec3(0.0, 1.0, 0.0);
         else if (CSMLayer == 2)
             colDebugCSMLayer = vec3(0.0, 0.0, 1.0);
-        else
+        else if (CSMLayer == 3)
             colDebugCSMLayer = vec3(0.0, 1.0, 1.0);
       #endif
       /*uniform形式  todo: silhouette-edge-fs也需要同步修改
       #if CC_SURFACES_ENABLE_DEBUG_VIEW
-        if (cc_debug_view_enable_csm_layer > 0.0)*/
+        if (cc_debug_view_misc_enable_csm_layer > 0.0)*/
     #endif
   #endif
 
@@ -127,7 +129,7 @@ void main()  {
   #endif
 
   // CSM Debug
-  #if CC_SURFACES_DEBUG_VIEW_CSM_LAYER
+  #if CC_SURFACES_DEBUG_VIEW_MISC_CSM_LAYER
     color.rgb *= colDebugCSMLayer.rgb;
   #endif
   
@@ -143,7 +145,7 @@ void main()  {
 
 /*uniform形式  todo: silhouette-edge-fs也需要同步修改
   #if CC_SURFACES_ENABLE_DEBUG_VIEW
-    if (cc_debug_view_enable_csm_layer > 0.0)
+    if (cc_debug_view_misc_enable_csm_layer > 0.0)
       color.rgb *= colDebugCSMLayer.rgb;
   #endif
   
