@@ -69,7 +69,7 @@
 // #pragma define-meta CC_SURFACES_USE_DEBUG_VIEW range([0, 2])
 #define CC_SURFACES_DEBUG_VIEW_SINGLE 1
 #define CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC 2
-
+/*
 #if CC_SURFACES_USE_DEBUG_VIEW
   #pragma builtin(global)
   layout(set = 0, binding = 7) uniform CCDebugView {
@@ -91,4 +91,4 @@
     float cc_debug_view_composite_enable_gamma_correction;
   };
 #endif
-
+*/

@@ -42,6 +42,6 @@
   #define VSOutput_fogFactor v_fogFactor
 #endif
 
-#ifdef CC_SURFACES_TRANSFER_LOCAL_POS
+#if CC_SURFACES_TRANSFER_LOCAL_POS
   #define VSOutput_localPos v_localPos
 #endif

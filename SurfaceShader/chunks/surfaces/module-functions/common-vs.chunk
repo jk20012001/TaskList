@@ -55,7 +55,7 @@ void CCSurfacesVertexOutput(in SurfacesStandardVertexIntermediate In)
   VSOutput_lightMapUV = In.lightmapUV;
 #endif
 
-#ifdef CC_SURFACES_TRANSFER_LOCAL_POS
+#if CC_SURFACES_TRANSFER_LOCAL_POS
   VSOutput_localPos = In.position;
 #endif
 }

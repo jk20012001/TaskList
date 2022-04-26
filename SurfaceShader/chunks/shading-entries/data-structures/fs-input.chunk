@@ -87,6 +87,6 @@ void CCSurfacesGetFragmentInput(out SurfacesStandardFragmentInput fsInput)
   #define FSInput_fogFactor v_fogFactor
 #endif
 
-#ifdef CC_SURFACES_TRANSFER_LOCAL_POS
+#if CC_SURFACES_TRANSFER_LOCAL_POS
   #define FSInput_localPos v_localPos
 #endif

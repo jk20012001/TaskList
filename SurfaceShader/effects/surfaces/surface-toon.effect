@@ -98,12 +98,6 @@ CCProgram shared-ubos %{
 
 CCProgram macro-remapping %{
   #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
-  
-  #define CC_SURFACES_USE_VERTEX_COLOR 0
-  #define CC_SURFACES_USE_SECOND_UV 0
-  #define CC_SURFACES_USE_TWO_SIDED 0
-  #define CC_SURFACES_USE_REFLECTION_DENOISE 0
-  #define CC_SURFACES_USE_LIGHT_MAP 0
 }%
 
 CCProgram surface-vertex %{
@@ -246,8 +240,8 @@ CCProgram toon-vs %{
   precision highp float;
 
   // 1. surface internal macros, for technique usage or remapping some user (material) macros to surface internal macros
-  #include <surfaces/effect-macros/common-macros>
   #include <macro-remapping>
+  #include <surfaces/effect-macros/common-macros>
 
   // 2. common include with corresponding shader stage
   #include <surfaces/includes/common-vs>
@@ -282,8 +276,8 @@ CCProgram toon-fs %{
 
   precision highp float;
   // 1. surface internal macros, for technique usage or remapping some user (material) macros to surface internal macros
-  #include <surfaces/effect-macros/common-macros>
   #include <macro-remapping>
+  #include <surfaces/effect-macros/common-macros>
 
   // 2. common include with corresponding shader stage
   #include <surfaces/includes/common-fs>

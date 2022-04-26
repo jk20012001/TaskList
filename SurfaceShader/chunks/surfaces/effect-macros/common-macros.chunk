@@ -5,3 +5,31 @@
 // #pragma define-meta USE_BATCHING editor(elevated: true)
 // #pragma define CC_SURFACES_USE_BATCHING USE_BATCHING
 #define CC_SURFACES_USE_BATCHING 0
+
+
+// all material->internal macros
+#ifndef CC_SURFACES_USE_SECOND_UV
+  #define CC_SURFACES_USE_SECOND_UV 0
+#endif
+#ifndef CC_SURFACES_USE_TWO_SIDED
+  #define CC_SURFACES_USE_TWO_SIDED 0
+#endif
+#ifndef CC_SURFACES_USE_REFLECTION_DENOISE
+  #define CC_SURFACES_USE_REFLECTION_DENOISE 0
+#endif
+#ifndef CC_SURFACES_USE_NORMAL_MAP
+  #define CC_SURFACES_USE_NORMAL_MAP 0
+#endif
+#ifndef CC_SURFACES_USE_VERTEX_COLOR
+  #define CC_SURFACES_USE_VERTEX_COLOR 0
+#endif
+//#todo: Lightmap宏待修改
+#ifndef CC_SURFACES_USE_LIGHT_MAP
+  #define CC_SURFACES_USE_LIGHT_MAP 0
+#endif
+#ifndef CC_SURFACES_TRANSFER_LOCAL_POS
+  #define CC_SURFACES_TRANSFER_LOCAL_POS 0
+#endif
+#ifndef CC_SURFACES_LIGHTING_ANISOTROPIC
+  #define CC_SURFACES_LIGHTING_ANISOTROPIC 0
+#endif
