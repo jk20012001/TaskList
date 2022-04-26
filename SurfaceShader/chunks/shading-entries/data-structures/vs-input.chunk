@@ -10,7 +10,7 @@ layout(location = 2) in vec2 a_texCoord;
   in vec4 a_color;
 #endif
 
-#if CC_SURFACES_HAS_SECOND_UV || CC_SURFACES_USE_LIGHT_MAP
+#if CC_SURFACES_USE_SECOND_UV || CC_SURFACES_USE_LIGHT_MAP
   in vec2 a_texCoord1;
 #endif
 

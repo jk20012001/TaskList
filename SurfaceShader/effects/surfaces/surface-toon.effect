@@ -100,13 +100,10 @@ CCProgram macro-remapping %{
   #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
   
   #define CC_SURFACES_USE_VERTEX_COLOR 0
-  #define CC_SURFACES_HAS_SECOND_UV 0
+  #define CC_SURFACES_USE_SECOND_UV 0
   #define CC_SURFACES_USE_TWO_SIDED 0
   #define CC_SURFACES_USE_REFLECTION_DENOISE 0
   #define CC_SURFACES_USE_LIGHT_MAP 0
-  
-  // vs-fs varing addon data
-  #define CC_SURFACES_TRANSFER_LOCAL_POS 0
 }%
 
 CCProgram surface-vertex %{
@@ -114,7 +111,7 @@ CCProgram surface-vertex %{
   void SurfacesVertexModifyUV(inout SurfacesStandardVertexIntermediate In)
   {
     In.texCoord = In.texCoord * tilingOffset.xy + tilingOffset.zw;
-  #if CC_SURFACES_HAS_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+  #if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
     In.texCoord1 = In.texCoord1 * tilingOffset.xy + tilingOffset.zw;
   #endif
   }

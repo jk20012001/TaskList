@@ -23,7 +23,7 @@
   #define VSOutput_mirrorNormal v_tangent.w
 #endif
 
-#if CC_SURFACES_HAS_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+#if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
   #define VSOutput_texcoord1 v_uv1
 #endif
 
@@ -42,6 +42,6 @@
   #define VSOutput_fogFactor v_fogFactor
 #endif
 
-#if CC_SURFACES_TRANSFER_LOCAL_POS
+#ifdef CC_SURFACES_TRANSFER_LOCAL_POS
   #define VSOutput_localPos v_localPos
 #endif

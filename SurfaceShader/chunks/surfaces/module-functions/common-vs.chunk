@@ -13,7 +13,7 @@ void CCSurfacesVertexInput(out SurfacesStandardVertexIntermediate In)
 #endif
 
   In.texCoord = a_texCoord;
-#if CC_SURFACES_HAS_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+#if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
   In.texCoord1 = a_texCoord1;
 #endif
 }
@@ -36,7 +36,7 @@ void CCSurfacesVertexOutput(in SurfacesStandardVertexIntermediate In)
 #endif
 
   VSOutput_texcoord = In.texCoord;
-#if CC_SURFACES_HAS_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+#if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
   VSOutput_texcoord1 = In.texCoord1;
 #endif
 
@@ -55,7 +55,7 @@ void CCSurfacesVertexOutput(in SurfacesStandardVertexIntermediate In)
   VSOutput_lightMapUV = In.lightmapUV;
 #endif
 
-#if CC_SURFACES_TRANSFER_LOCAL_POS
+#ifdef CC_SURFACES_TRANSFER_LOCAL_POS
   VSOutput_localPos = In.position;
 #endif
 }
@@ -100,7 +100,7 @@ void CCSurfacesVertexTransformUV(inout SurfacesStandardVertexIntermediate In)
 {
   #if SAMPLE_FROM_RT
     CC_HANDLE_RT_SAMPLE_FLIP(In.texCoord);
-    #if CC_SURFACES_HAS_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+    #if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
       CC_HANDLE_RT_SAMPLE_FLIP(In.texCoord1);
     #endif
   #endif

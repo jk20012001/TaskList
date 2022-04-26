@@ -22,7 +22,7 @@
   float mirrorNormal;
 #endif
 
-#if CC_SURFACES_HAS_SECOND_UV
+#if CC_SURFACES_USE_SECOND_UV
   vec2 texcoord1;
 #endif
 
@@ -66,7 +66,7 @@ void CCSurfacesGetFragmentInput(out SurfacesStandardFragmentInput fsInput)
   #define FSInput_mirrorNormal 1.0
 #endif
 
-#if CC_SURFACES_HAS_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+#if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
   #define FSInput_texcoord1 v_uv1
 #else
   #define FSInput_texcoord1 vec2(0.0, 0.0)
@@ -87,6 +87,6 @@ void CCSurfacesGetFragmentInput(out SurfacesStandardFragmentInput fsInput)
   #define FSInput_fogFactor v_fogFactor
 #endif
 
-#if CC_SURFACES_TRANSFER_LOCAL_POS
+#ifdef CC_SURFACES_TRANSFER_LOCAL_POS
   #define FSInput_localPos v_localPos
 #endif

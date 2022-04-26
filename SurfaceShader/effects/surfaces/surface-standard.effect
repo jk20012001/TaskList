@@ -85,11 +85,11 @@ CCProgram shared-ubos %{
 }%
 
 CCProgram macro-remapping %{
-  // macros not used in this effect file
+  // ui displayed macros not used in this effect file
   #pragma define-meta HAS_SECOND_UV
   #pragma define-meta USE_TWOSIDE
   #pragma define-meta USE_REFLECTION_DENOISE
-  #define CC_SURFACES_HAS_SECOND_UV HAS_SECOND_UV
+  #define CC_SURFACES_USE_SECOND_UV HAS_SECOND_UV
   #define CC_SURFACES_USE_TWO_SIDED USE_TWOSIDE
   #define CC_SURFACES_USE_REFLECTION_DENOISE USE_REFLECTION_DENOISE
   
@@ -97,10 +97,7 @@ CCProgram macro-remapping %{
   #pragma define-meta USE_LIGHTMAP
   #define CC_SURFACES_USE_LIGHT_MAP USE_LIGHTMAP
 
-  // vs-fs varing addon data
-  #define CC_SURFACES_TRANSFER_LOCAL_POS 0
-  
-  // macros used in this effect file
+  // ui displayed macros used in this effect file
   #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
   #define CC_SURFACES_USE_VERTEX_COLOR USE_VERTEX_COLOR
 }%
@@ -128,7 +125,7 @@ CCProgram surface-vertex %{
   void SurfacesVertexModifyUV(inout SurfacesStandardVertexIntermediate In)
   {
     In.texCoord = In.texCoord * tilingOffset.xy + tilingOffset.zw;
-  #if CC_SURFACES_HAS_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+  #if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
     In.texCoord1 = In.texCoord1 * tilingOffset.xy + tilingOffset.zw;
   #endif
   }
