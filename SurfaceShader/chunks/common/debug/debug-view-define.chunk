@@ -56,11 +56,13 @@
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_MODE range([0, 19])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE range([0, 16])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO range([0, 1])
+// #pragma define-meta CC_SURFACES_DEBUG_VIEW_MISC_ENABLE_CSM_LAYER_COLORATION range([0, 1])
 
 // test
 #pragma define CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO 0
 #pragma define CC_SURFACES_DEBUG_VIEW_MODE 0//CC_SURFACES_DEBUG_VIEW_LINEAR_DEPTH
 #pragma define CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE 0
+#pragma define CC_SURFACES_DEBUG_VIEW_MISC_ENABLE_CSM_LAYER_COLORATION 0
 #pragma define CC_SURFACES_USE_DEBUG_VIEW 0
 
 //#uniform形式 use uniforms for fast toggling
@@ -72,7 +74,7 @@
 /*
 #if CC_SURFACES_USE_DEBUG_VIEW
   #pragma builtin(global)
-  layout(set = 0, binding = 7) uniform CCDebugView {
+  layout(set = 2, binding = 10) uniform CCDebugView {
     float cc_debug_view_single_mode; // single debug
     float cc_debug_view_lighting_enable_with_albedo;
     float cc_debug_view_misc_enable_csm_layer_coloration; // misc debug
