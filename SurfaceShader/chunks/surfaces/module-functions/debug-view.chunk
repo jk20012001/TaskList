@@ -1,5 +1,5 @@
 // make divid-by-zero, non-rational pixel more obvious
-void CCSurfaceDebugDisplayInvalidNumber(inout vec4 color)
+void CCSurfacesDebugDisplayInvalidNumber(inout vec4 color)
 {
   vec4 error = vec4(1.0, 0.0, 0.2, 1.0);
 
