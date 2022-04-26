@@ -28,7 +28,8 @@
 #endif
 
 #if CC_USE_SKINNING
-  #include <cc-skinning>
+  #include <common/mesh/skinning>
+  //#include <cc-skinning>
 #endif
 
 #if !CC_USE_ACCURATE_FOG
