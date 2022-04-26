@@ -4,6 +4,8 @@ void main () {
   // for alpha clip
   vec4 color = SurfacesFragmentModifyBaseColorAndTransparency();
 
+  //#uniform形式需要同步到此处
+
   // Color output
 #if CC_USE_HDR
   #if !CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE || (CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_TONE_MAPPING)

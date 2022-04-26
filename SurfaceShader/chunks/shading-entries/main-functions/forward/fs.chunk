@@ -35,7 +35,7 @@ void main()  {
         else if (CSMLayer == 3)
             colDebugCSMLayer = vec3(0.0, 1.0, 1.0);
       #endif
-      /*uniform形式  todo: silhouette-edge-fs也需要同步修改
+      /*//#uniform形式
       #if CC_SURFACES_ENABLE_DEBUG_VIEW
         if (cc_debug_view_misc_enable_csm_layer > 0.0)*/
     #endif
@@ -73,7 +73,7 @@ void main()  {
     #endif
   #endif
 
-  /*uniform形式
+  /*//#uniform形式
   #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE_MODE
     vec4 debugColor = vec4(0.0, 0.0, 0.0, 1.0);
     #if !CC_FORWARD_ADD
@@ -118,7 +118,7 @@ void main()  {
     #if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE && !(CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_FOG)
       fogFactor = 0.0;
     #endif
-    /*uniform形式
+    /*//#uniform形式
     #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
       if (cc_debug_view_composite_enable_fog < EPSILON)
         fogFactor = 0.0;
@@ -143,7 +143,7 @@ void main()  {
     color.rgb = LinearToSRGB(color.rgb);
   #endif
 
-/*uniform形式  todo: silhouette-edge-fs也需要同步修改
+/*//#uniform形式
   #if CC_SURFACES_ENABLE_DEBUG_VIEW
     if (cc_debug_view_misc_enable_csm_layer > 0.0)
       color.rgb *= colDebugCSMLayer.rgb;

@@ -83,6 +83,7 @@ void CCSurfaceDebugDisplayInvalidNumber(inout vec4 color)
 
 
 
+#if CC_SURFACES_DEBUG_VIEW_MODE
   // Lighting related
   void CCSurfacesDebugViewLightingResult(out vec4 color, in LightingResult lightingResult)
   {
@@ -117,6 +118,7 @@ void CCSurfaceDebugDisplayInvalidNumber(inout vec4 color)
     color.rgb = vec3(lightingResult.shadow);
   #endif
   }
+#endif
 
 
 
