@@ -4,7 +4,7 @@ void main () {
   // for alpha clip
   vec4 color = SurfacesFragmentModifyBaseColorAndTransparency();
 
-  //#uniform形式需要同步到此处
+  //#uniform形式 需要同步到此处
 
   // Color output
 #if CC_USE_HDR

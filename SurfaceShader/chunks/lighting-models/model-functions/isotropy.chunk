@@ -23,7 +23,7 @@ void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lighti
     lightingDiffuse = irradiance * DiffuseCoefficient_EnergyConservation;
 
     float roughness = lightingData.specularParam;
-    //todo: 去掉这里的trick?
+    //#todo: 去掉这里的trick?
     float calcSpec = (roughness * 0.25 + 0.25) * D_GGXMobile(roughness, lightingData.NoHSat, lightingData.H, lightingData.N);
     lightingSpecular = irradiance * calcSpec;
 }

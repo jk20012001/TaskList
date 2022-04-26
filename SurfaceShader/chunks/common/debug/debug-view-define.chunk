@@ -52,13 +52,13 @@
 #define CC_SURFACES_DEBUG_VIEW_COMPOSITE_TONE_MAPPING CC_SURFACES_DEBUG_VIEW_COMPOSITE_FOG * 2
 #define CC_SURFACES_DEBUG_VIEW_COMPOSITE_GAMMA_CORRECTION CC_SURFACES_DEBUG_VIEW_COMPOSITE_TONE_MAPPING * 2
 
-//todo: Debug view UI and macros
+//#todo: Debug view UI and macros
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_MODE range([0, 19])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE range([0, 16])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO range([0, 1])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_MISC_CSM_LAYER range([0, 1])
 
-/* todo: use uniforms for fast toggling
+/* //#uniform形式 use uniforms for fast toggling
 //逻辑: 只要单项调试开启，此宏即为1
         当单项调试关闭时：复合开关全开且csmlayer关时此宏为0，否则此宏为2
 // #pragma define-meta CC_SURFACES_ENABLE_DEBUG_VIEW range([0, 2])

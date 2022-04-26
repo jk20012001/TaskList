@@ -93,7 +93,7 @@ CCProgram macro-remapping %{
   #define CC_SURFACES_USE_TWO_SIDED USE_TWOSIDE
   #define CC_SURFACES_USE_REFLECTION_DENOISE USE_REFLECTION_DENOISE
   
-  //todo：Lightmap宏待修改
+  //#todo：Lightmap宏待修改
   #pragma define-meta USE_LIGHTMAP
   #define CC_SURFACES_USE_LIGHT_MAP USE_LIGHTMAP
 

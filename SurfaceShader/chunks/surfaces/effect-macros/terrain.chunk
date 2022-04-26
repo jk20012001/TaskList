@@ -11,7 +11,7 @@
 #define CC_SURFACES_HAS_SECOND_UV 0
 #define CC_SURFACES_USE_TWO_SIDED 0
 
-//todo：Lightmap宏待修改
+//#todo：Lightmap宏待修改
 #pragma define-meta USE_LIGHTMAP
 #define CC_SURFACES_USE_LIGHT_MAP USE_LIGHTMAP
 
