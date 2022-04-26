@@ -56,21 +56,26 @@
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_MODE range([0, 19])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE range([0, 16])
 // #pragma define-meta CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO range([0, 1])
-// #pragma define-meta CC_SURFACES_DEBUG_VIEW_MISC_CSM_LAYER range([0, 1])
 
-/* //#uniform形式 use uniforms for fast toggling
-//逻辑: 只要单项调试开启，此宏即为1
-        当单项调试关闭时：复合开关全开且csmlayer关时此宏为0，否则此宏为2
-// #pragma define-meta CC_SURFACES_ENABLE_DEBUG_VIEW range([0, 2])
-#define CC_SURFACES_DEBUG_VIEW_SINGLE_MODE 1
-#define CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE 2
+// test
+#pragma define CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO 0
+#pragma define CC_SURFACES_DEBUG_VIEW_MODE 0//CC_SURFACES_DEBUG_VIEW_LINEAR_DEPTH
+#pragma define CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE 0
+#pragma define CC_SURFACES_USE_DEBUG_VIEW 0
 
-#if CC_SURFACES_ENABLE_DEBUG_VIEW
+//#uniform形式 use uniforms for fast toggling
+//逻辑: 只要单项调试开启，此宏即为1(ubo中设置view_single_mode)
+//      当单项调试关闭时：当复合开关全开且misc也全关时此宏为0, 否则此宏为2(ubo中设置composite和misc相关项)
+// #pragma define-meta CC_SURFACES_USE_DEBUG_VIEW range([0, 2])
+#define CC_SURFACES_DEBUG_VIEW_SINGLE 1
+#define CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC 2
+
+#if CC_SURFACES_USE_DEBUG_VIEW
   #pragma builtin(global)
-  layout(set = 0, binding = 0) uniform CCDebugView {
-    float cc_debug_view_mode; // single debug
-    float cc_debug_view_lighting_enable_with_albedo; // misc debug
-    float cc_debug_view_misc_enable_csm_layer; // misc debug
+  layout(set = 0, binding = 7) uniform CCDebugView {
+    float cc_debug_view_single_mode; // single debug
+    float cc_debug_view_lighting_enable_with_albedo;
+    float cc_debug_view_misc_enable_csm_layer_coloration; // misc debug
     float cc_debug_view_composite_enable_direct_diffuse;
     float cc_debug_view_composite_enable_direct_specular;
     float cc_debug_view_composite_enable_env_diffuse;
@@ -81,12 +86,9 @@
     float cc_debug_view_composite_enable_ao;
     float cc_debug_view_composite_enable_normal_map;
     float cc_debug_view_composite_enable_fog;
+    float cc_debug_view_composite_disable_csm_layer;
     float cc_debug_view_composite_enable_tone_mapping;
     float cc_debug_view_composite_enable_gamma_correction;
   };
-#endif*/
+#endif
 
-// test
-#pragma define CC_SURFACES_DEBUG_VIEW_LIGHTING_WITH_ALBEDO 0
-#pragma define CC_SURFACES_DEBUG_VIEW_MODE 0//CC_SURFACES_DEBUG_VIEW_LINEAR_DEPTH
-#pragma define CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE 0//511

@@ -22,22 +22,25 @@ void main()  {
       shadowBias += cc_localShadowBias.xy;
     #endif
     #if !CC_FORWARD_ADD
-      #if CC_SURFACES_DEBUG_VIEW_MISC_CSM_LAYER
-        int CSMLayer = 0;
-        if (OutOfRange)
-            colDebugCSMLayer = vec3(1.0);
-        else if (CSMLayer == 0)
-          colDebugCSMLayer = vec3(1.0, 0.0, 0.0);
-        else if (CSMLayer == 1)
-            colDebugCSMLayer = vec3(0.0, 1.0, 0.0);
-        else if (CSMLayer == 2)
-            colDebugCSMLayer = vec3(0.0, 0.0, 1.0);
-        else if (CSMLayer == 3)
-            colDebugCSMLayer = vec3(0.0, 1.0, 1.0);
+      //#uniform形式
+      #if 0
+      //#if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+      //if (cc_debug_view_misc_enable_csm_layer_coloration > 0.0)
+      {
+          int CSMLayer = 0;
+          bool OutOfRange = false;
+          if (OutOfRange)
+              colDebugCSMLayer = vec3(1.0);
+          else if (CSMLayer == 0)
+              colDebugCSMLayer = vec3(1.0, 0.0, 0.0);
+          else if (CSMLayer == 1)
+              colDebugCSMLayer = vec3(0.0, 1.0, 0.0);
+          else if (CSMLayer == 2)
+              colDebugCSMLayer = vec3(0.0, 0.0, 1.0);
+          else if (CSMLayer == 3)
+              colDebugCSMLayer = vec3(0.0, 1.0, 1.0);
+      }
       #endif
-      /*//#uniform形式
-      #if CC_SURFACES_ENABLE_DEBUG_VIEW
-        if (cc_debug_view_misc_enable_csm_layer > 0.0)*/
     #endif
   #endif
 
@@ -65,21 +68,19 @@ void main()  {
 
     fragColorX = debugColor;
     return;
-  #else
-    #if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
-      #if !CC_FORWARD_ADD || CC_FORWARD_ADD && ((CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_DIFFUSE) || (CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_SPECULAR))
-        CCSurfacesDebugViewCompositeLightingResult(lightingResult);
-      #endif
+  #elif CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
+    #if !CC_FORWARD_ADD || CC_FORWARD_ADD && ((CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_DIFFUSE) || (CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_SPECULAR))
+      CCSurfacesDebugViewCompositeLightingResult(lightingResult);
     #endif
   #endif
 
-  /*//#uniform形式
-  #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE_MODE
+  //#uniform形式
+  #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE
     vec4 debugColor = vec4(0.0, 0.0, 0.0, 1.0);
     #if !CC_FORWARD_ADD
-      CCSurfacesDebugViewMeshData(debugColor);
-      CCSurfacesDebugViewSurfaceData(debugColor, surfaceData);
-      CCSurfacesDebugViewLightingResult(debugColor, lightingResult);
+      //CCSurfacesDebugViewMeshData(debugColor);
+      //CCSurfacesDebugViewSurfaceData(debugColor, surfaceData);
+      //CCSurfacesDebugViewLightingResult(debugColor, lightingResult);
       if (cc_debug_view_mode == CC_SURFACES_DEBUG_VIEW_FOG)
       {
         fogFactor = 1.0 - fogFactor;
@@ -91,17 +92,17 @@ void main()  {
     #if CC_FORWARD_ADD
       if(cc_debug_view_mode == CC_SURFACES_DEBUG_VIEW_DIRECT_DIFFUSE || cc_debug_view_mode == CC_SURFACES_DEBUG_VIEW_DIRECT_SPECULAR || cc_debug_view_mode == CC_SURFACES_DEBUG_VIEW_DIRECT_ALL)
     #endif
-      CCSurfacesDebugViewLightingResult(debugColor, lightingResult);
+      //CCSurfacesDebugViewLightingResult(debugColor, lightingResult);
 
     fragColorX = debugColor;
     return;
-  #elif CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
-      #if CC_FORWARD_ADD
-        if(cc_debug_view_composite_enable_direct_diffuse > 0.0 || cc_debug_view_composite_enable_direct_specular > 0.0)
-      #endif
-      CCSurfacesDebugViewCompositeLightingResult(lightingResult);
+  #elif CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+    #if CC_FORWARD_ADD
+      if(cc_debug_view_composite_enable_direct_diffuse > 0.0 || cc_debug_view_composite_enable_direct_specular > 0.0)
     #endif
-  #endif*/
+    //CCSurfacesDebugViewCompositeLightingResult(lightingResult);
+  #endif
+  //-----------------------------------------------
 
   // Shading
   vec4 color = CCSurfacesShading(surfaceData, lightingResult);
@@ -118,18 +119,20 @@ void main()  {
     #if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE && !(CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_FOG)
       fogFactor = 0.0;
     #endif
-    /*//#uniform形式
-    #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
-      if (cc_debug_view_composite_enable_fog < EPSILON)
+    //#uniform形式
+    #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+      if (cc_debug_view_composite_enable_fog <= 0.0)
         fogFactor = 0.0;
     #endif
-    */
+    //-----------------------------------------------
+
     
     CC_APPLY_FOG_BASE(color, fogFactor);
   #endif
 
+    /*
   // CSM Debug
-  #if CC_SURFACES_DEBUG_VIEW_MISC_CSM_LAYER
+  #if 0
     color.rgb *= colDebugCSMLayer.rgb;
   #endif
   
@@ -142,25 +145,26 @@ void main()  {
   #if !CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE || (CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_GAMMA_CORRECTION)
     color.rgb = LinearToSRGB(color.rgb);
   #endif
-
-/*//#uniform形式
-  #if CC_SURFACES_ENABLE_DEBUG_VIEW
-    if (cc_debug_view_misc_enable_csm_layer > 0.0)
+    */
+  //#uniform形式
+  // CSM Debug
+  #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+    if (cc_debug_view_misc_enable_csm_layer_coloration > 0.0)
       color.rgb *= colDebugCSMLayer.rgb;
   #endif
   
   #if CC_USE_HDR
-    #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
+    #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
       if (cc_debug_view_composite_enable_tone_mapping > 0.0)
     #endif
       color.rgb = ACESToneMap(color.rgb);
-    #endif
   #endif
-  #if CC_SURFACES_ENABLE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
+  #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
     if (cc_debug_view_composite_enable_gamma_correction > 0.0)
   #endif
   color.rgb = LinearToSRGB(color.rgb);
-*/
+  //-----------------------------------------------
+
   CCSurfaceDebugDisplayInvalidNumber(color);
 #endif
 

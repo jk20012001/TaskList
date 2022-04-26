@@ -1,6 +1,4 @@
 物理调试->	
-其他渲染功能->
-x CSM Layer染色
 渲染调试->
 x 光照信息带固有色
 渲染单项调试->	关闭
@@ -52,3 +50,6 @@ x 光照信息带固有色
 				其他功能->	x Fog
 							x ToneMapping
 							x GammaCorrection(ToSRGB)
+
+其他组合调试->  x CSM Layer染色
+							
