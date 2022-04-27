@@ -6,7 +6,7 @@ void CCSurfacesDebugDisplayInvalidNumber(inout vec4 color)
   color = (isnans(color.rgb) || isinfs(color.rgb)) ? error : color;
 }
 
-#if CC_SURFACES_DEBUG_VIEW_MODE && !CC_FORWARD_ADD
+#if (CC_SURFACES_DEBUG_VIEW_MODE || CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE) && !CC_FORWARD_ADD
   void CCSurfacesDebugViewMeshData(out vec4 color)
   {
     vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
@@ -83,7 +83,7 @@ void CCSurfacesDebugDisplayInvalidNumber(inout vec4 color)
 
 
 
-#if CC_SURFACES_DEBUG_VIEW_MODE
+#if CC_SURFACES_DEBUG_VIEW_MODE || CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE
   // Lighting related
   void CCSurfacesDebugViewLightingResult(out vec4 color, in LightingResult lightingResult)
   {
@@ -122,7 +122,7 @@ void CCSurfacesDebugDisplayInvalidNumber(inout vec4 color)
 
 
 
-#if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE
+#if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE || CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
   void CCSurfacesDebugViewCompositeLightingResult(inout LightingResult lightingResult)
   {
   #if !(CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_DIRECT_DIFFUSE)

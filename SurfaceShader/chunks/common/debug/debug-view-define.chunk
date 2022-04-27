@@ -92,6 +92,9 @@
   };
 #endif
 
+  // move to common.chunk
+#pragma define equalf(data1, data2) (abs(float(data1) - float(data2)) < EPSILON)
+
   // define.ts: 增加PipelineGlobalBindings.UBO_DEBUGVIEW, cc_shadowMap / cc_spotLightingMap / cc_environment / cc_diffuseMap的binding加1
   /**
    * @en The uniform buffer object for debug view
