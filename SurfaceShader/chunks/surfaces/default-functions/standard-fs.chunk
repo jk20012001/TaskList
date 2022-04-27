@@ -13,10 +13,17 @@ vec3 SurfacesFragmentModifyWorldNormal()
 }
 #endif
 
-#ifndef CC_SURFACES_FRAGMENT_MODIFY_WORLD_TANGENT
-vec3 SurfacesFragmentModifyWorldTangent()
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_WORLD_TANGENT_AND_BINORMAL
+void SurfacesFragmentModifyWorldTangentAndBinormal(out vec3 worldTangent, out vec3 worldBinormal, vec3 worldNormal)
 {
-    return normalize(FSInput_worldTangent);
+    vec3 tangent = FSInput_worldTangent;
+    vec3 binormal = cross(worldNormal.xyz, FSInput_worldTangent) * FSInput_mirrorNormal;
+#if CC_SURFACES_USE_NORMAL_MAP
+    tangent = cross(binormal, worldNormal);
+#endif
+
+    worldTangent = normalize(tangent);
+    worldBinormal = normalize(binormal);
 }
 #endif
 

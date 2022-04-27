@@ -12,7 +12,7 @@ struct SurfacesMaterialData
   float ao;
 
   // for advanced PBR
-  vec3 worldTangent;
+  vec3 worldTangent, worldBinormal;
   // float transmittanceFactor;
   // float sssCurvature;
 };
