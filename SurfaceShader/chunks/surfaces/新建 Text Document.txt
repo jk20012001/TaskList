@@ -27,6 +27,7 @@ effect-macros是将effect中用于UI显示的USE_XXX宏转成内部渲染所需�
 	在effect的macro-remapping中映射不同用户effect中用到的宏到Surface系统内定宏, 需要就定义,不需要就不定义	
 	有些系统内定宏可能也需要转换为Surface系统内定宏, 如开启ReflectProbe的宏, 在烘焙Probe的Pass时也会走公共光照流程, 但此时需要临时禁用使用Probe的功能, 又不能更改系统宏的值, 只能将其临时定义为Surface系统宏来代替了, Surface内部就使用这个新宏来处理Probe的事情
 	还有Aniso等
+	LightMap专门用一个Surface专用宏而非系统宏,是为了在某些Pass中强行禁用LightMap以提升性能
 所有宏都仍然用#if来使用, 另外都需要在common中添加补充定义, 即若未定义的话define成0, 这样无论材质处define与否,都可以识别
 common头文件要晚于用户头文件包含,该头文件中会对一些漏定义的宏来补充定义
 
