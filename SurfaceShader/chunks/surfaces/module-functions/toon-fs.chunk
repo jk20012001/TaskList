@@ -129,7 +129,7 @@ void CCSurfacesDebugViewSurfaceData(out vec4 color, in SurfacesMaterialData surf
   color = vec4(surfaceData.worldTangent * 0.5 + vec3(0.5), 1.0);
 #endif
 #if CC_SURFACES_DEBUG_VIEW_MODE == CC_SURFACES_DEBUG_VIEW_FRAGMENT_BINORMAL
-  vec3 binormal = cross(surfaceData.worldNormal.xyz, surfaceData.worldTangent.xyz) * FSInput_mirrorNormal;
+  vec3 binormal = CalculateBinormal(surfaceData.worldNormal.xyz, surfaceData.worldTangent.xyz, FSInput_mirrorNormal);
   color = vec4(binormal * 0.5 + vec3(0.5), 1.0);
 #endif
 #if CC_SURFACES_DEBUG_VIEW_MODE == CC_SURFACES_DEBUG_VIEW_TRANSPARENCY

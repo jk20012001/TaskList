@@ -49,14 +49,14 @@ call npm install
 if %choice%==0 (
 if exist resources\3d\engine\bin\.cache\dev\editor\import-map.json (
 rem call npm run build:effect
-rem node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js --engine f:\work\engine\ts3.5
+rem node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js --engine f:\work\engine\current
 node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js
 )
 call npm start
 )
 
 if %choice%==20 (
-set enginepath=f:\work\engine\ts3.5
+set enginepath=f:\work\engine\current
 md resources\3d
 cd resources\3d
 mklink /J engine !enginepath!

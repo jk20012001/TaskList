@@ -36,6 +36,7 @@
 #include <aces>
 #include <gamma>
 #include <common/math/number>
+#include <common/math/coordinates>
 #include <common/mesh/material>
 #include <octahedron-transform>
 #include <common/texture/cubemap>
