@@ -100,6 +100,9 @@ CCProgram macro-remapping %{
   // ui displayed macros used in this effect file
   #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
   #define CC_SURFACES_USE_VERTEX_COLOR USE_VERTEX_COLOR
+
+  //#aniso
+  //#define CC_SURFACES_LIGHTING_ANISOTROPIC USE_ANISOTROPY
 }%
 
 CCProgram surface-vertex %{
@@ -272,7 +275,7 @@ CCProgram shadow-caster-vs %{
 
 CCProgram standard-fs %{
   // shading-model : standard
-  // lighting-model : isotropy
+  // lighting-model : isotropy / anisotropy
   // shader stage : fs
   // technique usage/type : render-to-scene
 
@@ -290,6 +293,9 @@ CCProgram standard-fs %{
   #include <surface-fragment>
 
   // 4. lighting-model (optional)
+  //#aniso
+  //#if USE_ANISOTROPY
+  //#include <lighting-models/includes/anisotropy>
   #include <lighting-models/includes/isotropy>
 
   // 5. surface include with corresponding shader stage and shading-model (optional)

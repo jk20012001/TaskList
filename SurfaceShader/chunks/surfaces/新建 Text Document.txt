@@ -18,6 +18,7 @@ struct可以有多个,但数量尽量少,可以多个相似的surf共享一个st
 
 default-function中有Get/ModifySurfaceData的函数
 	如果surface结构体变了,相应的default-function也要变,可以使用完全不同的名称和输出参数的default-function,可以参考toon的用法
+	通常来说有较多参数都是共用的情况下, 就不需要重新写一套结构体, 可以用内部宏来定义和赋值增量数据, 如标准PBR下的各向异性/SSS等
 	其中唯一一个特殊的函数是SurfacesFragmentModifyBaseColorAndTransparency,无论什么情况下都必须要实现一份,并在函数内做alphatest, 因为render-to-shadowmap要用alphaclip是通过它来完成的
 	
 module-function中是定义主函数中用到的vsoutput / surface / lighting / debugview / shading模块相关计算
@@ -44,7 +45,17 @@ VS扩展方法: 也可以重写module-function和default-function,新增VSInterm
 		1. 专用: 添加vs对应的module-function和surface function输出这些UV项到IntermediateData和VSOutput, PS中直接用FSInput_XXX宏来获取新增的这些数据即可
 		2. 通用: 新加一个macro添加VS输出新项clipPos, 这一堆UV直接在PS里采图之前根据FSInput_clipPos动态计算
 				需要新加别的项都可以包在宏里控制,这样不会影响其他材质的性能
-PS扩展方法: 预计算的皮肤
-			渲染到XXX
-			卡通描边
-			卡通光照模型
+PS扩展方法: 渲染到XXX
+			卡通描边: 用宏禁用所有光照和材质功能, 重写主函数, 其他都复用
+			卡通光照模型: 完全重写surface结构体和对应流程, 复用主函数
+
+			高级PBR(各向异性/SSS): 用宏来添加lightingIntermediateData和surfaceData数据, 可能需要重写lighting-model-function, 其他都复用
+			Hair: 同上, 重写的lighting-model-function中需要对两份高光一起计算并输出, 其他都复用
+			预计算的皮肤: 同上, 重写的lighting-model-function中需要调用用户函数SurfacesLightingModifySkinDiffuseLighting来采预积分图以计算diffuse, 其他都复用
+			
+			高级PBR(MultiLayer):光照流程本身有改动,需要对同样的光照模型使用多套参数计算多次并叠加
+								用宏来添加lightingIntermediateData和surfaceData数据
+								用宏来添加lightingResult数据, 主要是多套diffuse/specularColorWithLighting, 以及每层光照的计算结果
+								lighting-flow必须重写, 需要多次调用光照和材质模型函数以计算上面添加的lightingResult数据项
+								shading-model必须重写, 将多套lightingResult结果根据物理合成
+			高级PBR(ClearCoat):	视渲染算法而定,最复杂的不过就是MutliLayer的方式
