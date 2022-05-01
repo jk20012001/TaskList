@@ -214,13 +214,14 @@ CCProgram surface-fragment %{
   }
 
   #define CC_SURFACES_FRAGMENT_MODIFY_ANISOTROPY_PARAMS
-  void SurfacesFragmentModifyAnisotropyParams(out float anisotropyRotation, out float anisotropyShape)
+  vec4 SurfacesFragmentModifyAnisotropyParams()
   {
-      anisotropyRotation = anisotropyParam.y;
-      anisotropyShape = anisotropyParam.x;
+      float anisotropyRotation = anisotropyParam.y;
+      float anisotropyShape = anisotropyParam.x;
 #if IS_ANISOTROPY && USE_ANISOTROPY_ROTATION_MAP
-      anisotropyRotation *= texture(anisotropyRotationMap, DEFAULT_UV).x;
+      anisotropyRotation = fract(anisotropyRotation + texture(anisotropyRotationMap, DEFAULT_UV).x);
 #endif
+      return vec4(anisotropyRotation, anisotropyShape, 0.0, 0.0);
   }
 
   #define CC_SURFACES_FRAGMENT_MODIFY_EMISSIVE
@@ -293,7 +294,7 @@ CCProgram shadow-caster-vs %{
 
 CCProgram standard-fs %{
   // shading-model : standard
-  // lighting-model : isotropy / anisotropy
+  // lighting-model : standard-pbr (isotropy / anisotropy)
   // shader stage : fs
   // technique usage/type : render-to-scene
 
@@ -311,7 +312,7 @@ CCProgram standard-fs %{
   #include <surface-fragment>
 
   // 4. lighting-model (optional)
-  #include <lighting-models/includes/isotropy>
+  #include <lighting-models/includes/standard-pbr>
 
   // 5. surface include with corresponding shader stage and shading-model (optional)
   #include <surfaces/includes/standard-fs>

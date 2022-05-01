@@ -10,9 +10,9 @@ void CCSurfacesFragmentGetMaterialData(out SurfacesMaterialData surfaceData)
   surfaceData.worldNormal = SurfacesFragmentModifyWorldNormal();
   SurfacesFragmentModifyWorldTangentAndBinormal(surfaceData.worldTangent, surfaceData.worldBinormal, surfaceData.worldNormal);
 #if CC_SURFACES_LIGHTING_ANISOTROPIC
-  float anisotropyRotation;
-  SurfacesFragmentModifyAnisotropyParams(anisotropyRotation, surfaceData.anisotropyShape);
-  RotateTangentAndBinormal(surfaceData.worldTangent, surfaceData.worldBinormal, surfaceData.worldNormal, anisotropyRotation);
+  vec4 anisotropyParams = SurfacesFragmentModifyAnisotropyParams();
+  surfaceData.anisotropyShape = anisotropyParams.y;
+  RotateTangentAndBinormal(surfaceData.worldTangent, surfaceData.worldBinormal, surfaceData.worldNormal, anisotropyParams.x);
 #endif
 
   surfaceData.emissive = SurfacesFragmentModifyEmissive();
