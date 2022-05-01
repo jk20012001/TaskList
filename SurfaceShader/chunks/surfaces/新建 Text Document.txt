@@ -56,6 +56,7 @@ PS扩展方法: 渲染到XXX
 			高级PBR(MultiLayer):光照流程本身有改动,需要对同样的光照模型使用多套参数计算多次并叠加
 								用宏来添加lightingIntermediateData和surfaceData数据
 								用宏来添加lightingResult数据, 主要是多套diffuse/specularColorWithLighting, 以及每层光照的计算结果
+								必要的话甚至可以全部重写lightingIntermediateData surfaceData lightingResult三个结构体
 								lighting-flow必须重写, 需要多次调用光照和材质模型函数以计算上面添加的lightingResult数据项
 								shading-model必须重写, 将多套lightingResult结果根据物理合成
 			高级PBR(ClearCoat):	视渲染算法而定,最复杂的不过就是MutliLayer的方式

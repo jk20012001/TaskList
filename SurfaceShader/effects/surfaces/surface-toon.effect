@@ -97,7 +97,7 @@ CCProgram shared-ubos %{
   };}%
 
 CCProgram macro-remapping %{
-  #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
+  #define CC_SURFACES_USE_TANGENT_SPACE USE_NORMAL_MAP
 }%
 
 CCProgram surface-vertex %{

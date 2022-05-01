@@ -4,7 +4,7 @@ void CCSurfacesVertexInput(out SurfacesStandardVertexIntermediate In)
   In.position = vec4(a_position, 1.0);
   In.normal = a_normal;
 
-#if CC_SURFACES_USE_NORMAL_MAP
+#if CC_SURFACES_USE_TANGENT_SPACE
   In.tangent = a_tangent;
 #endif
 
@@ -25,7 +25,7 @@ void CCSurfacesVertexOutput(in SurfacesStandardVertexIntermediate In)
   VSOutput_faceSideSign = In.worldNormal.w;
   VSOutput_worldPos = In.worldPos;
 
-#if CC_SURFACES_USE_NORMAL_MAP
+#if CC_SURFACES_USE_TANGENT_SPACE
   VSOutput_worldTangent = In.worldTangent.xyz;
   // VSOutput_worldBitangent = In.worldBinormal;
   VSOutput_mirrorNormal = In.tangent.w;
@@ -65,7 +65,7 @@ void CCSurfacesVertexAnimation(inout SurfacesStandardVertexIntermediate In)
 {
 vec4 temp = vec4(0.0);
 #if CC_USE_MORPH
-  #if CC_SURFACES_USE_NORMAL_MAP
+  #if CC_SURFACES_USE_TANGENT_SPACE
     applyMorph(In.position, In.normal, In.tangent);
   #else
     applyMorph(In.position, In.normal, temp);
@@ -73,7 +73,7 @@ vec4 temp = vec4(0.0);
 #endif
 
 #if CC_USE_SKINNING
-  #if CC_SURFACES_USE_NORMAL_MAP
+  #if CC_SURFACES_USE_TANGENT_SPACE
     CCSkin(In.position, In.normal, In.tangent);
   #else
     CCSkin(In.position, In.normal, temp);
@@ -90,7 +90,7 @@ void CCSurfacesVertexWorldTransform(inout SurfacesStandardVertexIntermediate In)
     In.worldPos = (matWorld * In.position).xyz;
     In.worldNormal.xyz = normalize((matWorldIT * vec4(In.normal.xyz, 0.0)).xyz);
 
-    #if CC_SURFACES_USE_NORMAL_MAP
+    #if CC_SURFACES_USE_TANGENT_SPACE
       In.worldTangent = normalize((matWorld * vec4(In.tangent.xyz, 0.0)).xyz);
       In.worldBinormal = cross(In.worldNormal.xyz, In.worldTangent) * In.tangent.w; // note the cross order
     #endif

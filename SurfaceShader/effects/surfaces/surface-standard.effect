@@ -18,6 +18,8 @@ CCEffect %{
         emissive:             { value: [0.0, 0.0, 0.0, 1.0], linear: true, editor: { type: color } }
         emissiveScale:        { value: [1.0, 1.0, 1.0], target: emissiveScaleParam.xyz }
         normalStrength:       { value: 1.0, target: emissiveScaleParam.w, editor: { parent: USE_NORMAL_MAP, slide: true, range: [0, 5.0], step: 0.001 } }
+        anisotropyShape:     { value: 0.0, target: anisotropyParam.x, editor: { parent: IS_ANISOTROPY, slide : true, range : [0, 1.0] , step : 0.0001 } }
+        anisotropyRotation:  { value: 0.0, target: anisotropyParam.y, editor: { parent: IS_ANISOTROPY, slide : true, range : [0, 1.0] , step : 0.0001 } }
         mainTexture:          { value: grey, target: albedoMap, editor: { displayName: AlbedoMap } }
         normalMap:            { value: normal }
         pbrMap:               { value: grey }
@@ -81,6 +83,7 @@ CCProgram shared-ubos %{
     vec4 pbrParams;
     vec4 emissive;
     vec4 emissiveScaleParam;
+    vec2 anisotropyParam;
   };
 }%
 
@@ -98,11 +101,12 @@ CCProgram macro-remapping %{
   #define CC_SURFACES_USE_LIGHT_MAP USE_LIGHTMAP
 
   // ui displayed macros used in this effect file
-  #define CC_SURFACES_USE_NORMAL_MAP USE_NORMAL_MAP
+  #pragma define-meta IS_ANISOTROPY
+  #define CC_SURFACES_LIGHTING_ANISOTROPIC IS_ANISOTROPY
+#if IS_ANISOTROPY || USE_NORMAL_MAP
+  #define CC_SURFACES_USE_TANGENT_SPACE 1
+#endif
   #define CC_SURFACES_USE_VERTEX_COLOR USE_VERTEX_COLOR
-
-  //#aniso
-  //#define CC_SURFACES_LIGHTING_ANISOTROPIC USE_ANISOTROPY
 }%
 
 CCProgram surface-vertex %{
@@ -205,6 +209,13 @@ CCProgram surface-fragment %{
     return normalize(normal);
   }
 
+  #define CC_SURFACES_FRAGMENT_MODIFY_ANISOTROPY_PARAMS
+  void SurfacesFragmentModifyAnisotropyParams(out float anisotropyRotation, out float anisotropyShape)
+  {
+      anisotropyRotation = anisotropyParam.y;
+      anisotropyShape = anisotropyParam.x;
+  }
+
   #define CC_SURFACES_FRAGMENT_MODIFY_EMISSIVE
   vec3 SurfacesFragmentModifyEmissive()
   {
@@ -293,9 +304,6 @@ CCProgram standard-fs %{
   #include <surface-fragment>
 
   // 4. lighting-model (optional)
-  //#aniso
-  //#if USE_ANISOTROPY
-  //#include <lighting-models/includes/anisotropy>
   #include <lighting-models/includes/isotropy>
 
   // 5. surface include with corresponding shader stage and shading-model (optional)

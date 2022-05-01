@@ -3,7 +3,7 @@ struct SurfacesStandardVertexIntermediate
   //local space
   highp vec4 position;
   vec3 normal;
-#if CC_SURFACES_USE_NORMAL_MAP
+#if CC_SURFACES_USE_TANGENT_SPACE
   vec4 tangent;
 #endif
   
@@ -21,7 +21,7 @@ struct SurfacesStandardVertexIntermediate
   highp vec4 clipPos;
   highp vec3 worldPos;
   vec4 worldNormal; // a: two side sign
-  #if CC_SURFACES_USE_NORMAL_MAP
+  #if CC_SURFACES_USE_TANGENT_SPACE
     vec3 worldTangent, worldBinormal;
   #endif
 

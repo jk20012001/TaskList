@@ -14,7 +14,7 @@ struct SurfacesMaterialData
   // for advanced PBR
   vec3 worldTangent, worldBinormal;
 #if CC_SURFACES_LIGHTING_ANISOTROPIC
-  float anisoRotation, anisoShape;
+  float anisotropyShape;
 #endif
   // float transmittanceFactor;
   // float sssCurvature;

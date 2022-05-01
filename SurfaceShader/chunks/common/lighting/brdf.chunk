@@ -7,6 +7,21 @@ float D_GGXMobile (float roughness, float NoH, vec3 H, vec3 N) {
   return p * p;
 }
 
+void GetAnisotropicRoughness(float m, float Anisotropy, out float ax, out float ay)
+{
+    ax = max(m * (1.0 + Anisotropy), 0.001);
+    ay = max(m * (1.0 - Anisotropy), 0.001);
+}
+float D_GGXAniso(float RoughnessX, float RoughnessY, float NoH, vec3 H, vec3 X, vec3 Y)
+{
+    float mx = max(EPSILON_LOWP, RoughnessX * RoughnessX);
+    float my = max(EPSILON_LOWP, RoughnessY * RoughnessY);
+    float XoH = dot(X, H);
+    float YoH = dot(Y, H);
+    float d = XoH * XoH / (mx * mx) + YoH * YoH / (my * my) + NoH * NoH;
+    return 1.0 / max(EPSILON_LOWP, mx * my * d * d);
+}
+
 // EnvBRDFApprox
 vec3 IntegratedGFApprox (vec3 specular, float roughness, float NoV) {
   const vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);

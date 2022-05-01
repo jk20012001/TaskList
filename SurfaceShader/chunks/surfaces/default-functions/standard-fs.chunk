@@ -18,13 +18,20 @@ void SurfacesFragmentModifyWorldTangentAndBinormal(out vec3 worldTangent, out ve
 {
     vec3 tangent = FSInput_worldTangent;
     vec3 binormal = CalculateBinormal(worldNormal.xyz, FSInput_worldTangent, FSInput_mirrorNormal);
-#if CC_SURFACES_USE_NORMAL_MAP
+#if CC_SURFACES_USE_TANGENT_SPACE
     tangent = cross(binormal, worldNormal);
 #endif
 
     // use RotateTangentAndBinormal for anisotropic rotations
     worldTangent = normalize(tangent);
     worldBinormal = normalize(binormal);
+}
+#endif
+
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_ANISOTROPY_PARAMS
+void SurfacesFragmentModifyAnisotropyParams(out float anisotropyRotation, out float anisotropyShape)
+{
+    anisotropyRotation = anisotropyShape = 0.0;
 }
 #endif
 

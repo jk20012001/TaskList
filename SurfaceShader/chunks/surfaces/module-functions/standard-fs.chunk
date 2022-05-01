@@ -9,6 +9,11 @@ void CCSurfacesFragmentGetMaterialData(out SurfacesMaterialData surfaceData)
 
   surfaceData.worldNormal = SurfacesFragmentModifyWorldNormal();
   SurfacesFragmentModifyWorldTangentAndBinormal(surfaceData.worldTangent, surfaceData.worldBinormal, surfaceData.worldNormal);
+#if CC_SURFACES_LIGHTING_ANISOTROPIC
+  float anisotropyRotation;
+  SurfacesFragmentModifyAnisotropyParams(anisotropyRotation, surfaceData.anisotropyShape);
+  RotateTangentAndBinormal(surfaceData.worldTangent, surfaceData.worldBinormal, surfaceData.worldNormal, anisotropyRotation);
+#endif
 
   surfaceData.emissive = SurfacesFragmentModifyEmissive();
 
@@ -58,7 +63,11 @@ void CCSurfacesInitializeLightingIntermediateData(out LightingIntermediateData l
 {
   vec3 worldPos;
   HIGHP_VALUE_FROM_STRUCT_DEFINED(worldPos, surfaceData.worldPos);
-  CCSurfacesLightingGetIntermediateData_PerPixel(lightingData, surfaceData.worldNormal, worldPos, surfaceData.worldTangent, surfaceData.worldBinormal);
+  CCSurfacesLightingGetIntermediateData_PerPixel(lightingData, surfaceData.worldNormal, worldPos, surfaceData.worldTangent, surfaceData.worldBinormal
+#if CC_SURFACES_LIGHTING_ANISOTROPIC
+      , surfaceData.anisotropyShape
+#endif
+  );
   lightingData.specularParam = surfaceData.roughness;
 }
 void CCSurfacesLightingCalculateIntermediateData_PerLight(inout LightingIntermediateData lightingData, in SurfacesMaterialData surfaceData, vec3 lightDirWithDist)

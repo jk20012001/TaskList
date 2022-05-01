@@ -1,5 +1,7 @@
 此处的文件只和纯光照有关,尽量与surfaceMaterialData,材质颜色等解耦, 这样对不同的surface+shading可以切换不同的light-model
-intermediatedata除了计算光照中间数据节省性能之外,还可以存放一些surfaceMaterial相关数据, 这样model-function中使用它就可以跟surface完全解耦
+lightingIntermediateData除了计算光照中间数据节省性能之外,还可以存放一些surfaceMaterial相关数据, 这样model-function中使用它就可以跟surface完全解耦
+lightingResult包含了光照相关的材质属性及每一种类型的光照结果, 以便ShadingModel使用
+这两个结构体通常来说不需要重写, 用内部宏来增加不同材质的额外数据即可, 不过使用方法和数据变化很大的情况下可能需要重写(比如MultiLayerPBR), 在include中包含对应结构体定义文件即可
 
 lighting-flow是光照流程,是整个光照计算的架子,一般用common即可,除非很特别的材质才要新加,尽量避免这种情况
 	光照流程函数属于module-function,供shader主函数调用

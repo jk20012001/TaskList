@@ -14,14 +14,15 @@ struct LightingIntermediateData
   // material data
   float specularParam; // roughness or specular power
 #if CC_SURFACES_LIGHTING_ANISOTROPIC
-  float anisoRotation, anisoShape;
+  float anisotropyShape;
 #endif
 
   // #if CC_SURFACES_LIGHTING_SPECULAR_2ND
-  // float specularParam2nd, specularIntensity2nd; // for hair
+  // float specularParam2nd, specularIntensity2nd, specularRotation2nd; // for hair
+  // vec3 specularColor2nd;
   // #endif
-  // float ior;
   // #if CC_SURFACES_LIGHTING_CLEAR_COAT
+  // float ior;
   // float roughnessClearCoat; // for clear coat or multi-layer pbr
   // #endif
 };
@@ -29,7 +30,7 @@ struct LightingIntermediateData
 // add overrided functions for difference shading-models in <surfaces/module-functions/>
 void CCSurfacesLightingGetIntermediateData_PerPixel(out LightingIntermediateData data, vec3 worldNormal, vec3 worldPos, vec3 worldTangent, vec3 worldBinormal
 #if CC_SURFACES_LIGHTING_ANISOTROPIC
-    , float anisoRotation, float anisoShape    
+    , float anisotropyShape    
 #endif
 )
 {
@@ -47,6 +48,10 @@ void CCSurfacesLightingGetIntermediateData_PerPixel(out LightingIntermediateData
 
   data.T = worldTangent;
   data.B = worldBinormal;
+
+#if CC_SURFACES_LIGHTING_ANISOTROPIC
+  data.anisotropyShape = anisotropyShape;
+#endif
 }
 
 void CCSurfacesLightingGetIntermediateData_PerLight(out LightingIntermediateData data, vec3 lightDirWithDist)

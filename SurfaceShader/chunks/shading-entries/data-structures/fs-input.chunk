@@ -17,7 +17,7 @@
   vec4 vertexColor;
 #endif
 
-#if CC_SURFACES_USE_NORMAL_MAP
+#if CC_SURFACES_USE_TANGENT_SPACE
   vec3 worldTangent, worldBitangent;
   float mirrorNormal;
 #endif
@@ -56,7 +56,7 @@ void CCSurfacesGetFragmentInput(out SurfacesStandardFragmentInput fsInput)
   #define FSInput_vertexColor vec4(1.0) // for compatible user-surface functions in other render usage
 #endif
 
-#if CC_SURFACES_USE_NORMAL_MAP
+#if CC_SURFACES_USE_TANGENT_SPACE
   #define FSInput_worldTangent v_tangent.xyz
   // #define FSInput_worldBitangent v_bitangent
   #define FSInput_mirrorNormal v_tangent.w

@@ -2,7 +2,7 @@
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec3 a_normal;
 layout(location = 2) in vec2 a_texCoord;
-#if CC_SURFACES_USE_NORMAL_MAP
+#if CC_SURFACES_USE_TANGENT_SPACE
   layout(location = 3) in vec4 a_tangent;
 #endif
 
