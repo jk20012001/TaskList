@@ -7,11 +7,15 @@ float D_GGXMobile (float roughness, float NoH, vec3 H, vec3 N) {
   return p * p;
 }
 
-void GetAnisotropicRoughness(float m, float Anisotropy, out float ax, out float ay)
+void GetAnisotropicRoughness(float roughness, float anisotropyShape, out float roughnessX, out float roughnessY)
 {
-    ax = max(m * (1.0 + Anisotropy), 0.001);
-    ay = max(m * (1.0 - Anisotropy), 0.001);
+    float r1 = roughness, r2 = roughness;
+    r2 *= anisotropyShape < 0.0 ? mix(1.0, 10.0, -anisotropyShape) : 1.0;
+    r1 *= anisotropyShape > 0.0 ? mix(1.0, 10.0, anisotropyShape) : 1.0;
+    roughnessX = saturate(r1);
+    roughnessY = saturate(r2);
 }
+
 float D_GGXAniso(float RoughnessX, float RoughnessY, float NoH, vec3 H, vec3 X, vec3 Y)
 {
     float mx = max(EPSILON_LOWP, RoughnessX * RoughnessX);

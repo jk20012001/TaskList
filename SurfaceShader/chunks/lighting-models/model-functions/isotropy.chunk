@@ -24,10 +24,9 @@ void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lighti
 
     float roughness = lightingData.specularParam;
 #if CC_SURFACES_LIGHTING_ANISOTROPIC
-    float r1, r2;
-    GetAnisotropicRoughness(roughness * roughness, lightingData.anisotropyShape, r1, r2);
-    r1 = roughness; r2 = 1.0 - roughness;
-    float calcSpec = D_GGXAniso(r1, r2, lightingData.NoHSat, lightingData.H, lightingData.T, lightingData.B);
+    float rB, rT;
+    GetAnisotropicRoughness(roughness, lightingData.anisotropyShape, rB, rT);
+    float calcSpec = D_GGXAniso(rB, rT, lightingData.NoHSat, lightingData.H, lightingData.B, lightingData.T);
 #else
     //#todo: 去掉这里的trick?
     float calcSpec = (roughness * 0.25 + 0.25) * D_GGXMobile(roughness, lightingData.NoHSat, lightingData.H, lightingData.N);
