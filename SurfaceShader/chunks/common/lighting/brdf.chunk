@@ -9,9 +9,13 @@ float D_GGXMobile (float roughness, float NoH, vec3 H, vec3 N) {
 
 void GetAnisotropicRoughness(float roughness, float anisotropyShape, out float roughnessX, out float roughnessY)
 {
+    float shapeSign = sign(anisotropyShape);
+    anisotropyShape *= anisotropyShape;
+
     float r1 = roughness, r2 = roughness;
-    r2 *= anisotropyShape < 0.0 ? mix(1.0, 10.0, -anisotropyShape) : 1.0;
-    r1 *= anisotropyShape > 0.0 ? mix(1.0, 10.0, anisotropyShape) : 1.0;
+    float lerpedRoughness = mix(1.0, 10.0, anisotropyShape);
+    r2 *= shapeSign < 0.0 ? lerpedRoughness : 1.0;
+    r1 *= shapeSign > 0.0 ? lerpedRoughness : 1.0;
     roughnessX = saturate(r1);
     roughnessY = saturate(r2);
 }

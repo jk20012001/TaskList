@@ -21,9 +21,12 @@ void RotateTangentAndBinormal(inout vec3 tangent, inout vec3 binormal, vec3 norm
 {
     rotationAngle = clamp(rotationAngle, 0.0, 1.0 - EPSILON_LOWP); // 1.0 is invalid value that equals to 90 rotation (coef=0, angle>0.5)
     float coef = fract(rotationAngle * 2.0);
-    // spherical interpolating is more accuracy and linear transitions, but expensive
-    vec3 binormalNew = rotationAngle <= 0.5 ? mix(binormal, -tangent, coef) : mix(-tangent, -binormal, coef);
-    vec3 tangentNew = rotationAngle <= 0.5 ? mix(tangent, binormal, coef) : mix(binormal, -tangent, coef);
+    bool isNegative = rotationAngle <= 0.5;
+
+    // spherical interpolating is more accuracy and linear transitions but expensive, use simple pow fix instead
+    coef = pow(coef, isNegative ? 0.75 : 1.25);
+    vec3 binormalNew = isNegative ? mix(binormal, -tangent, coef) : mix(-tangent, -binormal, coef);
+    vec3 tangentNew = isNegative ? mix(tangent, binormal, coef) : mix(binormal, -tangent, coef);
     tangent = normalize(tangentNew);
     binormal = normalize(binormalNew);
 }
