@@ -11,7 +11,7 @@
 #ifndef _BASE_TYPE_DEFINED
 #define _BASE_TYPE_DEFINED
 
-struct _VECTOR2 { float x, y;float operator [](uint index) { return 0; } };
+struct _VECTOR2 { float x, y;float operator [](UINT index) { return 0; } };
 struct _VECTOR3 : _VECTOR2 { float z;};
 struct _VECTOR4 : _VECTOR3 { float w;};
 
@@ -51,10 +51,10 @@ typedef _GRAMMARVECTOR4 float4;
 typedef _GRAMMARVECTOR4 int4;
 typedef _GRAMMARVECTOR4 uint4;
 
-struct float3x3 { _VECTOR3 operator [](uint index); };
-struct float3x4 { _VECTOR3 operator [](uint index); };
-struct float4x3 { _VECTOR4 operator [](uint index); };
-struct float4x4 { _VECTOR4 operator [](uint index); };
+struct float3x3 { _VECTOR3 operator [](UINT index); };
+struct float3x4 { _VECTOR3 operator [](UINT index); };
+struct float4x3 { _VECTOR4 operator [](UINT index); };
+struct float4x4 { _VECTOR4 operator [](UINT index); };
 typedef float4x4 Matrix;
 typedef float4x4 matrix;
 typedef float4x4 Matrix4;
@@ -305,8 +305,8 @@ anytype cos(anytype 弧度);
 anytype acos(anytype 反余弦);
 void sincos(anytype Data, out anytype Sin, out anytype Cos, const char *_info = "同时返回正弦和余弦");
 anytype tan(anytype 弧度);
-anytype atan(anytype 反正切);
-anytype atan2(anytype Var1, anytype Var2, const char *_info = "同时计算两个数的反正切,互不影响");
+anytype atan(anytype y_Div_x, const char *_info = "计算指定值的反正切,无法确定象限");
+anytype atan2(anytype y, anytype x, const char *_info = "计算y/x的反正切,可以确定象限");
 anytype log(anytype 以自然对数为底);
 anytype log10(anytype 以10为底);
 anytype log2(anytype 以2为底);
@@ -329,7 +329,6 @@ void clip(anytype AnyElementIsLessThanZeroThenClip);
 void errorf(string Message);
 void printf(string FormattedMessage, ...);
 void abort();
-#endif //GRAMMAR_PERCEPTION_ONLY
 
 
 
@@ -449,7 +448,7 @@ floatVECType mod(floatVECType Data, floatVECType 除数, const char *_info = "浮点
 
 
 
-
+#endif //GRAMMAR_PERCEPTION_ONLY
 //////////////////////////////////////////////////////////////////////////
 //下面定义HLSL中使用的一些语法
 #else

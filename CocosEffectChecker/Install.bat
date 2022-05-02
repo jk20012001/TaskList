@@ -1,6 +1,8 @@
 @echo off
 cd /d %~dp0
+if not "%1"=="" (
 call CopyFiles.bat "%1"
+)
 if not "%2"=="" (
 cd /d %~dp0
 call CopyFiles.bat "%2"
