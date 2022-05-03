@@ -3,6 +3,7 @@ cc-local-batch(拆成cc-local-batched:builtin\uniforms和world-transform:interna
 cc-skinning(拆成cc-skinning-uniform:builtin\uniforms和skinning-animation-lbs / dqs:internal-functions两部分),此文件为了兼容仅做include
 			(surface中的skinning可以直接换用这个, 唯一的区别就是宏不一样,不管使用CC_SURFACES_USE_SKINNING还是USE_SKINNING都ok)
 morph(拆成cc-morph:builtin\uniforms和skinning-animation-lbs:internal-functions两部分),此文件为了兼容仅做include
+lighting(函数部分用include <common\lighting\attenuation>代替, 其他定义和include部分保留)
 cc-shadow-map-vs
 cc-shadow-map-fs
 cc-fog-vs
@@ -10,12 +11,36 @@ cc-fog-fs
 lightingmap-vs
 lightingmap-fs
 decode-base
+decode
+decode-standard
 input
 input-standard
+output
+output-standard
+shading-standard-base
+shading-standard
+shading-standard-additive
+shading-cluster-additive
+shading-toon
+standard-surface-entry
+
+
+保留不动的:
+deprecated可以用来干嘛???对这次大挪移有帮助么
+outline-vs/fs
+general-vs/fs
+
 
 移到builtin internal-use(内部特殊effect使用)
 alpha-test
-anti-aliasing
+sprite:	cc-sprite-common
+		cc-sprite-texture
+		embedded-alpha
+particle:	particle-common
+			particle-trail
+			particle-vs-gpu
+			particle-vs-legacy
+
 
 移到builtin uniforms(ubo texture sampler等):
 cc-global
@@ -24,9 +49,12 @@ cc-forward-light
 cc-environment
 cc-diffusemap
 cc-shadow
+cc-world-bound
+
 
 删掉:
 skinning-lbs / dqs
+
 
 移到common其他: 需要更名
 common
@@ -39,3 +67,10 @@ unpack
 aces
 gamma
 octahedron-transform
+rect-area-light
+transform
+
+
+移到post-process:
+fxaa
+anti-aliasing

@@ -7,6 +7,7 @@ exit
 
 cd /d "%1"
 cd editor\assets\chunks
+mklink /J builtin "%~dp0chunks\builtin\"
 mklink /J common "%~dp0chunks\common\"
 mklink /J lighting-models "%~dp0chunks\lighting-models\"
 mklink /J post-process "%~dp0chunks\post-process\"
