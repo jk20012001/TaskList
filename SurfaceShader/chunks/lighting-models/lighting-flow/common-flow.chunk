@@ -1,6 +1,6 @@
 #if (CC_PIPELINE_TYPE == CC_PIPELINE_TYPE_FORWARD || CC_FORCE_FORWARD_SHADING)
   #if CC_FORWARD_ADD && !CC_ENABLE_CLUSTERED_LIGHT_CULLING
-    void CCSurfacesLighting(out LightingResult lightingResult, in SurfacesMaterialData surfaceData, in vec4 shadowPos, in vec2 shadowBias)
+    void CCSurfacesLighting(inout LightingResult lightingResult, in SurfacesMaterialData surfaceData, in vec4 shadowPos, in vec2 shadowBias)
     {
       vec3 worldPos;
       HIGHP_VALUE_FROM_STRUCT_DEFINED(worldPos, surfaceData.worldPos);
@@ -45,7 +45,7 @@
       }
     }
   #else
-    void CCSurfacesLighting(out LightingResult lightingResult, in SurfacesMaterialData surfaceData, in vec4 shadowPos, in vec2 shadowBias)
+    void CCSurfacesLighting(inout LightingResult lightingResult, in SurfacesMaterialData surfaceData, in vec4 shadowPos, in vec2 shadowBias)
     {
       LightingIntermediateData lightingData;
       CCSurfacesInitializeLightingIntermediateData(lightingData, surfaceData);

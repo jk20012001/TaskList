@@ -14,7 +14,7 @@ vec3 SurfacesFragmentModifyWorldNormal()
 #endif
 
 #ifndef CC_SURFACES_FRAGMENT_MODIFY_WORLD_TANGENT_AND_BINORMAL
-void SurfacesFragmentModifyWorldTangentAndBinormal(out vec3 worldTangent, out vec3 worldBinormal, vec3 worldNormal)
+void SurfacesFragmentModifyWorldTangentAndBinormal(inout vec3 worldTangent, inout vec3 worldBinormal, vec3 worldNormal)
 {
     vec3 tangent = FSInput_worldTangent;
     vec3 binormal = CalculateBinormal(worldNormal.xyz, FSInput_worldTangent, FSInput_mirrorNormal);

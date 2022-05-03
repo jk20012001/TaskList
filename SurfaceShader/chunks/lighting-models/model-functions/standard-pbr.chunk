@@ -34,7 +34,7 @@ void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lighti
     lightingSpecular = irradiance * calcSpec;
 }
 
-void CCSurfacesLightingCalculateEnvironment(out LightingResult lightingResult, in LightingIntermediateData lightingData)
+void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult, in LightingIntermediateData lightingData)
 {
   float roughness = lightingData.specularParam;
   float fAmb = 0.5 - lightingData.N.y * 0.5;
@@ -71,7 +71,7 @@ void CCSurfacesLightingCalculateEnvironment(out LightingResult lightingResult, i
   lightingResult.environmentSpecular = envSpec * cc_ambientSky.w;;
 }
 
-void CCSurfacesLightingCalculateTransmittence(out LightingResult lightingResult, in LightingIntermediateData lightingData, vec3 shadowPos)
+void CCSurfacesLightingCalculateTransmittence(inout LightingResult lightingResult, in LightingIntermediateData lightingData, vec3 shadowPos)
 {
     vec3 irradiance = vec3(lightingData.NoLSat);// * lightSourceColorAndIntensity.rgb * lightSourceColorAndIntensity.w;
     

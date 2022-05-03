@@ -28,7 +28,7 @@ void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lighti
     lightingSpecular = irradiance * specularMask;
 }
 
-void CCSurfacesLightingCalculateEnvironment(out LightingResult lightingResult, in LightingIntermediateData lightingData)
+void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult, in LightingIntermediateData lightingData)
 {
   lightingResult.environmentDiffuse = vec3(0.0);
   lightingResult.environmentSpecular = vec3(0.0);

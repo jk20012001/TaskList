@@ -28,7 +28,7 @@ struct LightingIntermediateData
 };
 
 // add overrided functions for difference shading-models in <surfaces/module-functions/>
-void CCSurfacesLightingGetIntermediateData_PerPixel(out LightingIntermediateData data, vec3 worldNormal, vec3 worldPos, vec3 worldTangent, vec3 worldBinormal
+void CCSurfacesLightingGetIntermediateData_PerPixel(inout LightingIntermediateData data, vec3 worldNormal, vec3 worldPos, vec3 worldTangent, vec3 worldBinormal
 #if CC_SURFACES_LIGHTING_ANISOTROPIC
     , float anisotropyShape    
 #endif
@@ -54,7 +54,7 @@ void CCSurfacesLightingGetIntermediateData_PerPixel(out LightingIntermediateData
 #endif
 }
 
-void CCSurfacesLightingGetIntermediateData_PerLight(out LightingIntermediateData data, vec3 lightDirWithDist)
+void CCSurfacesLightingGetIntermediateData_PerLight(inout LightingIntermediateData data, vec3 lightDirWithDist)
 {
   // L H
   data.L = lightDirWithDist;

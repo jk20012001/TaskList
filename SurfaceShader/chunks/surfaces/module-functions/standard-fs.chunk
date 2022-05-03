@@ -1,7 +1,7 @@
 #include <common/lighting/brdf>
 
 // Surface
-void CCSurfacesFragmentGetMaterialData(out SurfacesMaterialData surfaceData)
+void CCSurfacesFragmentGetMaterialData(inout SurfacesMaterialData surfaceData)
 {
   HIGHP_VALUE_TO_STRUCT_DEFINED(FSInput_worldPos, surfaceData.worldPos);
 
@@ -47,19 +47,19 @@ vec3 CCSurfacesGetSpecularColor(in SurfacesMaterialData surfaceData)
 }
 
 // Diffuse/Specular Color with BRDF lighting preparation
-void CCSurfacesLightingInitializeColorWithLighting(out vec3 diffuseColorWithLighting, out vec3 specularColorWithLighting, in SurfacesMaterialData surfaceData, in LightingIntermediateData lightingData)
+void CCSurfacesLightingInitializeColorWithLighting(inout vec3 diffuseColorWithLighting, inout vec3 specularColorWithLighting, in SurfacesMaterialData surfaceData, in LightingIntermediateData lightingData)
 {
   diffuseColorWithLighting = CCSurfacesGetDiffuseColor(surfaceData);
   specularColorWithLighting = IntegratedGFApprox(CCSurfacesGetSpecularColor(surfaceData).xyz, surfaceData.roughness, lightingData.NoVAbsSat);
 }
 // Update two colors with BRDF which depend on lights (optional)
-void CCSurfacesLightingCalculateColorWithLighting(out vec3 diffuseColorWithLighting, out vec3 specularColorWithLighting, in SurfacesMaterialData surfaceData, in LightingIntermediateData lightingData)
+void CCSurfacesLightingCalculateColorWithLighting(inout vec3 diffuseColorWithLighting, inout vec3 specularColorWithLighting, in SurfacesMaterialData surfaceData, in LightingIntermediateData lightingData)
 {
 }
 
 // Copy material data to lighting data
 // such as tangent data for anisotropic materials
-void CCSurfacesInitializeLightingIntermediateData(out LightingIntermediateData lightingData, in SurfacesMaterialData surfaceData)
+void CCSurfacesInitializeLightingIntermediateData(inout LightingIntermediateData lightingData, in SurfacesMaterialData surfaceData)
 {
   vec3 worldPos;
   HIGHP_VALUE_FROM_STRUCT_DEFINED(worldPos, surfaceData.worldPos);
@@ -76,7 +76,7 @@ void CCSurfacesLightingCalculateIntermediateData_PerLight(inout LightingIntermed
 }
 
 // Copy material data to lighting results
-void CCSurfacesInitializeLightingResult(out LightingResult lightingResult, in SurfacesMaterialData surfaceData)
+void CCSurfacesInitializeLightingResult(inout LightingResult lightingResult, in SurfacesMaterialData surfaceData)
 {
   lightingResult.ao = surfaceData.ao;
   lightingResult.emissive = surfaceData.emissive;
