@@ -1,0 +1,41 @@
+移到legacy:
+cc-local-batch(拆成cc-local-batched:builtin\uniforms和world-transform:internal-functions两部分),此文件为了兼容仅做include
+cc-skinning(拆成cc-skinning-uniform:builtin\uniforms和skinning-animation-lbs / dqs:internal-functions两部分),此文件为了兼容仅做include
+			(surface中的skinning可以直接换用这个, 唯一的区别就是宏不一样,不管使用CC_SURFACES_USE_SKINNING还是USE_SKINNING都ok)
+morph(拆成cc-morph:builtin\uniforms和skinning-animation-lbs:internal-functions两部分),此文件为了兼容仅做include
+cc-shadow-map-vs
+cc-shadow-map-fs
+cc-fog-vs
+cc-fog-fs
+lightingmap-vs
+lightingmap-fs
+decode-base
+input
+input-standard
+
+移到builtin internal-use(内部特殊effect使用)
+alpha-test
+anti-aliasing
+
+移到builtin uniforms(ubo texture sampler等):
+cc-global
+cc-local
+cc-forward-light
+cc-environment
+cc-diffusemap
+cc-shadow
+
+删掉:
+skinning-lbs / dqs
+
+移到common其他: 需要更名
+common
+cc-fog-base
+cc-shadow
+cc-shadow-map-base
+texture-lod
+packing
+unpack
+aces
+gamma
+octahedron-transform

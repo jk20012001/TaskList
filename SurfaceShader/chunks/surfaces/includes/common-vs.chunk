@@ -5,30 +5,26 @@
 
 // UBO
 #include <cc-global>
-//#include <cc-local-batch>
+#include <builtin/uniforms/cc-local-batched>
 
-#if !CC_SURFACES_USE_INSTANCING
-  #if CC_SURFACES_USE_BATCHING
-    #pragma define BATCHING_COUNT 10
-    #pragma builtin(local)
-    layout(set = 2, binding = 0) uniform CCLocalBatched {
-      highp mat4 cc_matWorlds[BATCHING_COUNT];
-    };
-  #else
-    #include <cc-local>
-  #endif
+#if CC_USE_MORPH
+  #include <builtin/uniforms/cc-morph>
+#endif
+#if CC_USE_SKINNING
+  #include <builtin/uniforms/cc-skinning-uniforms>
 #endif
 
 // Functional
-#include <common/internal-functions/local-batch>
 #include <common>
+#include <builtin/internal-functions/world-transform>
 
 #if CC_USE_MORPH
-  #include <morph>
+  #include <builtin/internal-functions/morph-animation>
+  //#include <morph>
 #endif
 
 #if CC_USE_SKINNING
-  #include <common/mesh/skinning>
+  #include <builtin/internal-functions/skinning-animation-lbs>
   //#include <cc-skinning>
 #endif
 

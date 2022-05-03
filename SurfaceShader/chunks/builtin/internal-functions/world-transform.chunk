@@ -2,14 +2,14 @@
 
 void CCGetWorldMatrix(out mat4 matWorld)
 {
-  #if CC_SURFACES_USE_INSTANCING
+  #if USE_INSTANCING
     matWorld = mat4(
       vec4(a_matWorld0.xyz, 0.0),
       vec4(a_matWorld1.xyz, 0.0),
       vec4(a_matWorld2.xyz, 0.0),
       vec4(a_matWorld0.w, a_matWorld1.w, a_matWorld2.w, 1.0)
     );
-  #elif CC_SURFACES_USE_BATCHING
+  #elif USE_BATCHING
     matWorld = cc_matWorlds[int(a_dyn_batch_id)];
   #else
     matWorld = cc_matWorld;
@@ -18,7 +18,7 @@ void CCGetWorldMatrix(out mat4 matWorld)
 
 void CCGetWorldMatrixFull(out mat4 matWorld, out mat4 matWorldIT)
 {
-  #if CC_SURFACES_USE_INSTANCING
+  #if USE_INSTANCING
     matWorld = mat4(
       vec4(a_matWorld0.xyz, 0.0),
       vec4(a_matWorld1.xyz, 0.0),
@@ -26,7 +26,7 @@ void CCGetWorldMatrixFull(out mat4 matWorld, out mat4 matWorldIT)
       vec4(a_matWorld0.w, a_matWorld1.w, a_matWorld2.w, 1.0)
     );
     matWorldIT = matWorld;
-  #elif CC_SURFACES_USE_BATCHING
+  #elif USE_BATCHING
     matWorld = cc_matWorlds[int(a_dyn_batch_id)];
     matWorldIT = matWorld;
   #else
