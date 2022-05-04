@@ -19,7 +19,7 @@ void SurfacesFragmentModifyWorldTangentAndBinormal(inout vec3 worldTangent, inou
     vec3 tangent = FSInput_worldTangent;
 
 #if CC_SURFACES_USE_TANGENT_SPACE
-    vec3 binormal = normalize(CalculateBinormal(worldNormal.xyz, FSInput_worldTangent, FSInput_mirrorNormal));
+    vec3 binormal = normalize(CalculateBinormal(worldNormal.xyz, tangent, FSInput_mirrorNormal));
     tangent = normalize(cross(binormal, worldNormal));
 #else
     vec3 binormal = vec3(0.0, 0.0, 0.0);
