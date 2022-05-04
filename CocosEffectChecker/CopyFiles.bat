@@ -4,6 +4,8 @@ if "%1"=="" (
 pause
 exit
 )
+if not exist "%1" exit
+
 cd /d %~dp0
 @echo on
 xcopy /s /y engine\*.* "%1"
@@ -19,4 +21,3 @@ dllfunc tool.dll toolVSCodeAddKeyBinding_RunTask "ctrl+alt+f7" "Cocos Effect Che
 dllfunc tool.dll toolVSCodeAddKeyBinding_RunTask "ctrl+shift+f7" "Cocos Effect Editor"
 dllfunc tool.dll toolVSCodeAddKeyBinding "ctrl+shift+b" "-workbench.action.tasks.build"
 dllfunc tool.dll toolVSCodeAddKeyBinding "ctrl+shift+b" "workbench.action.tasks.runTask"
-

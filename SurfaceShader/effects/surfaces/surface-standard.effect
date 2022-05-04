@@ -294,7 +294,7 @@ CCProgram shadow-caster-vs %{
 
 CCProgram standard-fs %{
   // shading-model : standard
-  // lighting-model : standard-pbr (isotropy / anisotropy)
+  // lighting-model : standard (isotropy / anisotropy pbr)
   // shader stage : fs
   // technique usage/type : render-to-scene
 
@@ -312,7 +312,7 @@ CCProgram standard-fs %{
   #include <surface-fragment>
 
   // 4. lighting-model (optional)
-  #include <lighting-models/includes/standard-pbr>
+  #include <lighting-models/includes/standard>
 
   // 5. surface include with corresponding shader stage and shading-model (optional)
   #include <surfaces/includes/standard-fs>

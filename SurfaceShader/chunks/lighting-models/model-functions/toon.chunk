@@ -22,6 +22,12 @@ void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lighti
     
     lightingDiffuse = irradiance; // no energy conservation
 
+  // punctual lighting is different from dir lighting
+#if CC_FORWARD_ADD || CC_ENABLE_CLUSTERED_LIGHT_CULLING
+    float NL = 0.5 * lightingData.NoL + 0.5;
+    lightingDiffuse *= NL;
+#endif
+
     float NH = 0.5 * lightingData.NoH + 0.5;
     float specularWeight = 1.0 - pow(lightingData.specularParam, 5.0);
     float specularMask = step(specularWeight, NH);

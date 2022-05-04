@@ -1,7 +1,7 @@
 #pragma extension([GL_OES_standard_derivatives, __VERSION__ < 110])
   vec3 EnvReflectionWithMipFiltering(vec3 R, float roughness, float mipCount, float denoiseIntensity) {
     #if CC_USE_IBL
-      //#todo: 增加4.0支持的calcmip
+      //#todo: add GL400 calcmip
     	float mip = roughness * mipCount;
     	float delta = (dot(dFdx(R), dFdy(R))) * 1000.0;
     	float mipBias = mix(0.0, 5.0, clamp(delta, 0.0, 1.0));

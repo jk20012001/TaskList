@@ -1,4 +1,4 @@
 // Lighting-model includes
 #include <lighting-models/data-structures/lighting-intermediate-data>
 #include <lighting-models/data-structures/lighting-result>
-#include <lighting-models/model-functions/standard-pbr>
+#include <lighting-models/model-functions/standard>
