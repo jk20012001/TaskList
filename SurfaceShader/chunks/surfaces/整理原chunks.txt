@@ -56,11 +56,11 @@ cc-world-bound
 skinning-lbs / dqs
 
 
-移到common其他: 需要更名
+移到common其他: 需要把cc-去掉, cc-只限uniform定义头文件
 common
-cc-fog-base
+cc-fog-base(需要拆为公共函数到common\effect和引擎执行到builtin\internal-functions(包括define transform/apply等, 在引擎执行中include公共函数文件)
+cc-shadow-map-base(同上)
 cc-shadow
-cc-shadow-map-base
 texture-lod
 packing
 unpack

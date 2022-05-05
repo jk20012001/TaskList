@@ -52,7 +52,11 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
       #endif
     #endif
 
-    vec3 R = normalize(reflect(-lightingData.V, lightingData.N));
+    #if CC_SURFACES_LIGHTING_ANISOTROPIC
+      vec3 R = GetAnisotropicReflect(lightingData.anisotropyShape, -lightingData.V, lightingData.N, lightingData.T, lightingData.B);
+    #else
+      vec3 R = normalize(reflect(-lightingData.V, lightingData.N));
+    #endif
 
     #if CC_SURFACES_USE_REFLECTION_DENOISE
       envSpec = EnvReflectionWithMipFiltering(R, roughness, cc_ambientGround.w, 0.6);
