@@ -37,14 +37,17 @@ float D_GGXAniso(float RoughnessX, float RoughnessY, float NoH, vec3 H, vec3 X, 
     return 1.0 / max(EPSILON_LOWP, mx * my * d * d);
 }
 
-vec3 GetAnisotropicReflect(float anisotropyShape, vec3 V, vec3 N, vec3 X, vec3 Y)
+vec3 GetAnisotropicReflect(float roughness, float anisotropyShape, vec3 V, vec3 N, vec3 X, vec3 Y)
 {
     float shapeSign = sign(anisotropyShape);
     anisotropyShape *= anisotropyShape;
 
-    vec3 reflectTarget = shapeSign < 0.0 ? mix(N, Y, anisotropyShape) :
-                         shapeSign > 0.0 ? mix(N, X, anisotropyShape) : N;
-    return -reflect(-V, reflectTarget);
+    // roughness->0 may lead to isotropic effect with ggx aniso brdf
+    anisotropyShape *= smoothstep(0.0, 0.03, roughness);
+
+    vec3 reflectTarget = shapeSign < 0.0 ? mix(N, -Y, anisotropyShape) :
+                         shapeSign > 0.0 ? mix(N, -X, anisotropyShape) : N;
+    return reflect(-V, reflectTarget);
 }
 
 // EnvBRDFApprox

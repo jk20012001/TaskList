@@ -53,13 +53,18 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
     #endif
 
     #if CC_SURFACES_LIGHTING_ANISOTROPIC
-      vec3 R = GetAnisotropicReflect(lightingData.anisotropyShape, -lightingData.V, lightingData.N, lightingData.T, lightingData.B);
+      vec3 R = GetAnisotropicReflect(roughness, lightingData.anisotropyShape, lightingData.V, lightingData.N, lightingData.T, lightingData.B);
     #else
-      vec3 R = normalize(reflect(-lightingData.V, lightingData.N));
+      vec3 R = reflect(-lightingData.V, lightingData.N);
     #endif
 
+    // simulate ggx convlution
+    //#todo: need CC_IBL_CONVOLUTED macro
+    //#different from builtin
+    roughness = pow(roughness, 0.5);
+
     #if CC_SURFACES_USE_REFLECTION_DENOISE
-      envSpec = EnvReflectionWithMipFiltering(R, roughness, cc_ambientGround.w, 0.6);
+      envSpec = EnvReflectionWithMipFiltering(normalize(R), roughness, cc_ambientGround.w, 0.6);
     #else
       vec4 envmap = fragTextureLod(cc_environment, R, roughness * cc_ambientGround.w);
 
