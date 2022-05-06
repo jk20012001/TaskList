@@ -22,7 +22,7 @@ void main()  {
       shadowBias += cc_localShadowBias.xy;
     #endif
     #if !CC_FORWARD_ADD
-      //#uniform形式
+      //#uniformStyle
       #if CC_SURFACES_DEBUG_VIEW_MISC_ENABLE_CSM_LAYER_COLORATION
       //#if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
       //if (cc_debug_view_misc_enable_csm_layer_coloration > 0.0)
@@ -57,7 +57,7 @@ void main()  {
     #if CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE && !(CC_SURFACES_DEBUG_VIEW_COMPOSITE_MODE & CC_SURFACES_DEBUG_VIEW_COMPOSITE_FOG)
       fogFactor = 0.0;
     #endif
-    //#uniform形式
+    //#uniformStyle
     #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
       if (cc_debug_view_composite_enable_fog <= 0.0) {
           fogFactor = 0.0;
@@ -98,7 +98,7 @@ void main()  {
     #endif
   #endif
 
-  //#uniform形式
+  //#uniformStyle
   #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE
     vec4 debugColor = vec4(0.0, 0.0, 0.0, 1.0);
     #if !CC_FORWARD_ADD
@@ -151,7 +151,7 @@ void main()  {
     color.rgb = LinearToSRGB(color.rgb);
   #endif
     */
-  //#uniform形式
+  //#uniformStyle
   // CSM Debug
   #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
     if (cc_debug_view_misc_enable_csm_layer_coloration > 0.0) {

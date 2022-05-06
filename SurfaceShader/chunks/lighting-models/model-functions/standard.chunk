@@ -28,7 +28,7 @@ void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lighti
     GetAnisotropicRoughness(roughness, lightingData.anisotropyShape, rT, rB);
     float calcSpec = D_GGXAniso(rT, rB, lightingData.NoHSat, lightingData.H, lightingData.T, lightingData.B);
 #else
-    //#different from builtin
+    //#different from legacy-standard
     float calcSpec = D_GGX(roughness, lightingData.NoHSat);
 #endif
     lightingSpecular = irradiance * calcSpec;
@@ -60,7 +60,7 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
 
     // simulate ggx convlution
     //#todo: need CC_IBL_CONVOLUTED macro
-    //#different from builtin
+    //#different from legacy-standard
     roughness = pow(roughness, 0.5);
 
     #if CC_SURFACES_USE_REFLECTION_DENOISE

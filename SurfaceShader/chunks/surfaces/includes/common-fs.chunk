@@ -1,5 +1,5 @@
 // defines
-//#todo: #10131 禁止PS中有结构体，直接显示albedo，禁止任何光照计算,红米5A等机子自动设置该宏为1
+//#todo: #10131 Redmi5A = 1
 #pragma define-meta CC_DISABLE_STRUCTURE_IN_FRAGMENT_SHADER range([0, 1])
 
 #pragma define CC_PIPELINE_TYPE_FORWARD 0

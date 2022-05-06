@@ -42,7 +42,7 @@ vec3 GetAnisotropicReflect(float roughness, float anisotropyShape, vec3 V, vec3 
     float shapeSign = sign(anisotropyShape);
     anisotropyShape *= anisotropyShape;
 
-    // roughness->0 may lead to isotropic effect with ggx aniso brdf
+    // roughness->0 means optical smooth surface (back to isotropic)
     anisotropyShape *= smoothstep(0.0, 0.03, roughness);
 
     vec3 reflectTarget = shapeSign < 0.0 ? mix(N, -Y, anisotropyShape) :

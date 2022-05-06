@@ -27,6 +27,8 @@ standard-surface-entry
 
 保留不动的:
 deprecated可以用来干嘛???对这次大挪移有帮助么
+
+移到builtin main-function
 outline-vs/fs
 general-vs/fs
 
