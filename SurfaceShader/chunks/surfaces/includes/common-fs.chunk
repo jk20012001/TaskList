@@ -11,7 +11,7 @@
 // Surface
 #include <shading-entries/data-structures/fs-input>
 
-// UBO
+// Uniforms--UBO
 #include <cc-global>
 #if (CC_PIPELINE_TYPE == CC_PIPELINE_TYPE_FORWARD || CC_FORCE_FORWARD_SHADING)
   #if CC_FORWARD_ADD
@@ -19,7 +19,7 @@
   #endif
 #endif
 
-// Tex
+// Uniforms--Tex
 #include <cc-shadow>
 #if CC_USE_IBL
   #include <cc-environment>

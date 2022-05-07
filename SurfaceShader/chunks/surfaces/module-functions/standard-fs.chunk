@@ -50,6 +50,8 @@ vec3 CCSurfacesGetSpecularColor(in SurfacesMaterialData surfaceData)
 void CCSurfacesLightingInitializeColorWithLighting(inout vec3 diffuseColorWithLighting, inout vec3 specularColorWithLighting, in SurfacesMaterialData surfaceData, in LightingIntermediateData lightingData)
 {
   diffuseColorWithLighting = CCSurfacesGetDiffuseColor(surfaceData);
+  // (Intergrated) GF/4Pi use approximate value for both direct lighting and environment lighting
+  // accuracy value can be calculated in LightingCalculateDirect/Environment instead of IntegratedGFApprox
   specularColorWithLighting = IntegratedGFApprox(CCSurfacesGetSpecularColor(surfaceData).xyz, surfaceData.roughness, lightingData.NoVAbsSat);
 }
 // Update two colors with BRDF which depend on lights (optional)

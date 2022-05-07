@@ -97,6 +97,10 @@ CCProgram macro-remapping %{
   #define CC_SURFACES_USE_TWO_SIDED USE_TWOSIDE
   #define CC_SURFACES_USE_REFLECTION_DENOISE USE_REFLECTION_DENOISE
 
+  // if disabled, simulate convoluted IBL without convolution
+  #pragma define-meta USE_COMPATIBLE_LIGHTING
+  #define CC_SURFACES_USE_LEGACY_COMPATIBLE_LIGHTING USE_COMPATIBLE_LIGHTING
+
   //#todo：Lightmap宏待修改  待删除
   #pragma define-meta USE_LIGHTMAP
   #define CC_SURFACES_USE_LIGHT_MAP USE_LIGHTMAP
