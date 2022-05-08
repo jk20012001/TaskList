@@ -55,7 +55,7 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
       #endif
     #endif
 
-    #if CC_SURFACES_LIGHTING_ANISOTROPIC
+    #if CC_SURFACES_LIGHTING_ANISOTROPIC && !CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT
       vec3 R = GetAnisotropicReflect(roughness, lightingData.anisotropyShape, lightingData.V, lightingData.N, lightingData.T, lightingData.B);
     #else
       vec3 R = reflect(-lightingData.V, lightingData.N);
@@ -66,15 +66,33 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
       roughness = pow(roughness, 0.5);
     #endif
 
-    #if CC_SURFACES_USE_REFLECTION_DENOISE
-      envSpec = EnvReflectionWithMipFiltering(normalize(R), roughness, cc_ambientGround.w, 0.6);
-    #else
-      vec4 envmap = fragTextureLod(cc_environment, R, roughness * cc_ambientGround.w);
+    #if CC_SURFACES_LIGHTING_ANISOTROPIC && CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT
+      R = normalize(R);
+      float integratedBRDF = 0.0;
+      // Sample from center R, to N and -N two directions, convolution GGXAniso BRDF. This is one direction sample count
+      const int SAMPLE_STEP_COUNT = CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT;
+      // Sample range covers HALF_PI angles, and shape become isotropy, sample range become 0 to get a isotropic looking
+      float sampleAngleRange = HALF_PI * abs(lightingData.anisotropyShape);
+      vec3 stepOffset = normalize(R - lightingData.N) * (sampleAngleRange / float(SAMPLE_STEP_COUNT * 2));
 
-      #if CC_USE_IBL == IBL_RGBE
-        envSpec = unpackRGBE(envmap);
+      for(int i = -SAMPLE_STEP_COUNT; i <= SAMPLE_STEP_COUNT; ++i)
+      {
+        float rT, rB;
+        GetAnisotropicRoughness(roughness, lightingData.anisotropyShape, rT, rB);
+        vec3 L = normalize(R + stepOffset * float(i));
+        vec3 H = normalize(L + lightingData.V);
+        float NoHSat = saturate(dot(lightingData.N, H));
+        float calcSpec = D_GGXAniso(rT, rB, NoHSat, H, lightingData.T, lightingData.B);
+
+        envSpec += calcSpec * EnvReflection(L, roughness, cc_ambientGround.w);        integratedBRDF += calcSpec;
+      }
+      envSpec /= integratedBRDF;
+
+    #else
+      #if CC_SURFACES_USE_REFLECTION_DENOISE
+        envSpec = EnvReflectionWithMipFiltering(normalize(R), roughness, cc_ambientGround.w, 0.6);
       #else
-        envSpec = SRGBToLinear(envmap.rgb);
+        envSpec = EnvReflection(R, roughness, cc_ambientGround.w);
       #endif
     #endif
   #endif
