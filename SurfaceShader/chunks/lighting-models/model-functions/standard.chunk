@@ -37,6 +37,38 @@ void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lighti
     lightingSpecular = irradiance * calcSpec;
 }
 
+
+#if CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT
+  vec3 EnvAnisotropicReflection(vec3 R, float roughness, float mipCount, float anisotropyShape, vec3 V, vec3 N, vec3 T, vec3 B) {
+      R = normalize(R);
+      float integratedBRDF = 0.0;
+      vec3 envSpec = vec3(0.0);
+      // One direction sample count
+      const int SAMPLE_STEP_COUNT = CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT;
+      float sampleAngleRange = HALF_PI * abs(anisotropyShape);
+      vec3 anisoDirection = anisotropyShape < 0.0 ? T : B;
+      vec3 ROnNormalPlane = normalize(R - anisoDirection * dot(R, anisoDirection));
+      //ROnTangentPlane = R; //for example: cross-style
+      vec3 stepOffset = normalize(ROnNormalPlane - N) * (sampleAngleRange / float(SAMPLE_STEP_COUNT * 2));
+
+      for (int i = -SAMPLE_STEP_COUNT; i <= SAMPLE_STEP_COUNT; ++i)
+      {
+          float rT, rB;
+          GetAnisotropicRoughness(roughness, anisotropyShape, rT, rB);
+          vec3 L = normalize(R + stepOffset * float(i));
+          vec3 H = normalize(L + V);
+          float NoHSat = saturate(dot(N, H));
+          float calcSpec = D_GGXAniso(rT, rB, NoHSat, H, T, B);
+
+          envSpec += calcSpec * EnvReflection(L, roughness, mipCount);
+          integratedBRDF += calcSpec;
+      }
+      envSpec /= integratedBRDF;
+      return envSpec;
+  }
+#endif
+
+
 void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult, in LightingIntermediateData lightingData)
 {
   float roughness = lightingData.specularParam;
@@ -67,27 +99,7 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
     #endif
 
     #if CC_SURFACES_LIGHTING_ANISOTROPIC && CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT
-      R = normalize(R);
-      float integratedBRDF = 0.0;
-      // Sample from center R, to N and -N two directions, convolution GGXAniso BRDF. This is one direction sample count
-      const int SAMPLE_STEP_COUNT = CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT;
-      // Sample range covers HALF_PI angles, and shape become isotropy, sample range become 0 to get a isotropic looking
-      float sampleAngleRange = HALF_PI * abs(lightingData.anisotropyShape);
-      vec3 stepOffset = normalize(R - lightingData.N) * (sampleAngleRange / float(SAMPLE_STEP_COUNT * 2));
-
-      for(int i = -SAMPLE_STEP_COUNT; i <= SAMPLE_STEP_COUNT; ++i)
-      {
-        float rT, rB;
-        GetAnisotropicRoughness(roughness, lightingData.anisotropyShape, rT, rB);
-        vec3 L = normalize(R + stepOffset * float(i));
-        vec3 H = normalize(L + lightingData.V);
-        float NoHSat = saturate(dot(lightingData.N, H));
-        float calcSpec = D_GGXAniso(rT, rB, NoHSat, H, lightingData.T, lightingData.B);
-
-        envSpec += calcSpec * EnvReflection(L, roughness, cc_ambientGround.w);        integratedBRDF += calcSpec;
-      }
-      envSpec /= integratedBRDF;
-
+      envSpec = EnvAnisotropicReflection(R, roughness, cc_ambientGround.w, lightingData.anisotropyShape, lightingData.V, lightingData.N, lightingData.T, lightingData.B);
     #else
       #if CC_SURFACES_USE_REFLECTION_DENOISE
         envSpec = EnvReflectionWithMipFiltering(normalize(R), roughness, cc_ambientGround.w, 0.6);

@@ -41,7 +41,7 @@ bool GetMetallicAlbedoFromDiffuseSpecularWithoutColor(out float metallic, out ve
 	vec3 solverAlbedo = (d + s) * normalizedColor - vec3(f0 * (1.0 - solverMetallic));
 
 	bool isValidSolver = delta >= 0.0;
-	metallic = isValidSolver ? clamp(solverMetallic, 0.0, 1.0) : metallic;
-	albedo = isValidSolver ? vec3(max(0.0, solverAlbedo.x), max(0.0, solverAlbedo.y), max(0.0, solverAlbedo.z)) : albedo;
+	metallic = isValidSolver ? clamp(solverMetallic, 0.0, 1.0) : 0.0;
+	albedo = isValidSolver ? vec3(max(0.0, solverAlbedo.x), max(0.0, solverAlbedo.y), max(0.0, solverAlbedo.z)) : diffuse;
 	return isValidSolver;
 }
