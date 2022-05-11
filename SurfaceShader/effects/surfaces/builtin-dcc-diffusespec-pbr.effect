@@ -119,11 +119,11 @@ CCProgram standard-vs %{
     out vec3 v_bitangent;
   #endif
 
-  #if HAS_SECOND_UV || USE_LIGHTMAP
+  #if HAS_SECOND_UV || CC_USE_LIGHTMAP
     in vec2 a_texCoord1;
   #endif
 
-  #if USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
+  #if CC_USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
     #include <lightingmap-vs>
   #endif
 
@@ -162,7 +162,7 @@ CCProgram standard-vs %{
     CC_TRANSFER_FOG(pos);
     CC_TRANSFER_SHADOW(pos);
 
-    #if USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
+    #if CC_USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
       CCLightingMapCaclUV();
     #endif
 
@@ -176,7 +176,7 @@ CCProgram standard-fs %{
   #include <shared-ubos>
   #include <cc-fog-fs>
   #include <standard-surface-entry>
-  #if USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
+  #if CC_USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
     #include <lightingmap-fs>
   #endif
 
@@ -358,7 +358,7 @@ bool GetMetallicAlbedoFromDiffuseSpecularWithoutColor(out float metallic, out ve
     s.emissive = texture(emissiveMap, TEXTURE_UV).xyz;
   #endif
 
-    #if USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
+    #if CC_USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
       vec4 lightColor = texture(cc_lightingMap, v_luv.xy);
       s.lightmap = lightColor.xyz * v_luv.z;
       s.lightmap_test = v_luv.z; /*lum*/
@@ -375,7 +375,7 @@ CCProgram shadow-caster-vs %{
   #include <shared-ubos>
   #include <cc-shadow>
 
-  #if HAS_SECOND_UV || USE_LIGHTMAP
+  #if HAS_SECOND_UV || CC_USE_LIGHTMAP
     in vec2 a_texCoord1;
   #endif
 

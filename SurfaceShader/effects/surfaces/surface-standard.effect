@@ -101,10 +101,6 @@ CCProgram macro-remapping %{
   #pragma define-meta USE_COMPATIBLE_LIGHTING
   #define CC_SURFACES_USE_LEGACY_COMPATIBLE_LIGHTING USE_COMPATIBLE_LIGHTING
 
-  //#todo：Lightmap宏待修改  待删除
-  #pragma define-meta USE_LIGHTMAP
-  #define CC_SURFACES_USE_LIGHT_MAP USE_LIGHTMAP
-
   // ui displayed macros used in this effect file
   #pragma define-meta IS_ANISOTROPY
   #define CC_SURFACES_LIGHTING_ANISOTROPIC IS_ANISOTROPY
