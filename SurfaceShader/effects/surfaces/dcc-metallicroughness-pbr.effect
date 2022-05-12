@@ -11,19 +11,20 @@ CCEffect %{
         mainColor:            { value: [1.0, 1.0, 1.0, 1.0], target: albedo, linear: true, editor: { displayName: BaseColor, type: color } }
         mainTexture:          { value: grey, target: albedoMap, editor: { displayName: BaseColorMap } }
         baseWeightMap:        { value: grey }
-        albedoScale:          { value: [1.0, 1.0, 1.0], target: albedoScaleAndCutoff.xyz, editor: { displayName: BaseWeight } }
+        albedoScale:          { value: 1.0, editor: { displayName: BaseWeight } }
         roughness:            { value: 1.0 }
         roughnessMap:         { value: grey }
         metallic:             { value: 1.0 }
         metallicMap:          { value: grey }
         occlusion:            { value: 1.0 }
         occlusionMap:         { value: white }
-        emissiveScale:        { value: [1.0, 1.0, 1.0, 1.0], editor: { displayName: Emissive } }
+        emissiveScale:        { value: 1.0, editor: { displayName: Emissive } }
         emissiveScaleMap:     { value: grey, editor: { displayName: EmissiveMap } }
         emissive:             { value: [0.0, 0.0, 0.0, 1.0], linear: true, editor: { displayName: EmissiveColor, type: color} }
         emissiveMap:          { value: grey, editor: { displayName: EmissiveColorMap } }
-        opacity:              { value: 1.0, editor: { slide: true, range: [0, 1.0], step: 0.001 } }
-        opacityMap:           { value: grey, editor: { parent: USE_OPACITY_MAP } }
+        alphaSource:          { value: 0.0, editor: { slide: true, range: [0, 1.0], step: 0.001 } }
+        alphaSourceMap:       { value: grey, editor: { parent: USE_OPACITY_MAP } }
+        alphaThreshold:       { value: 0.5, target: albedoScaleAndCutoff.w, editor: { parent: USE_ALPHA_TEST, slide: true, range: [0, 1.0], step: 0.001 } }
         normalStrength:       { value: 1.0, editor: { parent: USE_NORMAL_MAP, slide: true, range: [0, 1.0], step: 0.001 } }
         normalMap:            { value: normal }
     - &forward-add
@@ -81,12 +82,13 @@ CCProgram shared-ubos %{
     vec4 albedo;
     vec4 albedoScaleAndCutoff;
     vec4 emissive;
-    vec4 emissiveScale;
+    float emissiveScale;
     float occlusion;
     float roughness;
     float metallic;
     float normalStrength;
-    float opacity;
+    float alphaSource;
+    float albedoScale;
   };
 }%
 
@@ -250,7 +252,8 @@ CCProgram standard-fs %{
   #endif
 
   #if USE_OPACITY_MAP
-    uniform sampler2D opacityMap;
+    #pragma define-meta ALPHA_SOURCE_CHANNEL options([r, g, b, a])
+    uniform sampler2D alphaSourceMap;
   #endif
 
   float discolor(vec3 srcColor) {
@@ -270,15 +273,13 @@ CCProgram standard-fs %{
       baseColor *= texColor;
     #endif
 
-    vec4 weightColor = vec4(1.0,1.0,1.0,1.0);
-    vec3 albedoScale = albedoScaleAndCutoff.rgb;
     #if USE_WEIGHT_MAP
-        weightColor = texture(baseWeightMap, TEXTURE_UV);
+        vec4 weightColor = texture(baseWeightMap, TEXTURE_UV);
         weightColor.rgb = SRGBToLinear(weightColor.rgb);
-        albedoScale = vec3(1.0,1.0,1.0);
+        baseColor.rgb *= weightColor.rgb;
+    #else
+        baseColor.rgb *= albedoScale;
     #endif
-    weightColor.rgb *= albedoScale;
-    baseColor.rgb *= weightColor.rgb;
     ////////////////////////
     float metallicValue = metallic;
     #if USE_METALLIC_MAP
@@ -314,10 +315,21 @@ CCProgram standard-fs %{
     #endif
     s.occlusion = occlusionValue;
 
-    #if USE_OPACITY_MAP
-      baseColor.a = 1.0 - texture(opacityMap, TEXTURE_UV).a;
+    #if ALPHA_SOURCE_IS_OPACITY
+      #if USE_OPACITY_MAP
+        baseColor.a = 1.0 - texture(alphaSourceMap, TEXTURE_UV).ALPHA_SOURCE_CHANNEL;
+      #else
+        baseColor.a = 1.0 - alphaSource;
+      #endif
     #else
-      baseColor.a = 1.0 - opacity;
+      #if USE_OPACITY_MAP
+        baseColor.a = texture(alphaSourceMap, TEXTURE_UV).ALPHA_SOURCE_CHANNEL;
+      #else
+        baseColor.a = alphaSource;
+      #endif
+    #endif
+    #if USE_ALPHA_TEST
+      if (baseColor.a < albedoScaleAndCutoff.w) discard;
     #endif
   ///////////////////////////// 
     s.albedo = baseColor;
@@ -352,12 +364,14 @@ CCProgram standard-fs %{
         emissiveColor.rgb = SRGBToLinear(texture(emissiveMap, TEXTURE_UV).rgb);
     #endif
     //emissive color scale
-    vec4 emissiveScaleColor = emissiveScale;
     #if USE_EMISSIVESCALE_MAP
-        emissiveScaleColor = texture(emissiveScaleMap, TEXTURE_UV);
+        vec4 emissiveScaleColor = texture(emissiveScaleMap, TEXTURE_UV);
         emissiveScaleColor.rgb = SRGBToLinear(emissiveScaleColor.rgb);
+        emissiveColor.rgb *= emissiveScaleColor.rgb;
+    #else
+        emissiveColor.rgb *= emissiveScale;
     #endif
-    emissiveColor.rgb *= emissiveScaleColor.rgb;
+    
     s.emissive = emissiveColor.rgb;
   }
 

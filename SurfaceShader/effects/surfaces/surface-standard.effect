@@ -108,6 +108,8 @@ CCProgram macro-remapping %{
   #define CC_SURFACES_USE_TANGENT_SPACE 1
 #endif
   #define CC_SURFACES_USE_VERTEX_COLOR USE_VERTEX_COLOR
+  
+  #define CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT 63
 }%
 
 CCProgram surface-vertex %{

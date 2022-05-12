@@ -34,7 +34,7 @@ void CCSurfacesLightingCalculateDirect(out vec3 lightingDiffuse, out vec3 lighti
     float calcSpec = D_GGX(roughness, lightingData.NoHSat);
   #endif
 #endif
-    lightingSpecular = irradiance * calcSpec;
+    lightingSpecular = lightingDiffuse * calcSpec;
 }
 
 
@@ -104,8 +104,8 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
     #endif
   #endif
 
-  lightingResult.environmentDiffuse = ambDiff.rgb * cc_ambientSky.w;;
-  lightingResult.environmentSpecular = envSpec * cc_ambientSky.w;;
+  lightingResult.environmentDiffuse = ambDiff.rgb * cc_ambientSky.w;
+  lightingResult.environmentSpecular = envSpec * cc_ambientSky.w;
 }
 
 void CCSurfacesLightingCalculateTransmittence(inout LightingResult lightingResult, in LightingIntermediateData lightingData, vec3 shadowPos)
