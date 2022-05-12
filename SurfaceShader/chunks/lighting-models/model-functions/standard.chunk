@@ -93,11 +93,6 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
       vec3 R = reflect(-lightingData.V, lightingData.N);
     #endif
 
-    // simulate ggx convlution
-    #if !CC_SURFACES_USE_LEGACY_COMPATIBLE_LIGHTING //#todo: && !CC_IBL_CONVOLUTED
-      roughness = pow(roughness, 0.5);
-    #endif
-
     #if CC_SURFACES_LIGHTING_ANISOTROPIC && CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT
       envSpec = EnvAnisotropicReflection(R, roughness, cc_ambientGround.w, lightingData.anisotropyShape, lightingData.V, lightingData.N, lightingData.T, lightingData.B);
     #else
