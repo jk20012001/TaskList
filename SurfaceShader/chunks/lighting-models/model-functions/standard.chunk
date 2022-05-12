@@ -78,7 +78,7 @@ void CCSurfacesLightingCalculateEnvironment(inout LightingResult lightingResult,
 
   #if CC_USE_IBL
     #if CC_USE_DIFFUSEMAP
-      // Diffuse reflection irradiance
+      // Diffuse irradiance
       vec4 diffuseMap = texture(cc_diffuseMap, lightingData.N);
       #if CC_USE_DIFFUSEMAP == IBL_RGBE
         ambDiff = unpackRGBE(diffuseMap);
