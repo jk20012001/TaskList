@@ -16,7 +16,8 @@
 @echo init: 初始化环境(解决找不到cocos-for-editor分支等问题)
 @echo clean: 清理仓库(解决编不过的问题)
 @echo b: 完全编译(如果编辑器编不过的话请手动更新app\modules\engine-extensions到正确的版本)
-@echo fix: 修复完全编译typedoc提示找不到typescript\bin\tsc导致引擎编不过的问题(可能还要手动更新engine\scripts\typedoc-plugin)
+@echo fix1: 修复MODULE_NOT_FOUND的问题
+@echo fix2: 修复完全编译typedoc提示找不到typescript\bin\tsc导致引擎编不过的问题(可能还要手动更新engine\scripts\typedoc-plugin)
 @echo=
 set /p choice=请输入:
 @echo=
@@ -54,7 +55,10 @@ call npm run build-declaration
 cd ..\..\..\
 call npm install
 )
-if "%choice%"=="fix" (
+if "%choice%"=="fix1" (
+C:\goldapps\DLLFunc.exe goldfx.dll toolFileFindAndReplace "%~dp0workflow\config.js" ", '--production'"
+)
+if "%choice%"=="fix2" (
 cd resources\3d\engine\scripts\typedoc-plugin\
 npm install typescript
 )
