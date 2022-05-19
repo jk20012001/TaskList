@@ -5,7 +5,7 @@ pause
 exit
 )
 
-if not "%1"=="" "%~dp0..\CocosEffectChecker\engine\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\dllfunc.exe" tool.dll CocosTasklistShaderLink "%1" "%~dp0"
-if not "%2"=="" "%~dp0..\CocosEffectChecker\engine\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\dllfunc.exe" tool.dll CocosTasklistShaderLink "%2" "%~dp0"
-if not "%3"=="" "%~dp0..\CocosEffectChecker\engine\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\dllfunc.exe" tool.dll CocosTasklistShaderLink "%3" "%~dp0"
+if not "%1"=="" "%~dp0..\CocosEffectChecker\engine\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\dllfunc.exe" tool.dll CocosTasklistShaderLink "%1\editor\assets\" "%~dp0"
+if not "%2"=="" "%~dp0..\CocosEffectChecker\engine\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\dllfunc.exe" tool.dll CocosTasklistShaderLink "%2\editor\assets\" "%~dp0"
+if not "%3"=="" "%~dp0..\CocosEffectChecker\engine\.vscode\ShaderCompilerIDE\ShaderCompilerIDE\Tools\dllfunc.exe" tool.dll CocosTasklistShaderLink "%3\editor\assets\" "%~dp0"
 pause

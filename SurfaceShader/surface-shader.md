@@ -50,7 +50,7 @@ Surface Shader内部计算时会用到一些宏开关，需要根据Effect中对
 | CC_SURFACES_USE_TANGENT_SPACE                         | BOOL | 是否使用切空间（使用法线图或各向异性时必须开启）             |
 | CC_SURFACES_TRANSFER_LOCAL_POS                        | BOOL | 是否在FS中访问模型空间坐标                                   |
 | CC_SURFACES_LIGHTING_ANISOTROPIC                      | BOOL | 是否开启各向异性材质                                         |
-| CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT | UINT | 各向异性环境光卷积采样数，为0表示关闭此计算，仅当各向异性开启时有效 |
+| CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT | UINT | 各向异性环境光卷积采样数，为0表示关闭卷积计算，仅当各向异性开启时有效 |
 | CC_SURFACES_USE_REFLECTION_DENOISE                    | BOOL | 是否开启环境反射除噪                                         |
 | CC_SURFACES_USE_LEGACY_COMPATIBLE_LIGHTING            | BOOL | 是否开启legacy兼容光照模式，可使渲染效果和legacy/standard.effect完全一致，便于升级 |
 
@@ -131,6 +131,8 @@ VS对应的函数列表如下：
 Shader传参的获取：
 
 FSInput_
+
+内部做了容错处理，可以无视宏条件随意访问
 
 ### Include Assembly
 
