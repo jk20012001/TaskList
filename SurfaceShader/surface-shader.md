@@ -8,7 +8,19 @@ Surface Shader仍然是基于[Cocos Effect的语法](effect-syntax.md)，以前�
 
 ## 相关概念
 
-这里有几个概念需要说明一下：渲染用途、材质模型和光照模型。
+这里有几个概念需要说明一下：
+
+1、渲染用途：说明了物体需要被渲染到哪儿。
+
+我们有很多渲染Pass用于渲染同一个物体到不同的纹理数据上，这些数据分别有内置的用途。比如说最常用的`渲染到场景`可以直接用于屏幕显示，或者把阴影投射物`渲染到阴影贴图`，或者`渲染到动态环境反射`来生成反射贴图等。
+
+2、材质模型：说明表面材质的数据（颜色等）是如何与光照结果相互作用的。
+
+3、光照模型：说明物体表面的光照计算是如何与光线发生作用的。
+
+由于表面物理属性和微观结构的不同，物体对光线的作用也是不一样的。比如说塑料会产生各向同性的圆形高光，头发会产生各向异性的条纹状高光，光线在皮肤上会发生散射，而在镜子上光线会毫无损失和污染的反射掉。
+
+通常材质与光照模型是联合起来使用的，我们会逐渐扩展常用的材质与光照模型
 
 ## 代码框架
 
@@ -36,6 +48,7 @@ Surface Shader内部计算时会用到一些宏开关，需要根据Effect中对
 | CC_SURFACES_USE_SECOND_UV                             | BOOL | 是否使用2uv                                                  |
 | CC_SURFACES_USE_TWO_SIDED                             | BOOL | 是否使用双面法线                                             |
 | CC_SURFACES_USE_TANGENT_SPACE                         | BOOL | 是否使用切空间（使用法线图或各向异性时必须开启）             |
+| CC_SURFACES_TRANSFER_LOCAL_POS                        | BOOL | 是否在FS中访问模型空间坐标                                   |
 | CC_SURFACES_LIGHTING_ANISOTROPIC                      | BOOL | 是否开启各向异性材质                                         |
 | CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT | UINT | 各向异性环境光卷积采样数，为0表示关闭此计算，仅当各向异性开启时有效 |
 | CC_SURFACES_USE_REFLECTION_DENOISE                    | BOOL | 是否开启环境反射除噪                                         |
@@ -88,7 +101,7 @@ Surface Shader内部计算时会用到一些宏开关，需要根据Effect中对
 
 ### Surface Function
 
-每个材质函数的功能类似于Unreal Engine中输出一个材质参数到指定的材质节点。使用 `CCProgram` 来定义Surface材质函数，**注意VS和FS使用的函数块必须分开存放**。通常来讲所有的VS和所有的FS各使用一个即可，在我们的例子中`standard-vs`和`shadow-caster-vs`共用`surface-vertex`块，而`standard-fs`和`shadow-caster-fs`共用`surface-fragment`块。这样做的好处是所有的用户自定义动画与材质可以在各种渲染用途中维持统一。
+每个材质函数的功能类似于Unreal Engine中输出一个材质参数到指定的材质节点。使用 `CCProgram` 来定义Surface材质函数，**注意VS和FS使用的函数块必须分开存放**。通常来讲所有的VS和所有的FS各使用一个即可，在我们的例子中`standard-vs`和`shadow-caster-vs`共用`surface-vertex`块，而`standard-fs`和`shadow-caster-fs`共用`surface-fragment`块。这样做的好处是所有的用户自定义动画与材质的代码只需要写一份，却可以在各种渲染用途中保持统一。
 
 **这些函数并不是必须定义的**，Surface Shader在内部提供了一个简单的默认函数，**如果你想重载它，需要预定义每个函数对应的宏来完成**。如：
 
@@ -114,6 +127,10 @@ VS对应的函数列表如下：
 |            |                |                |
 |            |                |                |
 |            |                |                |
+
+Shader传参的获取：
+
+FSInput_
 
 ### Include Assembly
 
