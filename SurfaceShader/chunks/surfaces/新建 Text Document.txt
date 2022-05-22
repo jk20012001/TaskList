@@ -49,14 +49,18 @@ PS扩展方法: 渲染到XXX
 			卡通描边: 用宏禁用所有光照和材质功能, 重写主函数, 其他都复用
 			卡通光照模型: 完全重写surface结构体和对应流程, 复用主函数
 
-			高级PBR(各向异性/SSS): 用宏来添加lightingIntermediateData和surfaceData数据, 可能需要重写lighting-model-function, 其他都复用
+			高级PBR(SSS/Transmit): 新增SSS/Transmit宏来添加lightingIntermediateData和surfaceData数据, 可能需要重写lighting-model-function, 其他都复用
 			Hair: 同上, 重写的lighting-model-function中需要对两份高光一起计算并输出, 其他都复用
 			预计算的皮肤: 同上, 重写的lighting-model-function中需要调用用户函数SurfacesLightingModifySkinDiffuseLighting来采预积分图以计算diffuse, 其他都复用
+			4S皮肤: 类似高级PBR, 需要计算薄片透射(common-flow中已有透射的计算函数), 主要是区分各Pass
+			水: common-flow中需要加入折射相关的计算函数(固定IOR), 其他都复用
+			    水下焦散作为自发光分量计算, common-flow中需要添加自发光的计算函数
+			薄片树叶: transmit计算函数中计算反面接收到的漫反射来计算穿透
 			
 			高级PBR(MultiLayer):光照流程本身有改动,需要对同样的光照模型使用多套参数计算多次并叠加
-								用宏来添加lightingIntermediateData和surfaceData数据
-								用宏来添加lightingResult数据, 主要是多套diffuse/specularColorWithLighting, 以及每层光照的计算结果
-								必要的话甚至可以全部重写lightingIntermediateData surfaceData lightingResult三个结构体
+								surfaceData / lightingIntermediateData / lightingResult结构体: 使用内部COUNT宏来新增并控制各项数据的数组大小, 需要添加每层光照的计算参数和结果
+									或上面三个结构体直接改用结构体数组来传参? 实测glsl是可以支持的
+									还是这三个结构体全部改用新的, 连include也一起改?
 								lighting-flow必须重写, 需要多次调用光照和材质模型函数以计算上面添加的lightingResult数据项
 								shading-model必须重写, 将多套lightingResult结果根据物理合成
-			高级PBR(ClearCoat):	视渲染算法而定,最复杂的不过就是MutliLayer的方式
+			高级PBR(ClearCoat):	视渲染算法而定,最复杂的不过就是MutliLayer的方式, 可能视为两层multi-layer-pbr

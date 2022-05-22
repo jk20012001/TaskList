@@ -60,17 +60,17 @@ skinning-lbs / dqs
 
 移到common其他: 需要把cc-去掉, cc-只限uniform定义头文件
 common
-cc-fog-base(需要拆为公共函数到common\effect和引擎执行到builtin\internal-functions(包括define transform/apply等, 在引擎执行中include公共函数文件)
-cc-shadow-map-base(同上)
-cc-shadow
-texture-lod
-packing
-unpack
-aces
-gamma
-octahedron-transform
-rect-area-light
-transform
+cc-fog-base(需要拆为公共函数文件到common\effect\fog.chunk和引擎执行文件到builtin\internal-functions\fog.chunk(包括define transform/apply等, 在引擎执行文件中include公共函数文件)
+cc-shadow-map-base(同上,还要多拆一个builtin\uniforms\shadow-map.chunk, 引擎执行中包含这两个)
+			迁移时将原文件换成引擎执行文件
+texture-lod :texture
+packing  :data
+unpack :data
+aces :color
+gamma :color
+octahedron-transform :math
+rect-area-light :lighting
+transform :math
 
 
 移到post-process:
