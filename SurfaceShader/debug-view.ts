@@ -40,6 +40,11 @@ import { Device } from '../../gfx';
 import { Enum } from '../../value-types';
 
 // export const DebugViewSingleType = Enum({
+const enum DebugViewType {
+    NONE,
+    SINGLE,
+    COMPOSITE,
+};
 const enum DebugViewSingleType {
     /**
      * @zh
@@ -94,7 +99,7 @@ const enum DebugViewCompositeType {
      * hemisphere diffuse
      * @readonly
      */
-     DIRECT_DIFFUSE,
+     DIRECT_DIFFUSE = 0,
      DIRECT_SPECULAR,
      ENV_DIFFUSE,
      ENV_SPECULAR,
@@ -108,6 +113,7 @@ const enum DebugViewCompositeType {
      
      TONE_MAPPING,
      GAMMA_CORRECTION,
+     MAX_BIT_COUNT
 };
 
 /**
@@ -169,11 +175,19 @@ export class DebugView {
         }
     }
 
-    private _setEnabled (val) {
-        this._enabled = val;
-        if (JSB) {
-            this._nativeObj!.enabled = val;
+    private _getDebugViewMode () : DebugViewType {
+        if (this._singleModeValue !== DebugViewSingleType.NONE) {
+            return DebugViewType.SINGLE;
+        } else if (this._lightingWithAlbedo !== true || this._csmLayerColoration !== false) {
+            return DebugViewType.COMPOSITE;
+        } else {
+            for (let i = 0; i < DebugViewCompositeType.MAX_BIT_COUNT; i++) {
+                if (!this.isCompositeModeEnabled(i)) {
+                    return DebugViewType.COMPOSITE;
+                }
+            }
         }
+        return DebugViewType.NONE;
     }
 
     private _setUseDiffuseMap (val) {
