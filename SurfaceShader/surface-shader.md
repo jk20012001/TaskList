@@ -35,7 +35,7 @@ Surface Shader仍然是基于[Cocos Effect的语法](effect-syntax.md)，以前�
 
 - `Macro Remapping`：将用户在Effect中声明或使用的宏名（部分）映射为Surface内部宏名。
 - `Surface Functions`：用于声明表面材质信息相关的Surface函数。
-- `Include Assembly`：用于组装每个顶点着色器（Vertex Shader）和片元着色器（Fragment Shader）的代码模块。
+- `Shader Assembly`：用于组装每个顶点着色器（Vertex Shader）和片元着色器（Fragment Shader）的代码模块。
 
 此处以内置着色器 `surfaces/standard.effect` 为例，说明 Surface Shader 的代码框架。
 
@@ -117,9 +117,11 @@ Surface Shader内部计算时会用到一些宏开关，需要根据Effect中对
 
 可以使用 `CCProgram` 或单独的chunk来定义Surface材质函数块。
 
-**注意VS和FS使用的函数块必须分开**。通常来讲所有的VS共享一个，所有的FS共享一个。在我们的例子中`standard-vs`和`shadow-caster-vs`共用`surface-vertex`块，而`standard-fs`和`shadow-caster-fs`共用`surface-fragment`块。这样做的好处是所有的用户自定义动画与材质的代码只需要写一份，却可以在各种渲染用途中保持统一。
+**注意VS和FS使用的函数块必须分开**。通常来讲所有的VS共享一个，所有的FS共享一个。在我们的例子中`standard-vs`和`shadow-caster-vs`共用`surface-vertex`块，而`standard-fs`和`shadow-caster-fs`共用`surface-fragment`块。
 
-**这些函数并不是必须定义的**，Surface Shader在内部提供了简单的默认函数，**如果你想重载某函数，需要预定义该函数对应的宏来完成**。如：
+>用这种方式的好处是所有的用户自定义动画与材质的代码只需要写一份，却可以在各种渲染用途中保持统一。
+
+Surface Shader在内部提供了简单的默认函数，所以**这些函数并不是必须定义的**，**如果你想重载某函数，需要预定义该函数对应的宏来完成**。这些函数命名以`Surfaces+Shader阶段`打头，后跟功能描述。可以在[`editor/assets/chunks/surfaces/default-functions`](https://github.com/cocos/cocos-engine/tree/v3.5.1/editor/assets/chunks/surfaces/default-functions)中查看不同材质模型中各Surface函数的具体定义与实现，如：
 
   ```glsl
 #define CC_SURFACES_VERTEX_MODIFY_WORLD_POS
@@ -138,80 +140,110 @@ vec3 SurfacesVertexModifyWorldPos(in SurfacesStandardVertexIntermediate In)
 
 #### 2、VS对应的函数列表
 
-| 预先定义宏 | 对应的渲染用途 | 对应的函数定义 |
-| ---------- | -------------- | -------------- |
-|            |                |                |
-|            |                |                |
-|            |                |                |
-|            |                |                |
-|            |                |                |
-|            |                |                |
-|            |                |                |
+VS中的处理和材质模型关系相对比较小，所以这里都使用通用函数，函数参数均为`SurfacesStandardVertexIntermediate`结构体，存放的是VS输入输出的数据。用户无需再关心具体的顶点输入输出流程处理，只需要聚焦到某个数据是否需要及如何修改。
+
+| 预先定义宏                             | 对应的函数定义                       | 对应的材质模型 | 功能说明                              |
+| -------------------------------------- | ------------------------------------ | -------------- | ------------------------------------- |
+| CC_SURFACES_VERTEX_MODIFY_LOCAL_POS    | vec3 SurfacesVertexModifyLocalPos    | Common         | 修改模型空间坐标                      |
+| CC_SURFACES_VERTEX_MODIFY_WORLD_POS    | vec3 SurfacesVertexModifyWorldPos    | Common         | 修改世界空间坐标（世界空间动画）      |
+| CC_SURFACES_VERTEX_MODIFY_CLIP_POS     | vec4 SurfacesVertexModifyClipPos     | Common         | 修改剪裁（NDC）空间坐标（修改深度等） |
+| CC_SURFACES_VERTEX_MODIFY_UV           | void SurfacesVertexModifyUV          | Common         | 修改UV0和UV1（使用tiling等）          |
+| CC_SURFACES_VERTEX_MODIFY_WORLD_NORMAL | vec3 SurfacesVertexModifyWorldNormal | Common         | 修改世界空间法线（世界空间动画）      |
 
 #### 3、FS对应的函数列表
 
-| 预先定义宏 | 对应的渲染用途 | 对应的函数定义 |
-| ---------- | -------------- | -------------- |
-|            |                |                |
-|            |                |                |
-|            |                |                |
-|            |                |                |
-|            |                |                |
-|            |                |                |
-|            |                |                |
+| 预先定义宏                                              | 对应的函数定义                                       | 对应的材质模型 | 功能说明                                                     |
+| ------------------------------------------------------- | ---------------------------------------------------- | -------------- | ------------------------------------------------------------ |
+| CC_SURFACES_FRAGMENT_MODIFY_ BASECOLOR_AND_TRANSPARENCY | vec4 SurfacesFragmentModify BaseColorAndTransparency | Common         | 修改基础色和透明值（a通道）                                  |
+| CC_SURFACES_FRAGMENT_MODIFY_ WORLD_NORMAL               | vec3 SurfacesFragmentModify WorldNormal              | Common         | 修改像素法线（通常是法线贴图）                               |
+| CC_SURFACES_FRAGMENT_MODIFY_ SHARED_DATA                | void SurfacesFragmentModify SharedData               | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改这些参数，减少性能耗费 |
+| CC_SURFACES_FRAGMENT_MODIFY_ WORLD_TANGENT_AND_BINORMAL | void SurfacesFragmentModify WorldTangentAndBinormal  | Standard PBR   | 修改世界切空间向量                                           |
+| CC_SURFACES_FRAGMENT_MODIFY_ EMISSIVE                   | vec3 SurfacesFragmentModify Emissive                 | Standard PBR   | 修改自发光颜色                                               |
+| CC_SURFACES_FRAGMENT_MODIFY_ PBRPARAMS                  | vec4 SurfacesFragmentModify PBRParams                | Standard PBR   | 修改PBR参数（ao, roughness, metallic, specularIntensity）    |
+| CC_SURFACES_FRAGMENT_MODIFY_ ANISOTROPY_PARAMS          | vec4 SurfacesFragmentModify AnisotropyParams         | Standard PBR   | 修改各向异性参数（rotation, shape, unused, unused）          |
+| CC_SURFACES_FRAGMENT_MODIFY_ BASECOLOR_AND_TOONSHADE    | void SurfacesFragmentModify BaseColorAndToonShade    | Toon           | 修改卡通渲染基础色                                           |
+| CC_SURFACES_FRAGMENT_MODIFY_ TOON_STEP_AND_FEATHER      | vec4 SurfacesFragmentModify ToonStepAndFeather       | Toon           | 修改卡通渲染所需的参数                                       |
+| CC_SURFACES_FRAGMENT_MODIFY_ TOON_SHADOW_COVER          | vec4 SurfacesFragmentModify ToonShadowCover          | Toon           | 修改卡通渲染所需的参数                                       |
+| CC_SURFACES_FRAGMENT_MODIFY_ TOON_SPECULAR              | vec4 SurfacesFragmentModify ToonSpecular             | Toon           | 修改卡通渲染所需的参数                                       |
 
-#### 4、VS输入参数的获取
+#### 4、VS输入值的获取
 
-| Vertex Shader输入参数名称 | 含义 |
-| ------------------------- | ---- |
-| VSInput_                  |      |
-|                           |      |
-|                           |      |
-|                           |      |
-|                           |      |
-|                           |      |
-|                           |      |
-|                           |      |
+VS输入值都在`SurfacesStandardVertexIntermediate`结构体中，作为Surface函数参数传入
 
-#### 5、FS输入参数的获取
+| Vertex Shader输入值 | 类型 | 使用时需要对应宏开启          | 含义                                 |
+| ------------------- | ---- | ----------------------------- | ------------------------------------ |
+| position            | vec4 | N/A                           | Local Position                       |
+| normal              | vec3 | N/A                           | Local Normal                         |
+| tangent             | vec4 | CC_SURFACES_USE_TANGENT_SPACE | Local Tangent and Mirror Normal Sign |
+| color               | vec4 | CC_SURFACES_USE_VERTEX_COLOR  | Vertex Color                         |
+| texCoord            | vec2 | N/A                           | UV0                                  |
+| texCoord1           | vec2 | CC_SURFACES_USE_SECOND_UV     | UV1                                  |
+| clipPos             | vec4 | N/A                           | Clip(NDC) Position                   |
+| worldPos            | vec3 | N/A                           | World Position                       |
+| worldNormal         | vec4 | N/A                           | World Normal and Two Side Sign       |
+| worldTangent        | vec3 | CC_SURFACES_USE_TANGENT_SPACE | World Tangent                        |
+| worldBinormal       | vec3 | CC_SURFACES_USE_TANGENT_SPACE | World Binormal                       |
 
-| Fragment Shader输入参数名称 | 含义 |
-| --------------------------- | ---- |
-|                             |      |
-|                             |      |
-|                             |      |
-|                             |      |
-|                             |      |
-|                             |      |
-|                             |      |
+#### 5、FS输入值的获取
 
-内部做了容错处理，可以无视宏条件随意访问
+FS的输入值目前作为宏来使用，大部分输入值在内部做了容错处理，可以无视对应宏条件随意访问
+
+| Fragment Shader输入值 | 类型  | 使用时需要对应宏开启           | 含义               |
+| --------------------- | ----- | ------------------------------ | ------------------ |
+| FSInput_worldPos      | vec3  | N/A                            | World Position     |
+| FSInput_worldNormal   | vec3  | N/A                            | World Normal       |
+| FSInput_faceSideSign  | float | N/A                            | Two Side Sign      |
+| FSInput_texcoord      | vec2  | N/A                            | UV0                |
+| FSInput_texcoord1     | vec2  | N/A                            | UV1                |
+| FSInput_vertexColor   | vec4  | N/A                            | Vertex Color       |
+| FSInput_worldTangent  | vec3  | N/A                            | World Tangent      |
+| FSInput_mirrorNormal  | float | N/A                            | Mirror Normal Sign |
+| FSInput_localPos      | vec4  | CC_SURFACES_TRANSFER_LOCAL_POS | Local Position     |
 
 
 
-### Include Assembly
+### Shader Assembly
 
 #### 1、组装
 
 
 
+## Debug View
+
+使用Surface Shader框架后，内置的Debug View功能即可生效，通过在界面上选择对应的Debug模式即可同屏查看模型、材质、光照及其他计算数据，在渲染效果异常的时候可以快速定位问题。
+
+此功能预计在3.6开放。
+
+
+
 ## 进阶使用方法
-1. 可以在不同的Shader主函数中混用Surface Shader和Legacy Shader（要保证Varying顶点数据在两个阶段一致）。
+
+1. 自行添加vs输出与fs输入：VS新定义varying变量之后在某个Surface函数中计算并输出该值
+                                                 FS新定义varying变量之后在某个Surface函数中获取并使用该值
+2. 甚至可以在不同的Shader主函数中混用Surface Shader和Legacy Shader（但是要保证Varying顶点数据在两个阶段一致）。
 
 
 
 
 ## 公共函数库
 
-可以在`chunks的common`文件夹下找到不同分类的函数库头文件。Surface内部已经自动包含了常用的公共函数，根据类型可分为：
+可以在`chunks的common`文件夹下找到不同分类的函数库头文件。
 
-| 文件夹名 | 函数用途 |
-| -------- | -------- |
-|          |          |
-|          |          |
-|          |          |
-|          |          |
-|          |          |
+库中的函数不依赖任何内部数据（引擎相关uniform和贴图等），可以当作工具函数直接使用。
+
+Surface内部已经自动包含了常用的公共函数头文件，根据类型可分为：
+
+| 文件夹名 | 函数用途                                 |
+| -------- | ---------------------------------------- |
+| color    | 色彩相关功能（颜色空间、tonemapping等）  |
+| data     | 数据相关功能（压缩解压缩等）             |
+| debug    | Debug View相关功能                       |
+| effect   | 场景特效相关功能（水、雾等）             |
+| lighting | 光照相关功能（brdf、bsdf、衰减、烘焙等） |
+| math     | 数学库（坐标变换、数值判定和运算等）     |
+| mesh     | 模型相关功能（材质转换、模型动画等）     |
+| shadow   | 阴影相关功能（pcf、hcs等）               |
+| texture  | 贴图相关功能（采样、mip计算等）          |
 
 
 
