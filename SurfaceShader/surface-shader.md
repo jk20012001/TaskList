@@ -16,16 +16,51 @@ Surface Shader仍然是基于[Cocos Effect的语法](effect-syntax.md)，以前�
 
 我们有很多渲染Pass用于渲染同一个物体到不同的纹理数据上，这些数据分别有内置的用途。比如说最常用的`渲染到场景`可以直接用于屏幕显示，或者把阴影投射物`渲染到阴影贴图`，或者`渲染到动态环境反射`来生成反射贴图等。
 
+| 常用的渲染用途       | 文件位置             |
+| -------------------- | -------------------- |
+| 渲染到场景（默认）   | render-to-scene      |
+| 渲染到阴影贴图       | render-to-shadowmap  |
+| 渲染到环境贴图       | render-to-reflectmap |
+| 渲染卡通描边         | misc/silhouette-edge |
+| 渲染天空             | misc/sky             |
+| 后期处理或GPGPU Pass | misc/quad            |
+
 ### 2、光照模型
 
 说明物体表面的微观结构与固有光学属性是如何对光线产生影响和作用的。
 比如说塑料会产生各向同性的圆形高光，头发会产生各向异性的条纹状高光，光线在皮肤上会发生散射，而在镜子这种更接近理想光学表面的物体上，绝大多数光线只会沿着反射角发生反射等。
 
+| 光照模型名称 | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| standard     | PBR光照，支持GGX BRDF分布的各向同性与各向异性光照，支持卷积环境光照 |
+| toon         | 简单的卡通光照，阶梯状的光照效果                             |
+
+
+
 ### 3、表面材质模型
 
 说明物体表面的一些物理参数（反照率、粗糙度等）是如何影响光照结果的。
 
-通常材质与光照模型必须关联使用，我们会逐渐扩展常用的材质与光照模型
+通常材质与光照模型必须关联使用，我们会逐渐扩展常用的材质与光照模型。
+
+| 材质模型名称 | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| standard     | 粗糙度和金属性描述的标准PBR材质，和SP、Blender、Maya等软件中的材质节点类似 |
+| toon         | 简单的卡通材质，有多种shade颜色处理                          |
+
+
+
+### 4、Shader Stage
+
+渲染是由不同的着色器来完成的，有处理顶点、像素或通用计算的不同阶段，如下表所示：
+
+| 着色器阶段      | 对应的Surface Shader代码标识 |
+| --------------- | ---------------------------- |
+| Vertex Shader   | vs                           |
+| Fragment Shader | fs                           |
+| Computer Shader | cs                           |
+
+
 
 ## 代码框架
 
@@ -68,7 +103,7 @@ Surface Shader内部计算时会用到一些宏开关，需要根据Effect中对
 
 #### 1、在Surface函数中未使用过的宏：
 
-  ```glsl
+```glsl
   // ui displayed macros not used in this effect file
   #pragma define-meta HAS_SECOND_UV
   #pragma define-meta USE_TWOSIDE
@@ -81,29 +116,29 @@ Surface Shader内部计算时会用到一些宏开关，需要根据Effect中对
   #define CC_SURFACES_USE_REFLECTION_DENOISE USE_REFLECTION_DENOISE
   #define CC_SURFACES_LIGHTING_ANISOTROPIC IS_ANISOTROPY
   #define CC_SURFACES_USE_LEGACY_COMPATIBLE_LIGHTING USE_COMPATIBLE_LIGHTING   
-  ```
+```
 由于Surface Shader精简了很多不必要的公共流程代码，如VS FS传参的定义等等，之前存在于旧流程中的~~`#if HAS_SECOND_UV`~~这样的代码也就不存在了。对于此类宏，必须要在此处预先定义**`#pragma define-meta MACRONAME`**，这样才可以显示在材质面板上。
 定义好之后，下一行就可以使用标准GLSL预定义**`#define CC_SURFACES_MACRONAME MACRONAME`**
 
 #### 2、在Surface函数中使用过的宏：
 
-  ```glsl
+```glsl
 // ui displayed macros used in this effect file
 #define CC_SURFACES_USE_VERTEX_COLOR USE_VERTEX_COLOR
 #if IS_ANISOTROPY || USE_NORMAL_MAP
   #define CC_SURFACES_USE_TANGENT_SPACE 1
 #endif
-  ```
+```
 
 这部分简单多了，直接按照**#define CC_SURFACES_MACRONAME MACRONAME**定义即可。
 不过CC_SURFACES_USE_TANGENT_SPACE宏要特别注意，通常开了法线贴图或各向异性，都要开启该宏，否则可能会出现编译错误。
 
 #### 3、内部功能性的宏：
 
-  ```glsl
+```glsl
 // functionality for each effect
 #define CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT 31
-  ```
+```
 
 直接定义想要的值即可。
 
@@ -121,9 +156,9 @@ Surface Shader内部计算时会用到一些宏开关，需要根据Effect中对
 
 >用这种方式的好处是所有的用户自定义动画与材质的代码只需要写一份，却可以在各种渲染用途中保持统一。
 
-Surface Shader在内部提供了简单的默认函数，所以**这些函数并不是必须定义的**，**如果你想重载某函数，需要预定义该函数对应的宏来完成**。这些函数命名以`Surfaces+Shader阶段`打头，后跟功能描述。可以在[`editor/assets/chunks/surfaces/default-functions`](https://github.com/cocos/cocos-engine/tree/v3.5.1/editor/assets/chunks/surfaces/default-functions)中查看不同材质模型中各Surface函数的具体定义与实现，如：
+Surface Shader在内部提供了简单的默认函数，所以**这些函数并不是必须定义的**，**如果你想重载某函数，需要预定义该函数对应的宏来完成**。这些函数命名以`Surfaces+ShaderStage名`打头，后跟功能描述。可以在[`editor/assets/chunks/surfaces/default-functions`](https://github.com/cocos/cocos-engine/tree/v3.5.1/editor/assets/chunks/surfaces/default-functions)中查看不同材质模型中各Surface函数的具体定义与实现，如：
 
-  ```glsl
+```glsl
 #define CC_SURFACES_VERTEX_MODIFY_WORLD_POS
 vec3 SurfacesVertexModifyWorldPos(in SurfacesStandardVertexIntermediate In)
 {
@@ -132,7 +167,7 @@ vec3 SurfacesVertexModifyWorldPos(in SurfacesStandardVertexIntermediate In)
   worldPos.y += cos(cc_time.x * worldPos.z);
   return worldPos;
 }
-  ```
+```
 
 预先定义`CC_SURFACES_VERTEX_MODIFY_WORLD_POS`宏，可以忽略掉内部默认函数，让Surface Shader使用你定义的函数来计算材质参数。
 
@@ -142,29 +177,31 @@ vec3 SurfacesVertexModifyWorldPos(in SurfacesStandardVertexIntermediate In)
 
 VS中的处理和材质模型关系相对比较小，所以这里都使用通用函数，函数参数均为`SurfacesStandardVertexIntermediate`结构体，存放的是VS输入输出的数据。用户无需再关心具体的顶点输入输出流程处理，只需要聚焦到某个数据是否需要及如何修改。
 
-| 预先定义宏                             | 对应的函数定义                       | 对应的材质模型 | 功能说明                              |
-| -------------------------------------- | ------------------------------------ | -------------- | ------------------------------------- |
-| CC_SURFACES_VERTEX_MODIFY_LOCAL_POS    | vec3 SurfacesVertexModifyLocalPos    | Common         | 修改模型空间坐标                      |
-| CC_SURFACES_VERTEX_MODIFY_WORLD_POS    | vec3 SurfacesVertexModifyWorldPos    | Common         | 修改世界空间坐标（世界空间动画）      |
-| CC_SURFACES_VERTEX_MODIFY_CLIP_POS     | vec4 SurfacesVertexModifyClipPos     | Common         | 修改剪裁（NDC）空间坐标（修改深度等） |
-| CC_SURFACES_VERTEX_MODIFY_UV           | void SurfacesVertexModifyUV          | Common         | 修改UV0和UV1（使用tiling等）          |
-| CC_SURFACES_VERTEX_MODIFY_WORLD_NORMAL | vec3 SurfacesVertexModifyWorldNormal | Common         | 修改世界空间法线（世界空间动画）      |
+| 预先定义宏                             | 对应的函数定义                       | 对应的材质模型 | 功能说明                                            |
+| -------------------------------------- | ------------------------------------ | -------------- | --------------------------------------------------- |
+| CC_SURFACES_VERTEX_MODIFY_LOCAL_POS    | vec3 SurfacesVertexModifyLocalPos    | Common         | 返回修改后的模型空间坐标                            |
+| CC_SURFACES_VERTEX_MODIFY_WORLD_POS    | vec3 SurfacesVertexModifyWorldPos    | Common         | 返回修改后的世界空间坐标（世界空间动画）            |
+| CC_SURFACES_VERTEX_MODIFY_CLIP_POS     | vec4 SurfacesVertexModifyClipPos     | Common         | 返回修改后的剪裁（NDC）空间坐标（通常用于修改深度） |
+| CC_SURFACES_VERTEX_MODIFY_UV           | void SurfacesVertexModifyUV          | Common         | 修改结构体内的UV0和UV1（使用tiling等）              |
+| CC_SURFACES_VERTEX_MODIFY_WORLD_NORMAL | vec3 SurfacesVertexModifyWorldNormal | Common         | 返回修改后的世界空间法线（世界空间动画）            |
 
 #### 3、FS对应的函数列表
 
+FS中的函数大部分是只修改一项，在Surface函数中直接返回即可。有些函数可能会修改多项（如UV和切空间向量），此时会在参数列表中传入多个值用于修改。具体属于哪种情况请参考函数定义。
+
 | 预先定义宏                                              | 对应的函数定义                                       | 对应的材质模型 | 功能说明                                                     |
 | ------------------------------------------------------- | ---------------------------------------------------- | -------------- | ------------------------------------------------------------ |
-| CC_SURFACES_FRAGMENT_MODIFY_ BASECOLOR_AND_TRANSPARENCY | vec4 SurfacesFragmentModify BaseColorAndTransparency | Common         | 修改基础色和透明值（a通道）                                  |
-| CC_SURFACES_FRAGMENT_MODIFY_ WORLD_NORMAL               | vec3 SurfacesFragmentModify WorldNormal              | Common         | 修改像素法线（通常是法线贴图）                               |
-| CC_SURFACES_FRAGMENT_MODIFY_ SHARED_DATA                | void SurfacesFragmentModify SharedData               | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改这些参数，减少性能耗费 |
-| CC_SURFACES_FRAGMENT_MODIFY_ WORLD_TANGENT_AND_BINORMAL | void SurfacesFragmentModify WorldTangentAndBinormal  | Standard PBR   | 修改世界切空间向量                                           |
-| CC_SURFACES_FRAGMENT_MODIFY_ EMISSIVE                   | vec3 SurfacesFragmentModify Emissive                 | Standard PBR   | 修改自发光颜色                                               |
-| CC_SURFACES_FRAGMENT_MODIFY_ PBRPARAMS                  | vec4 SurfacesFragmentModify PBRParams                | Standard PBR   | 修改PBR参数（ao, roughness, metallic, specularIntensity）    |
-| CC_SURFACES_FRAGMENT_MODIFY_ ANISOTROPY_PARAMS          | vec4 SurfacesFragmentModify AnisotropyParams         | Standard PBR   | 修改各向异性参数（rotation, shape, unused, unused）          |
+| CC_SURFACES_FRAGMENT_MODIFY_ BASECOLOR_AND_TRANSPARENCY | vec4 SurfacesFragmentModify BaseColorAndTransparency | Common         | 返回修改后的基础色（rgb通道）和透明值（a通道）               |
+| CC_SURFACES_FRAGMENT_MODIFY_ WORLD_NORMAL               | vec3 SurfacesFragmentModify WorldNormal              | Common         | 返回修改后的像素法线（通常是法线贴图）                       |
+| CC_SURFACES_FRAGMENT_MODIFY_ SHARED_DATA                | void SurfacesFragmentModify SharedData               | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改Surface结构体内的参数，减少性能耗费 |
+| CC_SURFACES_FRAGMENT_MODIFY_ WORLD_TANGENT_AND_BINORMAL | void SurfacesFragmentModify WorldTangentAndBinormal  | Standard PBR   | 修改Surface结构体内的世界切空间向量                          |
+| CC_SURFACES_FRAGMENT_MODIFY_ EMISSIVE                   | vec3 SurfacesFragmentModify Emissive                 | Standard PBR   | 返回修改后的自发光颜色                                       |
+| CC_SURFACES_FRAGMENT_MODIFY_ PBRPARAMS                  | vec4 SurfacesFragmentModify PBRParams                | Standard PBR   | 返回修改后的PBR参数（ao, roughness, metallic, specularIntensity） |
+| CC_SURFACES_FRAGMENT_MODIFY_ ANISOTROPY_PARAMS          | vec4 SurfacesFragmentModify AnisotropyParams         | Standard PBR   | 返回修改后的各向异性参数（rotation, shape, unused, unused）  |
 | CC_SURFACES_FRAGMENT_MODIFY_ BASECOLOR_AND_TOONSHADE    | void SurfacesFragmentModify BaseColorAndToonShade    | Toon           | 修改卡通渲染基础色                                           |
-| CC_SURFACES_FRAGMENT_MODIFY_ TOON_STEP_AND_FEATHER      | vec4 SurfacesFragmentModify ToonStepAndFeather       | Toon           | 修改卡通渲染所需的参数                                       |
-| CC_SURFACES_FRAGMENT_MODIFY_ TOON_SHADOW_COVER          | vec4 SurfacesFragmentModify ToonShadowCover          | Toon           | 修改卡通渲染所需的参数                                       |
-| CC_SURFACES_FRAGMENT_MODIFY_ TOON_SPECULAR              | vec4 SurfacesFragmentModify ToonSpecular             | Toon           | 修改卡通渲染所需的参数                                       |
+| CC_SURFACES_FRAGMENT_MODIFY_ TOON_STEP_AND_FEATHER      | vec4 SurfacesFragmentModify ToonStepAndFeather       | Toon           | 返回修改后的参数                                             |
+| CC_SURFACES_FRAGMENT_MODIFY_ TOON_SHADOW_COVER          | vec4 SurfacesFragmentModify ToonShadowCover          | Toon           | 返回修改后的参数                                             |
+| CC_SURFACES_FRAGMENT_MODIFY_ TOON_SPECULAR              | vec4 SurfacesFragmentModify ToonSpecular             | Toon           | 返回修改后的参数                                             |
 
 #### 4、VS输入值的获取
 
@@ -204,7 +241,94 @@ FS的输入值目前作为宏来使用，大部分输入值在内部做了容错
 
 ### Shader Assembly
 
-#### 1、组装
+我们使用Include不同模块头文件的形式，按顺序组装每个Pass的Shader。
+
+搜索`standard-fs`一段，可以看到整个Fragment Shader的组装过程分为6个部分
+
+#### 1、宏
+
+首先需要包含必要的内部宏映射和通用宏定义。
+
+宏映射使用在Macro Remapping一段中描述的自定义CCProgram代码块或chunk文件。
+
+接下来需要包含通用宏定义文件`common-macros`，如下所示：
+
+```glsl
+Pass standard-fs:
+#include <macro-remapping>
+#include <surfaces/effect-macros/common-macros>
+```
+
+对于特殊渲染用途的Pass而言，很多Shader功能是关掉的，因此无需包含`common-macros`，直接包含对应渲染用途的宏定义文件即可：
+
+```glsl
+Pass shadow-caster-fs:
+#include <surfaces/effect-macros/render-to-shadowmap>
+```
+
+
+
+#### 2、Shader通用头文件
+
+根据**当前的Shader Stage名称**来选择对应的通用头文件，如下所示：
+
+```glsl
+Vertex Shader：
+#include <surfaces/includes/common-vs>
+Fragement Shader：
+#include <surfaces/includes/common-fs>
+```
+
+#### 3、用户Surface功能函数
+
+使用在Surface Function一段中描述的自定义CCProgram代码块或chunk文件。
+
+由于Surface功能函数可能还会用到Effect参数相关的UBO内存布局，因此它也要提前被Include，否则会编译出错。
+
+如下所示：
+
+```glsl
+#include <shared-ubos>
+#include <surface-fragment>
+```
+
+#### 4、光照模型
+
+此部分为**可选项，只限渲染到场景的默认用途及Fragment Shader使用**。
+
+使用**光照模型名称**来选择对应的头文件，如下所示：
+
+```glsl
+Standard PBR Lighting：
+#include <lighting-models/includes/standard>
+Toon Lighting：
+#include <lighting-models/includes/toon>
+```
+
+#### 5、表面材质和着色模型
+
+此部分为**可选项，只限渲染到场景的默认用途使用**。
+
+**材质模型名称 + Shader Stage名称**来选择对应的头文件，如下所示：
+
+```glsl
+Vertex Shader：
+#include <surfaces/includes/standard-vs>
+Fragement Shader：
+#include <surfaces/includes/standard-fs>
+```
+
+#### 6、Shader主函数
+
+使用当前Pass的**渲染用途名称 + Shader Stage名称**来选择对应的主函数头文件。
+
+```glsl
+Pass standard-fs:
+#include <shading-entries/main-functions/render-to-scene/fs>
+Pass shadow-caster-fs:
+#include <shading-entries/main-functions/render-to-shadowmap/fs>
+```
+
 
 
 
@@ -250,4 +374,4 @@ Surface内部已经自动包含了常用的公共函数头文件，根据类型�
 
 
 
-[^1]: 不支持自定义几何体实例化属性。
+[^1]:不支持自定义几何体实例化属性。
