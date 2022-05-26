@@ -126,31 +126,31 @@ vec4 CCSurfacesShading(in SurfacesMaterialData surfaceData, in LightingResult li
 void CCSurfacesDebugViewSurfaceData(out vec4 color, in SurfacesMaterialData surfaceData)
 {
     float scalar;
-    if (cc_debug_view_single_mode == CC_SURFACES_DEBUG_VIEW_FRAGMENT_NORMAL)
+    if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FRAGMENT_NORMAL))
         color = vec4(surfaceData.worldNormal * 0.5 + vec3(0.5), 1.0);
 
-    if (cc_debug_view_single_mode == CC_SURFACES_DEBUG_VIEW_FRAGMENT_TANGENT)
+    if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FRAGMENT_TANGENT))
         color = vec4(0.5, 0.5, 0.5, 1.0);
 
-    if (cc_debug_view_single_mode == CC_SURFACES_DEBUG_VIEW_FRAGMENT_BINORMAL)
+    if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FRAGMENT_BINORMAL))
         color = vec4(0.5, 0.5, 0.5, 1.0);
 
-    if (cc_debug_view_single_mode == CC_SURFACES_DEBUG_VIEW_TRANSPARENCY)
+    if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_TRANSPARENCY))
     {
         scalar = surfaceData.baseColor.a;
         color = vec4(scalar, scalar, scalar, 1.0);
     }
 
-    if (cc_debug_view_single_mode == CC_SURFACES_DEBUG_VIEW_BASE_COLOR)
+    if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_BASE_COLOR))
         color = vec4(SRGBToLinear(surfaceData.baseColor.rgb), 1.0);
 
-    if (cc_debug_view_single_mode == CC_SURFACES_DEBUG_VIEW_DIFFUSE_COLOR)
+    if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_DIFFUSE_COLOR))
         color = vec4(SRGBToLinear(CCSurfacesGetDiffuseColor(surfaceData)), 1.0);
 
-    if (cc_debug_view_single_mode == CC_SURFACES_DEBUG_VIEW_SPECULAR_COLOR)
+    if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_SPECULAR_COLOR))
         color = vec4(SRGBToLinear(CCSurfacesGetSpecularColor(surfaceData)), 1.0);
 
-    if (cc_debug_view_single_mode == CC_SURFACES_DEBUG_VIEW_SPECULAR_INTENSITY)
+    if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_SPECULAR_INTENSITY))
     {
         scalar = surfaceData.specular.a;
         color = vec4(scalar, scalar, scalar, 1.0);

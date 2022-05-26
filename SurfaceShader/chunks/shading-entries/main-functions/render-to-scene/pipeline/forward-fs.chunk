@@ -72,7 +72,7 @@ void main()  {
       CCSurfacesDebugViewMeshData(debugColor);
       CCSurfacesDebugViewSurfaceData(debugColor, surfaceData);
       CCSurfacesDebugViewLightingResult(debugColor, lightingResult);
-      if (equalf(cc_debug_view_single_mode, CC_SURFACES_DEBUG_VIEW_FOG))
+      if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FOG))
       {
         fogFactor = 1.0 - fogFactor;
         debugColor = vec4(fogFactor, fogFactor, fogFactor, 1.0);
@@ -81,7 +81,7 @@ void main()  {
 
     // only base pass or direct lighting is enabled in add pass
     #if CC_FORWARD_ADD
-      if (equalf(cc_debug_view_single_mode, CC_SURFACES_DEBUG_VIEW_DIRECT_DIFFUSE) || equalf(cc_debug_view_single_mode, CC_SURFACES_DEBUG_VIEW_DIRECT_SPECULAR) || equalf(cc_debug_view_single_mode, CC_SURFACES_DEBUG_VIEW_DIRECT_ALL))
+      if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_DIRECT_DIFFUSE) || IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_DIRECT_SPECULAR) || IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_DIRECT_ALL))
     #endif
       CCSurfacesDebugViewLightingResult(debugColor, lightingResult);
 
