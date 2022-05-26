@@ -23,12 +23,12 @@ void CCSurfacesFragmentGetMaterialData(inout SurfacesMaterialData surfaceData)
   SurfacesFragmentModifySharedData(surfaceData);
 
 
-#if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+#if CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
   if (cc_debug_view_composite_enable_normal_map <= 0.0)
     surfaceData.worldNormal = FSInput_worldNormal;
 #endif
 
-#if CC_SURFACES_USE_DEBUG_VIEW
+#if CC_USE_DEBUG_VIEW
   if (cc_debug_view_lighting_enable_with_albedo <= 0.0) {
       surfaceData.baseColor.rgb = vec3(1.0);
       surfaceData.specular.rgb = vec3(1.0);
@@ -122,7 +122,7 @@ vec4 CCSurfacesShading(in SurfacesMaterialData surfaceData, in LightingResult li
 
 
 // Debug view
-#if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE
+#if CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE
 void CCSurfacesDebugViewSurfaceData(out vec4 color, in SurfacesMaterialData surfaceData)
 {
     float scalar;

@@ -22,7 +22,7 @@ void main()  {
       shadowBias += cc_localShadowBias.xy;
     #endif
     #if !CC_FORWARD_ADD
-      #if CC_SURFACES_USE_DEBUG_VIEW
+      #if CC_USE_DEBUG_VIEW && CC_SURFACES_ENABLE_DEBUG_VIEW
         if (cc_debug_view_misc_enable_csm_layer_coloration > 0.0)
         {
             int CSMLayer = 0;
@@ -52,7 +52,7 @@ void main()  {
       CC_TRANSFER_FOG_BASE(vec4(FSInput_worldPos, 1.0), fogFactor);
     #endif
 
-    #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+    #if CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC && CC_SURFACES_ENABLE_DEBUG_VIEW
       if (cc_debug_view_composite_enable_fog <= 0.0) {
           fogFactor = 0.0;
       }
@@ -66,7 +66,7 @@ void main()  {
 
 
   // Debug view
-  #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE
+  #if CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE && CC_SURFACES_ENABLE_DEBUG_VIEW
     vec4 debugColor = vec4(0.0, 0.0, 0.0, 1.0);
     #if !CC_FORWARD_ADD
       CCSurfacesDebugViewMeshData(debugColor);
@@ -88,7 +88,7 @@ void main()  {
     fragColorX = debugColor;
     return;
 
-  #elif CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+  #elif CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC && CC_SURFACES_ENABLE_DEBUG_VIEW
     #if CC_FORWARD_ADD
       if(cc_debug_view_composite_enable_direct_diffuse > 0.0 || cc_debug_view_composite_enable_direct_specular > 0.0)
     #endif
@@ -104,7 +104,7 @@ void main()  {
   #endif
 
   // CSM Debug
-  #if CC_SURFACES_USE_DEBUG_VIEW
+  #if CC_USE_DEBUG_VIEW && CC_SURFACES_ENABLE_DEBUG_VIEW
     if (cc_debug_view_misc_enable_csm_layer_coloration > 0.0) {
         color.rgb *= colDebugCSMLayer.rgb;
     }
@@ -113,12 +113,12 @@ void main()  {
 
     // Color output
   #if CC_USE_HDR
-    #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+    #if CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC && CC_SURFACES_ENABLE_DEBUG_VIEW
       if (cc_debug_view_composite_enable_tone_mapping > 0.0)
     #endif
       color.rgb = ACESToneMap(color.rgb);
   #endif
-  #if CC_SURFACES_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC
+  #if CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC && CC_SURFACES_ENABLE_DEBUG_VIEW
     if (cc_debug_view_composite_enable_gamma_correction > 0.0)
   #endif
   color.rgb = LinearToSRGB(color.rgb);
