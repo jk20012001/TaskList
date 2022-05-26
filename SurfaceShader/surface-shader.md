@@ -146,7 +146,7 @@ Surface Shader内部计算时会用到一些宏开关，需要根据Effect中对
 
 ### Surface Function
 
-**每个材质函数的功能类似于DCC软件的材质编辑器中输出一个材质参数到指定的材质节点**。类似于：![surfacenode](surfacenode.png)
+**每个材质函数的功能类似于DCC软件的材质编辑器中输出一个材质参数到指定的材质节点**。类似于：![surface-node](img/surface-node.png)
 
 #### 1、定义
 
