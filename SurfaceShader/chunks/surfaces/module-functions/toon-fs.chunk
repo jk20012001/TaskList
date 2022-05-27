@@ -30,7 +30,12 @@ void CCSurfacesFragmentGetMaterialData(inout SurfacesMaterialData surfaceData)
 
 #if CC_USE_DEBUG_VIEW
   if (cc_debug_view_lighting_enable_with_albedo <= 0.0) {
+      float brightBase = dot(GRAY_VECTOR, surfaceData.baseColor.rgb);
+      float brightShade1 = dot(GRAY_VECTOR, surfaceData.shade1.rgb);
+      float brightShade2 = dot(GRAY_VECTOR, surfaceData.shade2.rgb);
       surfaceData.baseColor.rgb = vec3(1.0);
+      surfaceData.shade1.rgb = vec3(brightShade1 / brightBase);
+      surfaceData.shade2.rgb = vec3(brightShade2 / brightBase);
       surfaceData.specular.rgb = vec3(1.0);
   }
 #endif

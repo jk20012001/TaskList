@@ -39,9 +39,9 @@ const enum DebugViewType {
 export const enum DebugViewSingleType {
     /**
      * @zh
-     * 半球漫反射
+     * 单项调试模式
      * @en
-     * hemisphere diffuse
+     * single debug mode
      * @readonly
      */
     NONE,
@@ -85,9 +85,9 @@ export const enum DebugViewSingleType {
 export const enum DebugViewCompositeType {
     /**
      * @zh
-     * 半球漫反射
+     * 组合调试模式
      * @en
-     * hemisphere diffuse
+     * composite debug mode
      * @readonly
      */
      DIRECT_DIFFUSE = 0,
@@ -108,21 +108,24 @@ export const enum DebugViewCompositeType {
 };
 
 /**
- * @en The skybox configuration of the render scene,
- * currently some rendering options like hdr and ibl lighting configuration is also here.
- * @zh 渲染场景的天空盒配置，目前一些渲染配置，比如 HDR 模式和环境光照配置也在 Skybox 中。
+ * @en Rendering Debug View Control
+ * @zh 渲染调试控制
  */
 export class DebugView {
 
     /**
-     * @en The texture cube used diffuse convolution map
-     * @zh 使用的漫反射卷积图
+     * @en whether enabled with specified composite debug mode 
+     * @zh 获取指定的组合调试模式是否开启
      */
     public isCompositeModeEnabled(val : number) : boolean {
         const mode = this._compositeModeValue & (1 << val);
         return mode !== 0;
     }
-    public enableCompositeMode(val: DebugViewCompositeType, enable: boolean) {
+    /**
+     * @en toggle specified composite debug mode
+     * @zh 开关指定的组合调试模式
+     */
+     public enableCompositeMode(val: DebugViewCompositeType, enable: boolean) {
         this._enableCompositeMode(val, enable);
         this._updatePipeline();
     }
@@ -199,14 +202,10 @@ export class DebugView {
             this._enableCompositeMode(i, true);
         }
 
-        /*this._singleMode = DebugViewSingleType.NONE;
+        this._singleMode = DebugViewSingleType.NONE;
         this._lightingWithAlbedo = true;
         this._csmLayerColoration = false;
         this._currentDebugViewType = DebugViewType.NONE;
-*/
-        // const root = legacyCC.director.root as Root;
-        // const pipeline = root.pipeline;
-        // pipeline.pipelineUBO.updateDebugViewUBO();      
     }
 
     protected _updatePipeline () {
@@ -244,4 +243,4 @@ export class DebugView {
 
 legacyCC.debugView = new DebugView();
 
-// define.ts: 增加PipelineGlobalBindings.UBO_DEBUG_VIEW, cc_shadowMap / cc_spotLightingMap / cc_environment / cc_diffuseMap的binding加1
+// 需要修改shader：cc_shadowMap / cc_spotLightingMap / cc_environment / cc_diffuseMap的binding加1
