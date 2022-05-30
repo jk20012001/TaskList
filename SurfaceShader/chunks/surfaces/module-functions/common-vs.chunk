@@ -45,7 +45,6 @@ void CCSurfacesVertexOutput(in SurfacesStandardVertexIntermediate In)
 #endif
 
 #if CC_RECEIVE_SHADOW
-  VSOutput_shadowPos = In.shadowPos;
   #if CC_SURFACES_USE_INSTANCING
     VSOutput_shadowBias = In.shadowBias;
   #endif
@@ -117,8 +116,6 @@ void CCSurfacesVertexTransferFog(inout SurfacesStandardVertexIntermediate In)
 void CCSurfacesVertexTransferShadow(inout SurfacesStandardVertexIntermediate In)
 {
   #if CC_RECEIVE_SHADOW
-    In.shadowPos = cc_matLightViewProj * vec4(In.worldPos, 1.0);
-
     In.shadowBias = vec2(cc_shadowWHPBInfo.w, cc_shadowLPNNInfo.z);
     #if CC_SURFACES_USE_INSTANCING
       In.shadowBias = vec2(a_localShadowBias.x + cc_shadowWHPBInfo.w, a_localShadowBias.y + cc_shadowLPNNInfo.z);

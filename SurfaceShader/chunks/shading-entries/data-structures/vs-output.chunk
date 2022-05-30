@@ -31,7 +31,6 @@
 #endif
 
 #if CC_RECEIVE_SHADOW
-  #define VSOutput_shadowPos v_shadowPos
   #if CC_SURFACES_USE_INSTANCING
     #define VSOutput_shadowBias v_shadowBias
   #endif

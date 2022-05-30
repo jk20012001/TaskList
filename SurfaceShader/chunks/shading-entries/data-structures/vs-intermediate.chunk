@@ -27,7 +27,6 @@ struct SurfacesStandardVertexIntermediate
 
   //transfered
 #if CC_RECEIVE_SHADOW
-  highp vec4 shadowPos;
   vec2 shadowBias;
 #endif
 
