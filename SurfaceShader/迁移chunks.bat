@@ -1,3 +1,5 @@
+@echo 先cocosshaderlink, 再执行本文件, 最后运行引擎以迁移代码
+pause
 set dstpath=%1editor\assets\chunks\
 set srcpath= %~dp0chunks\
 
@@ -8,6 +10,8 @@ del /F skinning-dqs.chunk
 del /F skinning-dqs.chunk.meta
 del /F skinning-lbs.chunk
 del /F skinning-lbs.chunk.meta
+
+@echo builtin/internal-functions
 del /F cc-fog-base.chunk
 del /F cc-fog-base.chunk.meta
 del /F cc-shadow-map-base.chunk
@@ -15,16 +19,18 @@ del /F cc-shadow-map-base.chunk.meta
 del /F morph.chunk
 del /F morph.chunk.meta
 
+@echo existed in tasklist legacy folder
+
 @echo legacy
 md legacy
-move cc-shadow-map-vs.chunk legacy\
-move cc-shadow-map-vs.chunk.meta legacy\
-move cc-shadow-map-fs.chunk legacy\
-move cc-shadow-map-fs.chunk.meta legacy\
-move cc-fog-vs.chunk legacy\
-move cc-fog-vs.chunk.meta legacy\
-move cc-fog-fs.chunk legacy\
-move cc-fog-fs.chunk.meta legacy\
+move cc-shadow-map-vs.chunk legacy\shadow-map-vs.chunk
+move cc-shadow-map-vs.chunk.meta legacy\shadow-map-vs.chunk.meta
+move cc-shadow-map-fs.chunk legacy\shadow-map-fs.chunk
+move cc-shadow-map-fs.chunk.meta legacy\shadow-map-fs.chunk.meta
+move cc-fog-vs.chunk legacy\fog-vs.chunk
+move cc-fog-vs.chunk.meta legacy\fog-vs.chunk.meta
+move cc-fog-fs.chunk legacy\fog-fs.chunk
+move cc-fog-fs.chunk.meta legacy\fog-fs.chunk.meta
 move lightingmap-vs.chunk legacy\
 move lightingmap-vs.chunk.meta legacy\
 move decode.chunk legacy\
@@ -58,10 +64,10 @@ move standard-surface-entry.chunk.meta legacy\
 move alpha-test.chunk builtin\internal-use\
 move alpha-test.chunk.meta builtin\internal-use\
 md builtin\internal-use\sprite
-move cc-sprite-common.chunk builtin\internal-use\sprite\
-move cc-sprite-common.chunk.meta builtin\internal-use\sprite\
-move cc-sprite-texture.chunk builtin\internal-use\sprite\
-move cc-sprite-texture.chunk.meta builtin\internal-use\sprite\
+move cc-sprite-common.chunk builtin\internal-use\sprite\sprite-common.chunk
+move cc-sprite-common.chunk.meta builtin\internal-use\sprite\sprite-common.chunk.meta
+move cc-sprite-texture.chunk builtin\internal-use\sprite\sprite-texture.chunk
+move cc-sprite-texture.chunk.meta builtin\internal-use\sprite\sprite-texture.chunk.meta
 move embedded-alpha.chunk builtin\internal-use\sprite\
 move embedded-alpha.chunk.meta builtin\internal-use\sprite\
 md builtin\internal-use\particle
@@ -85,15 +91,15 @@ move cc-environment.chunk builtin\uniforms\
 move cc-environment.chunk.meta builtin\uniforms\
 move cc-diffusemap.chunk builtin\uniforms\
 move cc-diffusemap.chunk.meta builtin\uniforms\
-move cc-shadow.chunk builtin\uniforms\cc-shadow-map.chunk
-move cc-shadow.chunk.meta builtin\uniforms\cc-shadow-map.chunk.meta
+move cc-shadow.chunk builtin\uniforms\
+move cc-shadow.chunk.meta builtin\uniforms\
 move cc-world-bound.chunk builtin\uniforms\
 move cc-world-bound.chunk.meta builtin\uniforms\
 
 
 @echo common
-move common.chunk common\
-move common.chunk.meta common\
+move common.chunk common\common-define.chunk
+move common.chunk.meta common\common-define.chunk.meta
 move texture-lod.chunk common\texture\
 move texture-lod.chunk.meta common\texture\
 move packing.chunk common\data\
