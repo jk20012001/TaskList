@@ -1,9 +1,9 @@
 
 export function migrateChunkFolders(asset: Asset) {
-    const replaceMap = new Map([
+    const includeMap = new Map([
         ['cc-shadow-map-base', 'builtin/internal-functions/shadow-map'],// todo
 
-        ['cc-fog-base', 'legacy/fog'], // existed legacy
+        ['cc-fog-base', 'legacy/fog-base'], // existed legacy
         ['morph', 'legacy/morph'],
         ['cc-skinning', 'legacy/skinning'], 
         ['cc-local-batch', 'legacy/local-batch'],
@@ -30,13 +30,10 @@ export function migrateChunkFolders(asset: Asset) {
         ['standard-surface-entry', 'legacy/standard-surface-entry'],
 
         ['alpha-test', 'builtin/internal-use/alpha-test'],
-        ['cc-sprite-common', 'builtin/internal-use/sprite/sprite-common'],
-        ['cc-sprite-texture', 'builtin/internal-use/sprite/sprite-texture'],
-        ['embedded-alpha', 'builtin/internal-use/sprite/embedded-alpha'],
-        ['particle-common', 'builtin/internal-use/particle/particle-common'],
-        ['particle-trail', 'builtin/internal-use/particle/particle-trail'],
-        ['particle-vs-gpu', 'builtin/internal-use/particle/particle-vs-gpu'],
-        ['particle-vs-legacy', 'builtin/internal-use/particle/particle-vs-legacy'],
+        ['cc-sprite-common', 'builtin/internal-use/sprite-common'],
+        ['cc-sprite-texture', 'builtin/internal-use/sprite-texture'],
+        ['embedded-alpha', 'builtin/internal-use/embedded-alpha'],
+        ['particle-common', 'builtin/internal-use/particle-common'],
 
         ['cc-global', 'builtin/uniforms/cc-global'],
         ['cc-local', 'builtin/uniforms/cc-local'],
@@ -55,12 +52,23 @@ export function migrateChunkFolders(asset: Asset) {
         ['octahedron-transform', 'common/math/octahedron-transform'],
         ['transform', 'common/math/transform'],
         ['rect-area-light', 'common/lighting/rect-area-light'],
+
+        ['fxaa', 'post-process/fxaa'],
+        ['anti-aliasing', 'post-process/anti-aliasing'],
+    ]);
+    const mainFunctionMap = new Map([
+        ['vert:\\s+particle-vs-gpu', 'vert: builtin/main-functions/particle-vs-gpu'],
+        ['vert:\\s+particle-vs-legacy', 'vert: builtin/main-functions/particle-vs-legacy'],
+        ['vert:\\s+particle-trail', 'vert: builtin/main-functions/particle-trail'],
+        ['vert:\\s+outline-vs', 'vert: builtin/main-functions/outline-vs'],
+        ['frag:\\s+outline-fs', 'frag: builtin/main-functions/outline-fs'],
+        ['vert:\\s+general-vs', 'vert: builtin/main-functions/general-vs'],
     ]);
 
     let effect = readFileSync(asset.source, { encoding: 'utf8' });
     let needSave = false;
 
-    for (const [key, value] of replaceMap) {
+    for (const [key, value] of includeMap) {
         const find = new RegExp('#include\\s+<' + key + '>', 'g');
         const replace = "#include <" + value + ">";
         if (effect.match(find)) {
@@ -68,6 +76,15 @@ export function migrateChunkFolders(asset: Asset) {
             needSave = true;
         }
     }
+    for (const [key, value] of mainFunctionMap) {
+        const find = new RegExp(key, 'g');
+        const replace = value;
+        if (effect.match(find)) {
+            effect = effect.replace(find, replace);
+            needSave = true;
+        }
+    }
+
     if (needSave) {
         writeFileSync(asset.source, effect, { encoding: 'utf8' });
     }

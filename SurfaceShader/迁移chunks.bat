@@ -1,7 +1,10 @@
 @echo 先cocosshaderlink, 再执行本文件, 最后运行引擎以迁移代码
-pause
+@echo 记得先从临时复制的拷过来
+
 set dstpath=%1\editor\assets\chunks\
 set srcpath= %~dp0\chunks\
+
+xcopy /s /y "%~dp0\临时复制\chunks\" "%dstpath%"
 
 cd /d "%dstpath%"
 
@@ -11,6 +14,12 @@ del /F skinning-dqs.chunk
 del /F skinning-dqs.chunk.meta
 del /F skinning-lbs.chunk
 del /F skinning-lbs.chunk.meta
+del /F builtin\legacy-cc-local-batch.chunk
+del /F builtin\legacy-cc-local-batch.chunk.meta
+del /F builtin\legacy-cc-skinning.chunk
+del /F builtin\legacy-cc-skinning.chunk.meta
+del /F builtin\legacy-morph.chunk
+del /F builtin\legacy-morph.chunk.meta
 
 @echo builtin/internal-functions
 rem del /F cc-shadow-map-base.chunk
@@ -71,24 +80,32 @@ move standard-surface-entry.chunk.meta legacy\
 
 
 @echo builtin\internal-use
+md builtin\internal-use\
 move alpha-test.chunk builtin\internal-use\
 move alpha-test.chunk.meta builtin\internal-use\
-md builtin\internal-use\sprite
-move cc-sprite-common.chunk builtin\internal-use\sprite\sprite-common.chunk
-move cc-sprite-common.chunk.meta builtin\internal-use\sprite\sprite-common.chunk.meta
-move cc-sprite-texture.chunk builtin\internal-use\sprite\sprite-texture.chunk
-move cc-sprite-texture.chunk.meta builtin\internal-use\sprite\sprite-texture.chunk.meta
-move embedded-alpha.chunk builtin\internal-use\sprite\
-move embedded-alpha.chunk.meta builtin\internal-use\sprite\
-md builtin\internal-use\particle
-move particle-common.chunk builtin\internal-use\particle\
-move particle-common.chunk.meta builtin\internal-use\particle\
-move particle-trail.chunk builtin\internal-use\particle\
-move particle-trail.chunk.meta builtin\internal-use\particle\
-move particle-vs-gpu.chunk builtin\internal-use\particle\
-move particle-vs-gpu.chunk.meta builtin\internal-use\particle\
-move particle-vs-legacy.chunk builtin\internal-use\particle\
-move particle-vs-legacy.chunk.meta builtin\internal-use\particle\
+move cc-sprite-common.chunk builtin\internal-use\sprite-common.chunk
+move cc-sprite-common.chunk.meta builtin\internal-use\sprite-common.chunk.meta
+move cc-sprite-texture.chunk builtin\internal-use\sprite-texture.chunk
+move cc-sprite-texture.chunk.meta builtin\internal-use\sprite-texture.chunk.meta
+move embedded-alpha.chunk builtin\internal-use\
+move embedded-alpha.chunk.meta builtin\internal-use\
+move particle-common.chunk builtin\internal-use\
+move particle-common.chunk.meta builtin\internal-use\
+
+@echo main functions
+md builtin\main-functions\
+move particle-trail.chunk builtin\main-functions\
+move particle-trail.chunk.meta builtin\main-functions\
+move particle-vs-gpu.chunk builtin\main-functions\
+move particle-vs-gpu.chunk.meta builtin\main-functions\
+move particle-vs-legacy.chunk builtin\main-functions\
+move particle-vs-legacy.chunk.meta builtin\main-functions\
+move general-vs.chunk builtin\main-functions\
+move general-vs.chunk.meta builtin\main-functions\
+move outline-vs.chunk builtin\main-functions\
+move outline-vs.chunk.meta builtin\main-functions\
+move outline-fs.chunk builtin\main-functions\
+move outline-fs.chunk.meta builtin\main-functions\
 
 @echo builtin\uniforms
 move cc-global.chunk builtin\uniforms\
@@ -135,3 +152,8 @@ move fxaa.chunk post-process\
 move fxaa.chunk.meta post-process\
 move anti-aliasing.chunk post-process\
 move anti-aliasing.chunk.meta post-process\
+
+@echo=
+@echo 即将打开要修改的文件第8行改回include cc-shadow-map-base
+pause
+D:\Tools\Tools\Text\notepad++\notepad++.exe "%dstpath%builtin\internal-functions\shadow-map.chunk"
