@@ -1,9 +1,20 @@
+删掉,已存在builtin internal-functions:
+skinning-lbs / dqs  不能单独引用
+cc-fog-base(需要拆为公共函数文件到common\effect\fog.chunk和引擎执行文件到builtin\internal-functions\fog.chunk(包括define transform/apply等, 在引擎执行文件中include公共函数文件)
+			迁移时将原文件换成引擎执行文件
+cc-shadow-map-base(同上,还要多拆一个builtin\uniforms\cc-shadow-map.chunk, 引擎执行中包含这两个)
+			迁移时将原文件换成引擎执行文件
+morph(拆成cc-morph:builtin\uniforms和morph-animation:internal-functions两部分)
+			迁移时将原文件换成引擎执行文件
+
 移到legacy:
 cc-local-batch(拆成cc-local-batched:builtin\uniforms和world-transform:internal-functions两部分),此文件为了兼容仅做include
+			迁移时将原文件换成此文件
 cc-skinning(拆成cc-skinning-uniform:builtin\uniforms和skinning-animation-lbs / dqs:internal-functions两部分),此文件为了兼容仅做include
 			(surface中的skinning可以直接换用这个, 唯一的区别就是宏不一样,不管使用CC_SURFACES_USE_SKINNING还是USE_SKINNING都ok)
-morph(拆成cc-morph:builtin\uniforms和skinning-animation-lbs:internal-functions两部分),此文件为了兼容仅做include
+			迁移时将原文件换成此文件
 lighting(函数部分用include <common\lighting\attenuation>代替, 其他定义和include部分保留)
+			迁移时将原文件换成此文件
 cc-shadow-map-vs
 cc-shadow-map-fs
 cc-fog-vs
@@ -54,23 +65,16 @@ cc-shadow
 cc-world-bound
 
 
-删掉:
-skinning-lbs / dqs
-
-
 移到common其他: 需要把cc-去掉, cc-只限uniform定义头文件
 common
-cc-fog-base(需要拆为公共函数文件到common\effect\fog.chunk和引擎执行文件到builtin\internal-functions\fog.chunk(包括define transform/apply等, 在引擎执行文件中include公共函数文件)
-cc-shadow-map-base(同上,还要多拆一个builtin\uniforms\shadow-map.chunk, 引擎执行中包含这两个)
-			迁移时将原文件换成引擎执行文件
 texture-lod :texture
 packing  :data
 unpack :data
 aces :color
 gamma :color
 octahedron-transform :math
-rect-area-light :lighting
 transform :math
+rect-area-light :lighting
 
 
 移到post-process:
