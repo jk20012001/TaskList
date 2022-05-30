@@ -1,25 +1,34 @@
-@echo 鍏坈ocosshaderlink, 鍐嶆墽琛屾湰鏂囦欢, 鏈�鍚庤繍琛屽紩鎿庝互杩佺Щ浠ｇ爜
+@echo 先cocosshaderlink, 再执行本文件, 最后运行引擎以迁移代码
 pause
-set dstpath=%1editor\assets\chunks\
-set srcpath= %~dp0chunks\
+set dstpath=%1\editor\assets\chunks\
+set srcpath= %~dp0\chunks\
 
 cd /d "%dstpath%"
 
 @echo delete
+del /F embedded-alpha.meta
 del /F skinning-dqs.chunk
 del /F skinning-dqs.chunk.meta
 del /F skinning-lbs.chunk
 del /F skinning-lbs.chunk.meta
 
 @echo builtin/internal-functions
-del /F cc-fog-base.chunk
-del /F cc-fog-base.chunk.meta
-del /F cc-shadow-map-base.chunk
-del /F cc-shadow-map-base.chunk.meta
-del /F morph.chunk
-del /F morph.chunk.meta
+rem del /F cc-shadow-map-base.chunk
+rem del /F cc-shadow-map-base.chunk.meta
 
 @echo existed in tasklist legacy folder
+del /F cc-fog-base.chunk
+del /F cc-fog-base.chunk.meta
+del /F morph.chunk
+del /F morph.chunk.meta
+del /F cc-local-batch.chunk
+del /F cc-local-batch.chunk.meta
+del /F cc-skinning.chunk
+del /F cc-skinning.chunk.meta
+del /F lighting.chunk
+del /F lighting.chunk.meta
+del /F lightingmap-fs.chunk
+del /F lightingmap-fs.chunk.meta
 
 @echo legacy
 md legacy
@@ -60,6 +69,7 @@ move shading-toon.chunk.meta legacy\
 move standard-surface-entry.chunk legacy\
 move standard-surface-entry.chunk.meta legacy\
 
+
 @echo builtin\internal-use
 move alpha-test.chunk builtin\internal-use\
 move alpha-test.chunk.meta builtin\internal-use\
@@ -98,6 +108,8 @@ move cc-world-bound.chunk.meta builtin\uniforms\
 
 
 @echo common
+md common\data
+md common\color
 move common.chunk common\common-define.chunk
 move common.chunk.meta common\common-define.chunk.meta
 move texture-lod.chunk common\texture\
@@ -118,6 +130,7 @@ move rect-area-light.chunk common\lighting\
 move rect-area-light.chunk.meta common\lighting\
 
 @echo post-process
+md post-process
 move fxaa.chunk post-process\
 move fxaa.chunk.meta post-process\
 move anti-aliasing.chunk post-process\

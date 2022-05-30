@@ -1,11 +1,11 @@
 
 export function migrateChunkFolders(asset: Asset) {
     const replaceMap = new Map([
-        ['cc-fog-base', 'builtin/internal-functions/fog'], // deleted
-        ['cc-shadow-map-base', 'builtin/internal-functions/shadow-map'],
-        ['morph', 'builtin/internal-functions/morph-animation'],
+        ['cc-shadow-map-base', 'builtin/internal-functions/shadow-map'],// todo
 
-        ['cc-skinning', 'legacy/skinning'], // existed legacy
+        ['cc-fog-base', 'legacy/fog'], // existed legacy
+        ['morph', 'legacy/morph'],
+        ['cc-skinning', 'legacy/skinning'], 
         ['cc-local-batch', 'legacy/local-batch'],
         ['lighting', 'legacy/lighting'],
         ['lightingmap-fs', 'legacy/lightingmap-fs'],
@@ -58,14 +58,17 @@ export function migrateChunkFolders(asset: Asset) {
     ]);
 
     let effect = readFileSync(asset.source, { encoding: 'utf8' });
+    let needSave = false;
 
     for (const [key, value] of replaceMap) {
-        const find = "/#include/s+<" + key + ">/g";
+        const find = new RegExp('#include\\s+<' + key + '>', 'g');
         const replace = "#include <" + value + ">";
         if (effect.match(find)) {
             effect = effect.replace(find, replace);
+            needSave = true;
         }
     }
-
-    writeFileSync(asset.source, effect, { encoding: 'utf8' });
+    if (needSave) {
+        writeFileSync(asset.source, effect, { encoding: 'utf8' });
+    }
 }
