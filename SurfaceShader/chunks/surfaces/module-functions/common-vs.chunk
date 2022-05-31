@@ -13,7 +13,7 @@ void CCSurfacesVertexInput(out SurfacesStandardVertexIntermediate In)
 #endif
 
   In.texCoord = a_texCoord;
-#if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+#if CC_SURFACES_USE_SECOND_UV && !CC_USE_LIGHTMAP
   In.texCoord1 = a_texCoord1;
 #endif
 }
@@ -36,7 +36,7 @@ void CCSurfacesVertexOutput(in SurfacesStandardVertexIntermediate In)
 #endif
 
   VSOutput_texcoord = In.texCoord;
-#if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+#if CC_SURFACES_USE_SECOND_UV && !CC_USE_LIGHTMAP
   VSOutput_texcoord1 = In.texCoord1;
 #endif
 
@@ -50,7 +50,7 @@ void CCSurfacesVertexOutput(in SurfacesStandardVertexIntermediate In)
   #endif
 #endif
 
-#if CC_SURFACES_USE_LIGHT_MAP && !USE_BATCHING && !CC_FORWARD_ADD
+#if CC_USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
   VSOutput_lightMapUV = In.lightmapUV;
 #endif
 
@@ -99,7 +99,7 @@ void CCSurfacesVertexTransformUV(inout SurfacesStandardVertexIntermediate In)
 {
   #if SAMPLE_FROM_RT
     CC_HANDLE_RT_SAMPLE_FLIP(In.texCoord);
-    #if CC_SURFACES_USE_SECOND_UV && !CC_SURFACES_USE_LIGHT_MAP
+    #if CC_SURFACES_USE_SECOND_UV && !CC_USE_LIGHTMAP
       CC_HANDLE_RT_SAMPLE_FLIP(In.texCoord1);
     #endif
   #endif
@@ -127,7 +127,7 @@ void CCSurfacesVertexTransferShadow(inout SurfacesStandardVertexIntermediate In)
 
 void CCSurfacesVertexTransferLightMapUV(inout SurfacesStandardVertexIntermediate In)
 {
-#if CC_SURFACES_USE_LIGHT_MAP && !USE_BATCHING && !CC_FORWARD_ADD
+#if CC_USE_LIGHTMAP && !USE_BATCHING && !CC_FORWARD_ADD
   #if USE_INSTANCING
     In.lightmapUV.xy = a_lightingMapUVParam.xy + a_texCoord1 * a_lightingMapUVParam.z;
     In.lightmapUV.z = a_lightingMapUVParam.w;

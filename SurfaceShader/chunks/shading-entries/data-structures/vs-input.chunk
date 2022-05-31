@@ -10,7 +10,8 @@ layout(location = 2) in vec2 a_texCoord;
   in vec4 a_color;
 #endif
 
-#if CC_SURFACES_USE_SECOND_UV || CC_SURFACES_USE_LIGHT_MAP
+// Attribute define should depend on system macro, not surface macro
+#if CC_SURFACES_USE_SECOND_UV || CC_USE_LIGHTMAP
   in vec2 a_texCoord1;
 #endif
 
@@ -34,7 +35,7 @@ layout(location = 2) in vec2 a_texCoord;
   in vec4 a_matWorld0;
   in vec4 a_matWorld1;
   in vec4 a_matWorld2;
-  #if CC_SURFACES_USE_LIGHT_MAP
+  #if CC_USE_LIGHTMAP
     in vec4 a_lightingMapUVParam;
   #endif
   #if CC_RECEIVE_SHADOW
