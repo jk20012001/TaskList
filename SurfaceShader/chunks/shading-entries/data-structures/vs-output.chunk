@@ -26,12 +26,12 @@
   #define VSOutput_texcoord1 v_uv1
 #endif
 
-#if CC_SURFACES_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
+#if CC_SURFACES_USE_LIGHT_MAP && !USE_BATCHING && !CC_FORWARD_ADD
   #define VSOutput_lightMapUV v_luv
 #endif
 
 #if CC_RECEIVE_SHADOW
-  #if CC_SURFACES_USE_INSTANCING
+  #if USE_INSTANCING
     #define VSOutput_shadowBias v_shadowBias
   #endif
 #endif

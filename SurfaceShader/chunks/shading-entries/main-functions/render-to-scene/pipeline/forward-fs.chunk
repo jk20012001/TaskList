@@ -16,9 +16,9 @@ void main()  {
   #if CC_RECEIVE_SHADOW
     shadowPos = cc_matLightViewProj * vec4(surfaceData.worldPos, 1.0);
     shadowBias = vec2(cc_shadowWHPBInfo.w, cc_shadowLPNNInfo.z);
-    #if CC_SURFACES_USE_INSTANCING
+    #if USE_INSTANCING
       shadowBias = FSInput_shadowBias;
-    #elif !CC_SURFACES_USE_BATCHING
+    #elif !USE_BATCHING
       shadowBias += cc_localShadowBias.xy;
     #endif
     #if !CC_FORWARD_ADD

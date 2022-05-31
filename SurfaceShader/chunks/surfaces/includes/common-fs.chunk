@@ -45,7 +45,7 @@
 #include <builtin/internal-functions/shadow-map>
 #include <builtin/internal-functions/fog>
 
-#if CC_SURFACES_USE_LIGHT_MAP && !CC_SURFACES_USE_BATCHING && !CC_FORWARD_ADD
+#if CC_SURFACES_USE_LIGHT_MAP && !USE_BATCHING && !CC_FORWARD_ADD
   #include <builtin/uniforms/cc-light-map>
   #include <common/lighting/light-map>
 #endif

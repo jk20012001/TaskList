@@ -27,7 +27,7 @@ layout(location = 2) in vec2 a_texCoord;
   layout(location = 5) in vec4 a_weights;
 #endif
 
-#if CC_SURFACES_USE_INSTANCING
+#if USE_INSTANCING
   #if CC_USE_BAKED_ANIMATION
     in highp vec4 a_jointAnimInfo; // frameID, totalJoints, offset
   #endif
@@ -40,7 +40,7 @@ layout(location = 2) in vec2 a_texCoord;
   #if CC_RECEIVE_SHADOW
     in vec2 a_localShadowBias; // x:shadow bias, y:shadow normal bias.
   #endif
-#elif CC_SURFACES_USE_BATCHING
+#elif USE_BATCHING
   in float a_dyn_batch_id;
 #endif
 
