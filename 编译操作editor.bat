@@ -4,7 +4,8 @@
 @echo 1: 编译editor(快速)
 @echo 2: 编译ts引擎声明
 @echo 3: 编译原生绑定
-@echo 4: 编译effect
+@echo 4: 编译全部effect
+@echo effect: 编译单个effect
 @echo 5: 编译debuginfo(解决unkown id的问题)
 @echo run: 运行editor
 @echo=
@@ -29,6 +30,7 @@ if %choice%==1 call npm run build
 if %choice%==2 copy /y npm run build-declaration
 if %choice%==3 python %~dp0resources\3d\engine\native\tools\tojs\genbindings.py
 if %choice%==4 node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js
+if "%choice%"=="effect" node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js F:\Work\editor\current\resources\3d\engine\editor\assets\effects\surfaces\standard.effect
 if %choice%==5 (
 cd resources\3d\engine
 rem call npm install gulp

@@ -27,7 +27,7 @@ import { JSB } from 'internal:constants';
 import { legacyCC } from '../global-exports';
 import { Root } from '../root';
 // import { NaitveSkybox } from '../native-scene';
-import { GlobalDSManager } from '../pipeline/global-descriptor-set-manager';
+import { GlobalDSManager } from './global-descriptor-set-manager';
 import { Device } from '../gfx';
 import { Enum } from '../value-types';
 
@@ -35,7 +35,7 @@ const enum DebugViewType {
     NONE,
     SINGLE,
     COMPOSITE_AND_MISC,
-};
+}
 export const enum DebugViewSingleType {
     /**
      * @zh
@@ -56,7 +56,7 @@ export const enum DebugViewSingleType {
     UV_LIGHTMAP,
     PROJ_DEPTH,
     LINEAR_DEPTH,
-    
+
     FRAGMENT_NORMAL,
     FRAGMENT_TANGENT,
     FRAGMENT_BINORMAL,
@@ -67,7 +67,7 @@ export const enum DebugViewSingleType {
     METALLIC,
     ROUGHNESS,
     SPECULAR_INTENSITY,
-    
+
     DIRECT_DIFFUSE,
     DIRECT_SPECULAR,
     DIRECT_ALL,
@@ -78,9 +78,9 @@ export const enum DebugViewSingleType {
     LIGHT_MAP,
     SHADOW,
     AO,
-    
+
     FOG,
-};
+}
 
 export const enum DebugViewCompositeType {
     /**
@@ -90,34 +90,33 @@ export const enum DebugViewCompositeType {
      * composite debug mode
      * @readonly
      */
-     DIRECT_DIFFUSE = 0,
-     DIRECT_SPECULAR,
-     ENV_DIFFUSE,
-     ENV_SPECULAR,
-     EMISSIVE,
-     LIGHT_MAP,
-     SHADOW,
-     AO,
-     
-     NORMAL_MAP,
-     FOG,
-     
-     TONE_MAPPING,
-     GAMMA_CORRECTION,
-     MAX_BIT_COUNT
-};
+    DIRECT_DIFFUSE = 0,
+    DIRECT_SPECULAR,
+    ENV_DIFFUSE,
+    ENV_SPECULAR,
+    EMISSIVE,
+    LIGHT_MAP,
+    SHADOW,
+    AO,
+
+    NORMAL_MAP,
+    FOG,
+
+    TONE_MAPPING,
+    GAMMA_CORRECTION,
+    MAX_BIT_COUNT
+}
 
 /**
  * @en Rendering Debug View Control
  * @zh 渲染调试控制
  */
 export class DebugView {
-
     /**
-     * @en whether enabled with specified composite debug mode 
+     * @en whether enabled with specified composite debug mode
      * @zh 获取指定的组合调试模式是否开启
      */
-    public isCompositeModeEnabled(val : number) : boolean {
+    public isCompositeModeEnabled (val : number) : boolean {
         const mode = this._compositeModeValue & (1 << val);
         return mode !== 0;
     }
@@ -125,7 +124,7 @@ export class DebugView {
      * @en toggle specified composite debug mode
      * @zh 开关指定的组合调试模式
      */
-     public enableCompositeMode(val: DebugViewCompositeType, enable: boolean) {
+    public enableCompositeMode (val: DebugViewCompositeType, enable: boolean) {
         this._enableCompositeMode(val, enable);
         this._updatePipeline();
     }
@@ -174,11 +173,11 @@ export class DebugView {
         }
     }
 
-    private _enableCompositeMode(val: DebugViewCompositeType, enable: boolean) {
+    private _enableCompositeMode (val: DebugViewCompositeType, enable: boolean) {
         if (enable) {
-            this._compositeModeValue = this._compositeModeValue | (1 << val);
+            this._compositeModeValue |= (1 << val);
         } else {
-            this._compositeModeValue = this._compositeModeValue & (~(1 << val));
+            this._compositeModeValue &= (~(1 << val));
         }
     }
 
@@ -219,8 +218,7 @@ export class DebugView {
         // Once you have entered debug mode, don't turn off this macro again, it will always be in debug mode until you restart the editor
         const useDebugView = this._currentDebugViewType === DebugViewType.NONE ? this._getDebugViewType() : this._currentDebugViewType;
 
-        if(useDebugView !== DebugViewType.NONE)
-        {
+        if (useDebugView !== DebugViewType.NONE) {
             pipeline.pipelineUBO.updateDebugViewUBO();
         }
 

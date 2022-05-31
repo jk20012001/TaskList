@@ -1,5 +1,6 @@
 @echo 先cocosshaderlink, 再执行本文件, 最后运行引擎以迁移代码
-@echo 记得先从临时复制的拷过来
+@echo 如果要提交的时候,请检查chunks根目录下的文件,和3.5.1版的是否有不同,尤其是morph batch skinning相关的
+@echo 要不要改builtin/internal-functions为functionality, builtin/uniforms/cc-skinning-uniforms为cc-skinning
 
 set dstpath=%1\editor\assets\chunks\
 set srcpath= %~dp0\chunks\
