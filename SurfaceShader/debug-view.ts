@@ -129,6 +129,19 @@ export class DebugView {
         this._updatePipeline();
     }
 
+    /**
+     * @en toggle all composite debug mode
+     * @zh 开关所有的组合调试模式
+     */
+    public enableAllCompositeMode (enable: boolean) {
+        this._enableAllCompositeMode(enable);
+        this._updatePipeline();
+    }
+
+    /**
+     * @en toggle single debug mode
+     * @zh 设置单项调试模式
+     */
     public get singleMode () : DebugViewSingleType {
         return this._singleMode;
     }
@@ -137,6 +150,10 @@ export class DebugView {
         this._updatePipeline();
     }
 
+    /**
+     * @en toggle pure lighting mode
+     * @zh 切换正常光照和仅光照模式
+     */
     public get lightingWithAlbedo () : boolean {
         return this._lightingWithAlbedo;
     }
@@ -145,6 +162,10 @@ export class DebugView {
         this._updatePipeline();
     }
 
+    /**
+     * @en toggle CSM layer coloration mode
+     * @zh 切换层叠阴影贴图染色调试模式
+     */
     public get csmLayerColoration () : boolean {
         return this._csmLayerColoration;
     }
@@ -181,6 +202,12 @@ export class DebugView {
         }
     }
 
+    private _enableAllCompositeMode (enable: boolean) {
+        for (let i = 0; i < DebugViewCompositeType.MAX_BIT_COUNT; i++) {
+            this._enableCompositeMode(i, enable);
+        }
+    }
+
     private _getDebugViewType () : DebugViewType {
         if (this._singleMode !== DebugViewSingleType.NONE) {
             return DebugViewType.SINGLE;
@@ -188,7 +215,7 @@ export class DebugView {
             return DebugViewType.COMPOSITE_AND_MISC;
         } else {
             for (let i = 0; i < DebugViewCompositeType.MAX_BIT_COUNT; i++) {
-                if (!this.isCompositeModeEnabled(i)) {
+                if (this.isCompositeModeEnabled(i)) {
                     return DebugViewType.COMPOSITE_AND_MISC;
                 }
             }
@@ -197,11 +224,8 @@ export class DebugView {
     }
 
     public activate () {
-        for (let i = 0; i < DebugViewCompositeType.MAX_BIT_COUNT; i++) {
-            this._enableCompositeMode(i, true);
-        }
-
         this._singleMode = DebugViewSingleType.NONE;
+        this._enableAllCompositeMode(true);
         this._lightingWithAlbedo = true;
         this._csmLayerColoration = false;
         this._currentDebugViewType = DebugViewType.NONE;

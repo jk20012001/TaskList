@@ -64,3 +64,6 @@ PS扩展方法: 渲染到XXX
 								lighting-flow必须重写, 需要多次调用光照和材质模型函数以计算上面添加的lightingResult数据项
 								shading-model必须重写, 将多套lightingResult结果根据物理合成
 			高级PBR(ClearCoat):	视渲染算法而定,最复杂的不过就是MutliLayer的方式, 可能视为两层multi-layer-pbr
+
+AO的特殊用法: 用在3S凸模型物体(玉等)上, 可以用来简易模仿Depth, 厚的地方通常AO会比较暗(需要验证?)
+              用在头发上也可以简易模仿穿透吸收阴影的深度, AO暗(遮挡复杂)的地方, 顶点相对会处于比较深的位置, 即传输吸收距离长. 无shadow的地方不需要特殊处理,有shadow遮挡的地方, 可以将AO作为吸收距离,该值越小则适当减弱shadow的影响即可有柔和的层次感

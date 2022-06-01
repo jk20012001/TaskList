@@ -1,0 +1,228 @@
+ native/cocos/renderer/pipeline/Define.cpp | 32 +++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/native/cocos/renderer/pipeline/Define.cpp b/native/cocos/renderer/pipeline/Define.cpp
+index e7f388d5b..7c0d92d53 100644
+--- a/native/cocos/renderer/pipeline/Define.cpp
++++ b/native/cocos/renderer/pipeline/Define.cpp
+@@ -310,6 +310,38 @@ const gfx::UniformBlock UBOUILocal::LAYOUT = {
+     1,
+ };
+ 
++const ccstd::string UBODebugView::NAME = "CCDebugView";
++const gfx::DescriptorSetLayoutBinding UBODebugView::DESCRIPTOR = {
++    UBODebugView::BINDING,
++    gfx::DescriptorType::UNIFORM_BUFFER,
++    1,
++    gfx::ShaderStageFlagBit::ALL,
++    {},
++};
++const gfx::UniformBlock UBODebugView::LAYOUT = {
++    globalSet,
++    UBODebugView::BINDING,
++    UBODebugView::NAME,
++    {
++        {"cc_debug_view_single_mode", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_lighting_enable_with_albedo", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_misc_enable_csm_layer_coloration", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_direct_diffuse", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_direct_specular", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_env_diffuse", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_env_specular", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_emissive", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_light_map", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_shadow", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_ao", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_normal_map", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_fog", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_tone_mapping", gfx::Type::FLOAT, 1},
++        {"cc_debug_view_composite_enable_gamma_correction", gfx::Type::FLOAT, 1},
++    },
++    1,
++};
++
+ const ccstd::string SHADOWMAP::NAME = "cc_shadowMap";
+ const gfx::DescriptorSetLayoutBinding SHADOWMAP::DESCRIPTOR = {
+     SHADOWMAP::BINDING,
+ native/cocos/renderer/pipeline/Define.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/native/cocos/renderer/pipeline/Define.h b/native/cocos/renderer/pipeline/Define.h
+index ece48593b..ced94a2ef 100644
+--- a/native/cocos/renderer/pipeline/Define.h
++++ b/native/cocos/renderer/pipeline/Define.h
+@@ -218,6 +218,7 @@ enum class CC_DLL PipelineGlobalBindings {
+     UBO_GLOBAL,
+     UBO_CAMERA,
+     UBO_SHADOW,
++    UBO_DEBUG_VIEW,
+ 
+     SAMPLER_SHADOWMAP,
+     SAMPLER_ENVIRONMENT,
+@@ -465,6 +466,30 @@ struct CC_DLL UBOShadow {
+     static const ccstd::string NAME;
+ };
+ 
++struct CC_DLL UBODebugView {
++    static constexpr uint SINGLE_MODE_OFFSET = 0;
++    static constexpr uint LIGHTING_ENABLE_WITH_ALBEDO_OFFSET = SINGLE_MODE_OFFSET + 4;
++    static constexpr uint MISC_ENABLE_CSM_LAYER_COLORATION_OFFSET = LIGHTING_ENABLE_WITH_ALBEDO_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_DIRECT_DIFFUSE_OFFSET = MISC_ENABLE_CSM_LAYER_COLORATION_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_DIRECT_SPECULAR_OFFSET = COMPOSITE_ENABLE_DIRECT_DIFFUSE_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_ENV_DIFFUSE_OFFSET = COMPOSITE_ENABLE_DIRECT_SPECULAR_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_ENV_SPECULAR_OFFSET = COMPOSITE_ENABLE_ENV_DIFFUSE_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_EMISSIVE_OFFSET = COMPOSITE_ENABLE_ENV_SPECULAR_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_LIGHT_MAP_OFFSET = COMPOSITE_ENABLE_EMISSIVE_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_SHADOW_OFFSET = COMPOSITE_ENABLE_LIGHT_MAP_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_AO_OFFSET = COMPOSITE_ENABLE_SHADOW_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_NORMAL_MAP_OFFSET = COMPOSITE_ENABLE_AO_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_FOG_OFFSET = COMPOSITE_ENABLE_NORMAL_MAP_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_TONE_MAPPING_OFFSET = COMPOSITE_ENABLE_FOG_OFFSET + 4;
++    static constexpr uint COMPOSITE_ENABLE_GAMMA_CORRECTION_OFFSET = COMPOSITE_ENABLE_TONE_MAPPING_OFFSET + 4;
++    static constexpr uint COUNT = COMPOSITE_ENABLE_GAMMA_CORRECTION_OFFSET + 4;
++    static constexpr uint SIZE = COUNT * 4;
++    static constexpr uint BINDING = static_cast<uint>(PipelineGlobalBindings::UBO_DEBUG_VIEW);
++    static const gfx::DescriptorSetLayoutBinding DESCRIPTOR;
++    static const gfx::UniformBlock LAYOUT;
++    static const ccstd::string NAME;
++};
++
+ struct CC_DLL DescriptorSetLayoutInfos {
+     gfx::DescriptorSetLayoutBindingList bindings;
+     ccstd::unordered_map<ccstd::string, gfx::UniformBlock> blocks;
+ native/cocos/renderer/pipeline/PipelineUBO.cpp | 30 ++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/native/cocos/renderer/pipeline/PipelineUBO.cpp b/native/cocos/renderer/pipeline/PipelineUBO.cpp
+index 3dc86d483..ca8b76b5a 100644
+--- a/native/cocos/renderer/pipeline/PipelineUBO.cpp
++++ b/native/cocos/renderer/pipeline/PipelineUBO.cpp
+@@ -317,6 +317,19 @@ void PipelineUBO::updateShadowUBOLightView(const RenderPipeline *pipeline, ccstd
+     memcpy(shadowUBO.data() + UBOShadow::SHADOW_COLOR_OFFSET, shadowInfo->getShadowColor4f().data(), sizeof(float) * 4);
+ }
+ 
++void PipelineUBO::updateDebugViewUBOView(const RenderPipeline *pipeline, ccstd::array<float, UBODebugView::COUNT> *bufferView) {
++    auto *device = gfx::Device::getInstance();
++    //const debugView = legacyCC.debugView;
++    auto &debugViewUBO = *bufferView;
++    float zero = 0.0f, one = 0.0f;
++    memcpy(debugViewUBO.data() + UBODebugView::SINGLE_MODE_OFFSET, &zero, sizeof(float));
++    memcpy(debugViewUBO.data() + UBODebugView::LIGHTING_ENABLE_WITH_ALBEDO_OFFSET, &one, sizeof(float));
++    memcpy(debugViewUBO.data() + UBODebugView::MISC_ENABLE_CSM_LAYER_COLORATION_OFFSET, &zero, sizeof(float));
++    for (int i = UBODebugView::COMPOSITE_ENABLE_DIRECT_DIFFUSE_OFFSET; i < UBODebugView::SIZE; i += sizeof(float)) {
++        memcpy(debugViewUBO.data() + UBODebugView::COMPOSITE_ENABLE_DIRECT_DIFFUSE_OFFSET + i, &one, sizeof(float));
++    }
++}
++
+ static uint8_t combineSignY = 0;
+ uint8_t PipelineUBO::getCombineSignY() {
+     return combineSignY;
+@@ -372,6 +385,16 @@ void PipelineUBO::activate(gfx::Device *device, RenderPipeline *pipeline) {
+     });
+     descriptorSet->bindBuffer(UBOShadow::BINDING, shadowUBO);
+     _ubos.push_back(shadowUBO);
++
++    auto *debugViewUBO = _device->createBuffer({
++        gfx::BufferUsageBit::UNIFORM | gfx::BufferUsageBit::TRANSFER_DST,
++        gfx::MemoryUsageBit::DEVICE,
++        UBODebugView::SIZE,
++        UBODebugView::SIZE,
++        gfx::BufferFlagBit::NONE,
++    });
++    descriptorSet->bindBuffer(UBODebugView::BINDING, debugViewUBO);
++    _ubos.push_back(debugViewUBO);
+ }
+ 
+ void PipelineUBO::destroy() {
+@@ -449,6 +472,13 @@ void PipelineUBO::updateShadowUBOLight(gfx::DescriptorSet *globalDS, const scene
+     cmdBuffer->updateBuffer(globalDS->getBuffer(UBOShadow::BINDING), _shadowUBO.data(), UBOShadow::SIZE);
+ }
+ 
++void PipelineUBO::updateDebugViewUBO(gfx::DescriptorSet *globalDS) {
++    auto *const cmdBuffer = _pipeline->getCommandBuffers()[0];
++    PipelineUBO::updateDebugViewUBOView(_pipeline, &_debugViewUBO);
++    globalDS->update();
++    cmdBuffer->updateBuffer(globalDS->getBuffer(UBODebugView::BINDING), _debugViewUBO.data(), UBODebugView::SIZE);
++}
++
+ void PipelineUBO::updateShadowUBORange(uint offset, const Mat4 *data) {
+     memcpy(_shadowUBO.data() + offset, data->m, sizeof(*data));
+ }
+ native/cocos/renderer/pipeline/PipelineUBO.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/native/cocos/renderer/pipeline/PipelineUBO.h b/native/cocos/renderer/pipeline/PipelineUBO.h
+index a82e1cd6f..42a558c4b 100644
+--- a/native/cocos/renderer/pipeline/PipelineUBO.h
++++ b/native/cocos/renderer/pipeline/PipelineUBO.h
+@@ -41,6 +41,7 @@ public:
+     static void updateCameraUBOView(const RenderPipeline *pipeline, float *output, const scene::Camera *camera);
+     static void updateShadowUBOView(const RenderPipeline *pipeline, ccstd::array<float, UBOShadow::COUNT> *bufferView, const scene::Camera *camera);
+     static void updateShadowUBOLightView(const RenderPipeline *pipeline, ccstd::array<float, UBOShadow::COUNT> *bufferView, const scene::Light *light);
++    static void updateDebugViewUBOView(const RenderPipeline *pipeline, ccstd::array<float, UBODebugView::COUNT> *bufferView);
+     static uint8_t getCombineSignY();
+ 
+     PipelineUBO() = default;
+@@ -52,6 +53,7 @@ public:
+     void updateMultiCameraUBO(const ccstd::vector<scene::Camera *> &cameras);
+     void updateShadowUBO(const scene::Camera *camera);
+     void updateShadowUBOLight(gfx::DescriptorSet *globalDS, const scene::Light *light);
++    void updateDebugViewUBO(gfx::DescriptorSet *globalDS);
+     void updateShadowUBORange(uint offset, const Mat4 *data);
+ 
+     uint getCurrentCameraUBOOffset() const;
+@@ -63,6 +65,7 @@ private:
+ 
+     ccstd::array<float, UBOGlobal::COUNT> _globalUBO;
+     ccstd::array<float, UBOShadow::COUNT> _shadowUBO;
++    ccstd::array<float, UBODebugView::COUNT> _debugViewUBO;
+ 
+     ccstd::vector<gfx::Buffer *> _ubos;
+     void initCombineSignY();
+ native/cocos/renderer/pipeline/RenderPipeline.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/native/cocos/renderer/pipeline/RenderPipeline.cpp b/native/cocos/renderer/pipeline/RenderPipeline.cpp
+index d3b37adad..8f99e3ce6 100644
+--- a/native/cocos/renderer/pipeline/RenderPipeline.cpp
++++ b/native/cocos/renderer/pipeline/RenderPipeline.cpp
+@@ -93,6 +93,7 @@ bool RenderPipeline::activate(gfx::Swapchain * /*swapchain*/) {
+         flow->activate(this);
+     }
+ 
++    //legacyCC.debugView.activate();
+     return true;
+ }
+ 
+ native/cocos/renderer/pipeline/forward/ForwardPipeline.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/native/cocos/renderer/pipeline/forward/ForwardPipeline.cpp b/native/cocos/renderer/pipeline/forward/ForwardPipeline.cpp
+index 3b1438f29..6f02a3c24 100644
+--- a/native/cocos/renderer/pipeline/forward/ForwardPipeline.cpp
++++ b/native/cocos/renderer/pipeline/forward/ForwardPipeline.cpp
+@@ -145,6 +145,7 @@ bool ForwardPipeline::activeRenderer(gfx::Swapchain *swapchain) {
+     // update global defines when all states initialized.
+     _macros["CC_USE_HDR"] = static_cast<bool>(_pipelineSceneData->isHDR());
+     _macros["CC_SUPPORT_FLOAT_TEXTURE"] = hasAnyFlags(_device->getFormatFeatures(gfx::Format::RGBA32F), gfx::FormatFeature::RENDER_TARGET | gfx::FormatFeature::SAMPLED_TEXTURE);
++    _macros["CC_USE_DEBUG_VIEW"] = static_cast<int32_t>(0);
+ 
+     // step 2 create index buffer
+     uint ibStride = 4;
+ 
+ native/cocos/renderer/pipeline/GlobalDescriptorSetManager.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/native/cocos/renderer/pipeline/GlobalDescriptorSetManager.cpp b/native/cocos/renderer/pipeline/GlobalDescriptorSetManager.cpp
+index 36dfed340..9ab6271fd 100644
+--- a/native/cocos/renderer/pipeline/GlobalDescriptorSetManager.cpp
++++ b/native/cocos/renderer/pipeline/GlobalDescriptorSetManager.cpp
+@@ -165,6 +165,8 @@ void GlobalDSManager::setDescriptorSetLayout() {
+     globalDescriptorSetLayout.bindings[UBOCamera::BINDING] = UBOCamera::DESCRIPTOR;
+     globalDescriptorSetLayout.blocks[UBOShadow::NAME] = UBOShadow::LAYOUT;
+     globalDescriptorSetLayout.bindings[UBOShadow::BINDING] = UBOShadow::DESCRIPTOR;
++    globalDescriptorSetLayout.blocks[UBODebugView::NAME] = UBODebugView::LAYOUT;
++    globalDescriptorSetLayout.bindings[UBODebugView::BINDING] = UBODebugView::DESCRIPTOR;
+     globalDescriptorSetLayout.samplers[SHADOWMAP::NAME] = SHADOWMAP::LAYOUT;
+     globalDescriptorSetLayout.bindings[SHADOWMAP::BINDING] = SHADOWMAP::DESCRIPTOR;
+     globalDescriptorSetLayout.samplers[ENVIRONMENT::NAME] = ENVIRONMENT::LAYOUT;
