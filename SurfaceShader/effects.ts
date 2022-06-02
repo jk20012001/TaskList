@@ -41,6 +41,7 @@ export function migrateChunkFolders(asset: Asset) {
         ['cc-environment', 'builtin/uniforms/cc-environment'],
         ['cc-diffusemap', 'builtin/uniforms/cc-diffusemap'],
         ['cc-shadow', 'builtin/uniforms/cc-shadow'],
+        ['cc-csm', 'builtin/uniforms/cc-csm'],
         ['cc-world-bound', 'builtin/uniforms/cc-world-bound'],
 
         ['common', 'common/common-define'],

@@ -121,6 +121,8 @@ move cc-diffusemap.chunk builtin\uniforms\
 move cc-diffusemap.chunk.meta builtin\uniforms\
 move cc-shadow.chunk builtin\uniforms\
 move cc-shadow.chunk.meta builtin\uniforms\
+move cc-csm.chunk builtin\uniforms\
+move cc-csm.chunk.meta builtin\uniforms\
 move cc-world-bound.chunk builtin\uniforms\
 move cc-world-bound.chunk.meta builtin\uniforms\
 

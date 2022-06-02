@@ -115,6 +115,7 @@ export class DebugView {
     /**
      * @en whether enabled with specified composite debug mode
      * @zh 获取指定的组合调试模式是否开启
+     * @param specified composite type
      */
     public isCompositeModeEnabled (val : number) : boolean {
         const mode = this._compositeModeValue & (1 << val);
@@ -123,6 +124,7 @@ export class DebugView {
     /**
      * @en toggle specified composite debug mode
      * @zh 开关指定的组合调试模式
+     * @param specified composite type, enable or disable
      */
     public enableCompositeMode (val: DebugViewCompositeType, enable: boolean) {
         this._enableCompositeMode(val, enable);
@@ -179,19 +181,12 @@ export class DebugView {
     protected _lightingWithAlbedo = true;
     protected _csmLayerColoration = false;
     protected _currentDebugViewType = DebugViewType.NONE;
-    // protected declare _nativeObj: NaitveDebugView | null;
 
     /**
      * @internal
      */
-    /*get native (): NaitveSkybox {
-        return this._nativeObj!;
-    }*/
-
     constructor () {
-        if (JSB) {
-            // this._nativeObj = new NaitveSkybox();
-        }
+        this.activate();
     }
 
     private _enableCompositeMode (val: DebugViewCompositeType, enable: boolean) {
@@ -232,10 +227,6 @@ export class DebugView {
     }
 
     protected _updatePipeline () {
-        if (JSB) {
-            // this._nativeObj!.isRGBE = this.isRGBE;
-        }
-
         const root = legacyCC.director.root as Root;
         const pipeline = root.pipeline;
 
@@ -252,17 +243,8 @@ export class DebugView {
         }
     }
 
-    protected _destroy () {
-        if (JSB) {
-            // this._nativeObj = null;
-        }
-    }
-
     public destroy () {
-        this._destroy();
     }
 }
 
 legacyCC.debugView = new DebugView();
-
-// 需要修改shader：cc_shadowMap / cc_spotLightingMap / cc_environment / cc_diffuseMap的binding加1
