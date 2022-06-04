@@ -1,0 +1,10 @@
+float CCGetLinearDepthFromViewSpace(vec3 viewPos, float near, float far) {
+  float dist = length(viewPos);
+  return (dist - near) / (far - near);
+}
+
+//cc_matLightView, cc_shadowNFLSInfo.x, cc_shadowNFLSInfo.y
+float CCGetLinearDepth(vec3 worldPos, mat4 matLightView, float near, float far) {
+  vec4 viewStartPos = cc_matLightView * vec4(worldPos.xyz, 1.0);
+  return CCGetLinearDepthFromViewSpace(viewStartPos.xyz, near, far);
+}

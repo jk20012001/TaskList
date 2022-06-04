@@ -80,7 +80,7 @@ export class SpotLight extends Light {
     // shading-standard-additive.chunk中加    illum = 1.0;    att = INV_PI4 / distSqr;
 	// camera.ts里setExposure强制返回一个数(0.1)
 	// 场景光照模式预设: 晴天室外 晴天室内 阴天室外 阴天室内 满月室外 满月室内 黑夜室外 黑夜室内 选好之后同时改变: 有效平行主光, 环境光, 相机曝光参数
-	// 渲染光源的话, 直接使用光源nit值(太阳适当缩放) * exposure输出即可, 当然hdr模式下可能要直接输出nit值, 然后经过不同的曝光系数, 研究其相对hdr照片的比例
+	// 渲染光源的话, 直接使用光源nit值(太阳适当缩放) * exposure输出即可, 当然hdr模式下可能要直接输出nit值, 然后研究其相对hdr照片值的比例
 
     nt2lmWithAngle = (angle: number) => 2 * Math.PI * (1.0 - Math.cos(angle * 0.5));
 
