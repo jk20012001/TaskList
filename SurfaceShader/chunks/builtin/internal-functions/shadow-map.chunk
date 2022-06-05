@@ -11,6 +11,7 @@ float CCGetLinearDepth(vec3 worldPos) {
 #if CC_RECEIVE_SHADOW
   #include <cc-global>
   #include <cc-local>
+  //#todo: #include <cc-csm>
   #include <builtin/uniforms/cc-shadow-map>
 
   #include <packing>

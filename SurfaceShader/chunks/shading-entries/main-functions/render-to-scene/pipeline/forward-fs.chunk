@@ -25,17 +25,18 @@ void main()  {
       #if CC_USE_DEBUG_VIEW && CC_SURFACES_ENABLE_DEBUG_VIEW
         if (cc_debug_view_misc_enable_csm_layer_coloration > 0.0)
         {
-            int CSMLayer = 0;
-            bool OutOfRange = false;
+			vec4 csmPos;
+            int csmLayer = 0;//#todo: CCGetCSMLevel(csmPos, surfaceData.worldPos);
+            bool OutOfRange = csmLayer < 0;
             if (OutOfRange)
                 colDebugCSMLayer = vec3(1.0);
-            else if (CSMLayer == 0)
+            else if (csmLayer == 0)
                 colDebugCSMLayer = vec3(1.0, 0.0, 0.0);
-            else if (CSMLayer == 1)
+            else if (csmLayer == 1)
                 colDebugCSMLayer = vec3(0.0, 1.0, 0.0);
-            else if (CSMLayer == 2)
+            else if (csmLayer == 2)
                 colDebugCSMLayer = vec3(0.0, 0.0, 1.0);
-            else if (CSMLayer == 3)
+            else if (csmLayer == 3)
                 colDebugCSMLayer = vec3(0.0, 1.0, 1.0);
         }
       #endif
