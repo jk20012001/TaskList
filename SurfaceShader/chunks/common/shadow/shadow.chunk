@@ -1,10 +1,12 @@
-float CCGetLinearDepthFromViewSpace(vec3 viewPos, float near, float far) {
-  float dist = length(viewPos);
-  return (dist - near) / (far - near);
-}
+// When screenSpaceSingY and clipSpaceSignY have different signs, need to flip the uv
+#pragma define CC_HANDLE_NDC_SAMPLE_FLIP(uv) uv = cc_cameraPos.w == 1.0 ? vec2(uv.x, 1.0 - uv.y) : uv
 
-//cc_matLightView, cc_shadowNFLSInfo.x, cc_shadowNFLSInfo.y
-float CCGetLinearDepth(vec3 worldPos, mat4 matLightView, float near, float far) {
-  vec4 viewStartPos = cc_matLightView * vec4(worldPos.xyz, 1.0);
-  return CCGetLinearDepthFromViewSpace(viewStartPos.xyz, near, far);
+vec3 GetShadowNDCPos (vec4 shadowPosWithDepthBias)
+{
+  vec3 shadowNDCPos = shadowPosWithDepthBias.xyz / shadowPosWithDepthBias.w * 0.5 + 0.5;
+  if (shadowNDCPos.x < 0.0 || shadowNDCPos.x > 1.0 ||
+      shadowNDCPos.y < 0.0 || shadowNDCPos.y > 1.0 ||
+      shadowNDCPos.z < 0.0 || shadowNDCPos.z > 1.0) { return 1.0; }
+  CC_HANDLE_NDC_SAMPLE_FLIP(shadowNDCPos.xy);
+  return shadowNDCPos;
 }
