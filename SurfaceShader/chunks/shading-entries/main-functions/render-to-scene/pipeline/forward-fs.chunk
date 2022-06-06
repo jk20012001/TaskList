@@ -15,12 +15,7 @@ void main()  {
   vec3 colDebugCSMLayer = vec3(1.0);
   #if CC_RECEIVE_SHADOW
     shadowPos = cc_matLightViewProj * vec4(surfaceData.worldPos, 1.0);
-    shadowBias = vec2(cc_shadowWHPBInfo.w, cc_shadowLPNNInfo.z);
-    #if USE_INSTANCING
-      shadowBias = FSInput_shadowBias;
-    #elif !USE_BATCHING
-      shadowBias += cc_localShadowBias.xy;
-    #endif
+    shadowBias = FSInput_shadowBias;
     #if !CC_FORWARD_ADD
       #if CC_USE_DEBUG_VIEW && CC_SURFACES_ENABLE_DEBUG_VIEW
         if (cc_debug_view_misc_enable_csm_layer_coloration > 0.0)
