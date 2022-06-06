@@ -26,7 +26,6 @@
 import { JSB } from 'internal:constants';
 import { legacyCC } from '../global-exports';
 import { Root } from '../root';
-// import { NaitveSkybox } from '../native-scene';
 import { GlobalDSManager } from './global-descriptor-set-manager';
 import { Device } from '../gfx';
 import { Enum } from '../value-types';
@@ -176,6 +175,14 @@ export class DebugView {
         this._updatePipeline();
     }
 
+    /**
+     * @en get debug view on / off state
+     * @zh 当前是否开启了调试模式
+     */
+    public isDebugViewEnabled () {
+        return this._getDebugViewType() !== DebugViewType.NONE;
+    }
+
     protected _singleMode = DebugViewSingleType.NONE;
     protected _compositeModeValue = 0;
     protected _lightingWithAlbedo = true;
@@ -232,10 +239,6 @@ export class DebugView {
 
         // Once you have entered debug mode, don't turn off this macro again, it will always be in debug mode until you restart the editor
         const useDebugView = this._currentDebugViewType === DebugViewType.NONE ? this._getDebugViewType() : this._currentDebugViewType;
-
-        if (useDebugView !== DebugViewType.NONE) {
-            pipeline.pipelineUBO.updateDebugViewUBO();
-        }
 
         if (pipeline.macros.CC_USE_DEBUG_VIEW !== useDebugView) {
             pipeline.macros.CC_USE_DEBUG_VIEW = useDebugView;

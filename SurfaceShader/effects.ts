@@ -1,16 +1,16 @@
 
 export function migrateChunkFolders(asset: Asset) {
     const includeMap = new Map([
-        ['cc-shadow-map-base', 'builtin/internal-functions/shadow-map'],// todo
+        ['cc-shadow-map-base', 'builtin/internal-functions/shadow-map'],
 
-        ['cc-fog-base', 'legacy/fog-base'], // existed legacy
+        ['cc-fog-base', 'legacy/fog-base'], // existed, already modified
         ['morph', 'legacy/morph'],
         ['cc-skinning', 'legacy/skinning'], 
         ['cc-local-batch', 'legacy/local-batch'],
         ['lighting', 'legacy/lighting'],
         ['lightingmap-fs', 'legacy/lightingmap-fs'],
 
-        ['cc-shadow-map-vs', 'legacy/shadow-map-vs'], // move to
+        ['cc-shadow-map-vs', 'legacy/shadow-map-vs'], // move without any modifying
         ['cc-shadow-map-fs', 'legacy/shadow-map-fs'],
         ['cc-fog-vs', 'legacy/fog-vs'],
         ['cc-fog-fs', 'legacy/fog-fs'],
