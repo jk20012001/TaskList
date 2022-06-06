@@ -187,7 +187,6 @@ export class DebugView {
     protected _compositeModeValue = 0;
     protected _lightingWithAlbedo = true;
     protected _csmLayerColoration = false;
-    protected _currentDebugViewType = DebugViewType.NONE;
 
     /**
      * @internal
@@ -217,7 +216,7 @@ export class DebugView {
             return DebugViewType.COMPOSITE_AND_MISC;
         } else {
             for (let i = 0; i < DebugViewCompositeType.MAX_BIT_COUNT; i++) {
-                if (this.isCompositeModeEnabled(i)) {
+                if (!this.isCompositeModeEnabled(i)) {
                     return DebugViewType.COMPOSITE_AND_MISC;
                 }
             }
@@ -230,15 +229,13 @@ export class DebugView {
         this._enableAllCompositeMode(true);
         this._lightingWithAlbedo = true;
         this._csmLayerColoration = false;
-        this._currentDebugViewType = DebugViewType.NONE;
     }
 
     protected _updatePipeline () {
         const root = legacyCC.director.root as Root;
         const pipeline = root.pipeline;
 
-        // Once you have entered debug mode, don't turn off this macro again, it will always be in debug mode until you restart the editor
-        const useDebugView = this._currentDebugViewType === DebugViewType.NONE ? this._getDebugViewType() : this._currentDebugViewType;
+        const useDebugView = this._getDebugViewType();
 
         if (pipeline.macros.CC_USE_DEBUG_VIEW !== useDebugView) {
             pipeline.macros.CC_USE_DEBUG_VIEW = useDebugView;
