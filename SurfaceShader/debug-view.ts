@@ -247,5 +247,3 @@ export class DebugView {
     public destroy () {
     }
 }
-
-legacyCC.debugView = new DebugView();
