@@ -206,7 +206,7 @@ float CCGetLinearDepth(vec3 worldPos) {
     return mix(realtimeShadow, 1.0, cc_shadowNFLSInfo.w);
   }
   
-  /*
+
   int CCGetCSMLevel(out vec4 csmPos, out vec4 shadowProjDepthInfo, out vec4 shadowProjInfo, out mat4 matLightView, vec3 worldPos) {
     for (int i = 0; i < NUMCASCADES; i++) {
       vec4 shadowPos = cc_matShadowViewProj_levels[i] * vec4(worldPos.xyz, 1.0);
@@ -249,7 +249,6 @@ float CCGetLinearDepth(vec3 worldPos) {
     }
     return mix(realtimeShadow, 1.0, cc_shadowNFLSInfo.w);
   }
-  */
 #endif
 
 //#todo: move to legacy/shadow-map-vs.chunk, delete include cc-shadow-map-base in shadow-map-vs.chunk
