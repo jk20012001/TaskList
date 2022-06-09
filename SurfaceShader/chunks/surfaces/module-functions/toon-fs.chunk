@@ -135,10 +135,10 @@ void CCSurfacesDebugViewSurfaceData(out vec4 color, in SurfacesMaterialData surf
         color = vec4(surfaceData.worldNormal * 0.5 + vec3(0.5), 1.0);
 
     if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FRAGMENT_TANGENT))
-        color = vec4(0.5, 0.5, 0.5, 1.0);
+        color = vec4(0.0, 0.0, 0.0, 1.0);
 
     if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FRAGMENT_BINORMAL))
-        color = vec4(0.5, 0.5, 0.5, 1.0);
+        color = vec4(0.0, 0.0, 0.0, 1.0);
 
     if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_TRANSPARENCY))
     {

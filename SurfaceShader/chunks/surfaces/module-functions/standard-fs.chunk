@@ -141,15 +141,28 @@ vec4 CCSurfacesShading(in SurfacesMaterialData surfaceData, in LightingResult li
 #if CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_SINGLE
 void CCSurfacesDebugViewSurfaceData(out vec4 color, in SurfacesMaterialData surfaceData)
 {
+    vec4 black = vec4(0.0, 0.0, 0.0, 1.0);
     float scalar;
     if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FRAGMENT_NORMAL))
         color = vec4(surfaceData.worldNormal * 0.5 + vec3(0.5), 1.0);
 
     if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FRAGMENT_TANGENT))
+    {
+      #if CC_SURFACES_USE_TANGENT_SPACE
         color = vec4(surfaceData.worldTangent * 0.5 + vec3(0.5), 1.0);
+      #else
+        color = black;
+      #endif
+    }
 
     if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_FRAGMENT_BINORMAL))
+    {
+      #if CC_SURFACES_USE_TANGENT_SPACE
         color = vec4(surfaceData.worldBinormal * 0.5 + vec3(0.5), 1.0);
+      #else
+        color = black;
+      #endif
+    }
 
     if (IS_SINGLE_MODE(CC_SURFACES_DEBUG_VIEW_TRANSPARENCY)) {
         scalar = surfaceData.baseColor.a;

@@ -3,22 +3,24 @@
 @echo 请选择:
 @echo 1: 编译editor(快速)
 @echo 2: 编译ts引擎声明
-@echo 3: 编译原生绑定
+@echo 3: 编译原生绑定(提示缺少库的话请先选择py)
 @echo 4: 编译全部effect
 @echo effect: 编译单个effect
-@echo 5: 编译debuginfo(解决unkown id的问题)
+@echo 5: 编译debuginfo(解决EngineErrorMap unkown id的问题)
 @echo run: 运行editor
 @echo=
 @echo env: 编译原生绑定所需的环境变量NDK_ROOT及npm所需的环境变量NODE_PATH等
-@echo npm: 全局安装npm所需的库(必须安装Nodejs14.x)
+@echo npm: 全局安装npm所需的库
+@echo py: 全局安装python所需的库
 @echo link: 符号链接resources下的引擎文件夹--写死
 @echo link2: 符号链接resources下的引擎文件夹--手动指定
 @echo=
 @echo init: 初始化环境(解决找不到cocos-for-editor分支等问题)
 @echo clean: 清理仓库(解决编不过的问题)
 @echo b: 完全编译(如果编辑器编不过的话请手动更新app\modules\engine-extensions到正确的版本)
-@echo fix1: 修复MODULE_NOT_FOUND的问题
-@echo fix2: 修复完全编译typedoc提示找不到typescript\bin\tsc导致引擎编不过的问题(可能还要手动更新engine\scripts\typedoc-plugin)
+@echo=
+@echo fix1: 修复完全编译时MODULE_NOT_FOUND的问题
+@echo fix2: 修复完全编译时typedoc提示找不到typescript\bin\tsc导致引擎编不过的问题(可能还要手动更新engine\scripts\typedoc-plugin)
 @echo=
 set /p choice=请输入:
 @echo=
@@ -57,13 +59,6 @@ call npm run build-declaration
 cd ..\..\..\
 call npm install
 )
-if "%choice%"=="fix1" (
-C:\goldapps\DLLFunc.exe goldfx.dll toolFileFindAndReplace "%~dp0workflow\config.js" ", '--production'"
-)
-if "%choice%"=="fix2" (
-cd resources\3d\engine\scripts\typedoc-plugin\
-npm install typescript
-)
 if "%choice%"=="run" (
 if exist resources\3d\engine\bin\.cache\dev\editor\import-map.json (
 rem call npm run build:effect
@@ -82,6 +77,7 @@ rem C:\goldapps\DLLFunc.exe goldfx.dll toolAddPathToSystemEnvironmentValue C:\Us
 )
 if "%choice%"=="npm" (
 explorer https://nodejs.org/download/release/v14.19.2/
+@echo 必须安装Nodejs14.x
 pause
 npm install typescript -g
 npm install tslint -g
@@ -90,6 +86,19 @@ npm install gulp -g
 npm install yarn -g
 npm install workflow-admin -g
 )
+if "%choice%"=="py" (
+@echo 必须使用Python2.x且关闭代理及VPN
+pip install pyyaml==5.4.1
+pip install cheetah
+)
+if "%choice%"=="fix1" (
+C:\goldapps\DLLFunc.exe goldfx.dll toolFileFindAndReplace "%~dp0workflow\config.js" ", '--production'"
+)
+if "%choice%"=="fix2" (
+cd resources\3d\engine\scripts\typedoc-plugin\
+npm install typescript
+)
+
 if "%choice%"=="link" (
 set enginepath=f:\work\engine\current
 md resources\3d
