@@ -20,8 +20,8 @@ void main()  {
         {
             vec4 csmPos;
             vec4 shadowProjDepthInfo, shadowProjInfo;
-            mat4 matLightView;
-            int csmLayer = CCGetCSMLevel(csmPos, shadowProjDepthInfo, shadowProjInfo, matLightView, surfaceData.worldPos);
+            mat4 matShadowView;
+            int csmLayer = CCGetCSMLevel(csmPos, shadowProjDepthInfo, shadowProjInfo, matShadowView, surfaceData.worldPos);
             bool OutOfRange = csmLayer < 0;
             if (OutOfRange)
                 colDebugCSMLayer = vec3(1.0);
@@ -95,9 +95,6 @@ void main()  {
     return;
 
   #elif CC_USE_DEBUG_VIEW == CC_SURFACES_DEBUG_VIEW_COMPOSITE_AND_MISC && CC_SURFACES_ENABLE_DEBUG_VIEW
-    #if CC_FORWARD_ADD
-      if(IS_DEBUG_VIEW_COMPOSITE_ENABLE_DIRECT_DIFFUSE || IS_DEBUG_VIEW_COMPOSITE_ENABLE_DIRECT_SPECULAR)
-    #endif
     CCSurfacesDebugViewCompositeLightingResult(lightingResult);
   #endif
 
