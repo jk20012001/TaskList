@@ -1,11 +1,10 @@
 @echo 先cocosshaderlink, 再执行本文件, 最后运行引擎以迁移代码
 @echo 如果要提交的时候,请检查chunks根目录下的文件,和3.5.1版的是否有不同,尤其是morph batch skinning相关的
-@echo 要不要改builtin/internal-functions为functionality, internal-use为internal-usage? builtin/uniforms/cc-skinning-uniforms为cc-skinning
 
 set dstpath=%1\editor\assets\chunks\
 set srcpath= %~dp0\chunks\
 
-xcopy /s /y "%~dp0\临时复制\chunks\" "%dstpath%"
+rem xcopy /s /y "%~dp0\临时复制\chunks\" "%dstpath%"
 
 cd /d "%dstpath%"
 
@@ -123,6 +122,8 @@ move cc-csm.chunk builtin\uniforms\
 move cc-csm.chunk.meta builtin\uniforms\
 move cc-world-bound.chunk builtin\uniforms\
 move cc-world-bound.chunk.meta builtin\uniforms\
+move builtin\uniforms\cc-skinning-uniforms.chunk builtin\uniforms\cc-skinning.chunk
+move builtin\uniforms\cc-skinning-uniforms.chunk.meta builtin\uniforms\cc-skinning.chunk.meta
 
 
 @echo common
@@ -153,8 +154,3 @@ move fxaa.chunk post-process\
 move fxaa.chunk.meta post-process\
 move anti-aliasing.chunk post-process\
 move anti-aliasing.chunk.meta post-process\
-
-@echo=
-@echo 即将打开要修改的文件第8行改回include cc-shadow-map-base
-pause
-D:\Tools\Tools\Text\notepad++\notepad++.exe "%dstpath%builtin\internal-functions\shadow-map.chunk"

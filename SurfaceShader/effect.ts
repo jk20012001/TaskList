@@ -324,7 +324,7 @@ export function migrateChunkFolders(asset: Asset) {
         ['cc-fog-base', 'legacy/fog-base'], // existed, already modified
         ['cc-shadow-map-base', 'legacy/shadow-map-base'],
         ['morph', 'legacy/morph'],
-        ['cc-skinning', 'legacy/skinning'], 
+        ['cc-skinning', 'legacy/skinning'],
         ['cc-local-batch', 'legacy/local-batch'],
         ['lighting', 'legacy/lighting'],
         ['lightingmap-fs', 'legacy/lightingmap-fs'],
@@ -362,6 +362,7 @@ export function migrateChunkFolders(asset: Asset) {
         ['cc-shadow', 'builtin/uniforms/cc-shadow'],
         ['cc-csm', 'builtin/uniforms/cc-csm'],
         ['cc-world-bound', 'builtin/uniforms/cc-world-bound'],
+        ['builtin/uniforms/cc-skinning-uniforms', 'builtin/uniforms/cc-skinning'],
 
         ['common', 'common/common-define'],
         ['texture-lod', 'common/texture/texture-lod'],
