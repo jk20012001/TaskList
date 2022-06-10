@@ -22,13 +22,11 @@ del /F builtin\legacy-cc-skinning.chunk.meta
 del /F builtin\legacy-morph.chunk
 del /F builtin\legacy-morph.chunk.meta
 
-@echo builtin/internal-functions
-del /F cc-shadow-map-base.chunk
-del /F cc-shadow-map-base.chunk.meta
-
 @echo existed in tasklist legacy folder
 del /F cc-fog-base.chunk
 del /F cc-fog-base.chunk.meta
+del /F cc-shadow-map-base.chunk
+del /F cc-shadow-map-base.chunk.meta
 del /F morph.chunk
 del /F morph.chunk.meta
 del /F cc-local-batch.chunk

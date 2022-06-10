@@ -10,7 +10,6 @@ float CCGetLinearDepth(vec3 worldPos) {
 
 #if CC_RECEIVE_SHADOW
   #include <cc-global>
-  #include <cc-csm>
   #include <builtin/uniforms/cc-shadow-map>
 
   #include <packing>
@@ -209,17 +208,17 @@ float CCGetLinearDepth(vec3 worldPos) {
 
   int CCGetCSMLevel(out vec4 csmPos, out vec4 shadowProjDepthInfo, out vec4 shadowProjInfo, out mat4 matShadowView, vec3 worldPos) {
     for (int i = 0; i < NUMCASCADES; i++) {
-      vec4 shadowPos = cc_matShadowViewProj_levels[i] * vec4(worldPos.xyz, 1.0);
+      vec4 shadowPos = cc_matCSMViewProj[i] * vec4(worldPos.xyz, 1.0);
       vec3 clipPos = shadowPos.xyz / shadowPos.w * 0.5 + 0.5;
       if (clipPos.x < (0.0 + cc_csmInfo.y) || clipPos.x > (1.0 - cc_csmInfo.y) ||
           clipPos.y < (0.0 + cc_csmInfo.y) || clipPos.y > (1.0 - cc_csmInfo.y) ||
           clipPos.z < 0.0 || clipPos.z > 1.0) {
         continue;
       }
-      csmPos = cc_matShadowViewProjAtlas_levels[i] * vec4(worldPos.xyz, 1.0);
-	  shadowProjDepthInfo = cc_shadowProjDepthInfo_levels[i];
-	  shadowProjInfo = cc_shadowProjInfo_levels[i];
-	  matShadowView = cc_matShadowLightView_levels[i];
+      csmPos = cc_matCSMViewProjAtlas[i] * vec4(worldPos.xyz, 1.0);
+	  shadowProjDepthInfo = cc_csmProjDepthInfo[i];
+	  shadowProjInfo = cc_csmProjInfo[i];
+	  matShadowView = cc_matCSMView[i];
       return i;
     }
     return -1;
@@ -250,6 +249,3 @@ float CCGetLinearDepth(vec3 worldPos) {
     return mix(realtimeShadow, 1.0, cc_shadowNFLSInfo.w);
   }
 #endif
-
-//#todo: move to legacy/shadow-map-vs.chunk, delete include cc-shadow-map-base in shadow-map-vs.chunk
-#pragma define CC_TRANSFER_SHADOW_BASE(pos, shadowPos) shadowPos = cc_matLightViewProj * pos

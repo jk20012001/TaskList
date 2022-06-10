@@ -321,9 +321,8 @@ export function migrateMacroUseLightMap(asset: Asset) {
 
 export function migrateChunkFolders(asset: Asset) {
     const includeMap = new Map([
-        ['cc-shadow-map-base', 'builtin/internal-functions/shadow-map'],
-
         ['cc-fog-base', 'legacy/fog-base'], // existed, already modified
+        ['cc-shadow-map-base', 'legacy/shadow-map-base'],
         ['morph', 'legacy/morph'],
         ['cc-skinning', 'legacy/skinning'], 
         ['cc-local-batch', 'legacy/local-batch'],
