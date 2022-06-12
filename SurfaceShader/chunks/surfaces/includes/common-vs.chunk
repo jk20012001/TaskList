@@ -20,6 +20,6 @@
   #include <builtin/internal-functions/skinning-animation-lbs>
 #endif
 
-#if !CC_USE_ACCURATE_FOG
+#if CC_USE_FOG != CC_FOG_NONE && !CC_USE_ACCURATE_FOG
   #include <builtin/internal-functions/fog>
 #endif
