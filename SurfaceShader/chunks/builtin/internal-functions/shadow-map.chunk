@@ -238,9 +238,9 @@ float CCGetLinearDepth(vec3 worldPos) {
   
     float pcf = cc_shadowWHPBInfo.z;
     if (pcf > 2.9) {
-      realtimeShadow = CCGetDirLightShadowFactorSoft4X(pos);
+      realtimeShadow = CCGetDirLightShadowFactorSoft5X(pos);
     } else if (pcf > 1.9) {
-      realtimeShadow = CCGetDirLightShadowFactorSoft2X(pos);
+      realtimeShadow = CCGetDirLightShadowFactorSoft3X(pos);
     } else if (pcf > 0.9) {
       realtimeShadow = CCGetDirLightShadowFactorSoft(pos);
     }else { 
