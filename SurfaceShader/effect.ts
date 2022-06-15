@@ -378,9 +378,9 @@ export function migrateChunkFolders(asset: Asset) {
         ['anti-aliasing', 'post-process/anti-aliasing'],
     ]);
     const mainFunctionMap = new Map([
-        ['vert:\\s+particle-vs-gpu', 'vert: builtin/main-functions/particle-vs-gpu'],
-        ['vert:\\s+particle-vs-legacy', 'vert: builtin/main-functions/particle-vs-legacy'],
-        ['vert:\\s+particle-trail', 'vert: builtin/main-functions/particle-trail'],
+        ['vert:\\s+particle-vs-gpu', 'vert: builtin/internal-use/particle-vs-gpu'],
+        ['vert:\\s+particle-vs-legacy', 'vert: builtin/internal-use/particle-vs-legacy'],
+        ['vert:\\s+particle-trail', 'vert: builtin/internal-use/particle-trail'],
         ['vert:\\s+outline-vs', 'vert: builtin/main-functions/outline-vs'],
         ['frag:\\s+outline-fs', 'frag: builtin/main-functions/outline-fs'],
         ['vert:\\s+general-vs', 'vert: builtin/main-functions/general-vs'],

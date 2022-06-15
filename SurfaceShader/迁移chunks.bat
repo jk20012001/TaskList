@@ -89,15 +89,15 @@ move embedded-alpha.chunk builtin\internal-use\
 move embedded-alpha.chunk.meta builtin\internal-use\
 move particle-common.chunk builtin\internal-use\
 move particle-common.chunk.meta builtin\internal-use\
+move particle-trail.chunk builtin\internal-use\
+move particle-trail.chunk.meta builtin\internal-use\
+move particle-vs-gpu.chunk builtin\internal-use\
+move particle-vs-gpu.chunk.meta builtin\internal-use\
+move particle-vs-legacy.chunk builtin\internal-use\
+move particle-vs-legacy.chunk.meta builtin\internal-use\
 
 @echo main functions
 md builtin\main-functions\
-move particle-trail.chunk builtin\main-functions\
-move particle-trail.chunk.meta builtin\main-functions\
-move particle-vs-gpu.chunk builtin\main-functions\
-move particle-vs-gpu.chunk.meta builtin\main-functions\
-move particle-vs-legacy.chunk builtin\main-functions\
-move particle-vs-legacy.chunk.meta builtin\main-functions\
 move general-vs.chunk builtin\main-functions\
 move general-vs.chunk.meta builtin\main-functions\
 move outline-vs.chunk builtin\main-functions\
