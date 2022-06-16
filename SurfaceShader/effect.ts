@@ -6,6 +6,8 @@ import { existsSync, readFileSync, writeFileSync } from 'fs-extra';
 import { basename, dirname, extname, join, relative, resolve } from 'path';
 import { buildEffect, IChunkInfo, options } from '../../../static/effect-compiler';
 
+import { getDependUUIDList } from '../utils';
+
 // 当某个头文件请求没找到，尝试把这个请求看成相对当前 effect 的路径，返回实际头文件路径再尝试找一下
 const closure = { root: '', dir: '' };
 options.throwOnWarning = true; // be more strict on the user input for now
@@ -98,8 +100,11 @@ export default class EffectImporter extends Importer {
                 }
             }
 
-            // @ts-ignore
-            await asset.saveToLibrary('.json', EditorExtends.serialize(result));
+            const serializeJSON = EditorExtends.serialize(result);
+            await asset.saveToLibrary('.json', serializeJSON);
+
+            const depends = getDependUUIDList(serializeJSON);
+            asset.setData('depends', depends);
 
             return true;
         } catch (err) {
