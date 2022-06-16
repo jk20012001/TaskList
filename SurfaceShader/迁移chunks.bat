@@ -2,7 +2,7 @@
 @echo 如果要提交的时候,请检查chunks根目录下的文件,和3.5.1版的是否有不同,尤其是morph batch skinning相关的
 
 set dstpath=%1\editor\assets\chunks\
-set srcpath= %~dp0\chunks\
+set srcpath=%~dp0\chunks\
 
 rem xcopy /s /y "%~dp0\临时复制\chunks\" "%dstpath%"
 
@@ -39,6 +39,8 @@ del /F lightingmap-fs.chunk.meta
 
 @echo legacy
 md legacy
+copy "%srcpath%legacy\*.*" legacy\
+pause
 move cc-shadow-map-vs.chunk legacy\shadow-map-vs.chunk
 move cc-shadow-map-vs.chunk.meta legacy\shadow-map-vs.chunk.meta
 move cc-shadow-map-fs.chunk legacy\shadow-map-fs.chunk
@@ -154,3 +156,5 @@ move fxaa.chunk post-process\
 move fxaa.chunk.meta post-process\
 move anti-aliasing.chunk post-process\
 move anti-aliasing.chunk.meta post-process\
+
+pause
