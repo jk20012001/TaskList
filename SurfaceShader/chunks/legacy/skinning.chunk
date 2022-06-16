@@ -1,4 +1,4 @@
 #include <common>
 #include <builtin/uniforms/cc-skinning-uniforms>
-#include <builtin/internal-functions/skinning-animation-lbs>
-//#include <builtin/internal-functions/skinning-animation-dqs>
+#include <builtin/functionalities/skinning-animation-lbs>
+//#include <builtin/functionalities/skinning-animation-dqs>

@@ -77,33 +77,33 @@ move standard-surface-entry.chunk legacy\
 move standard-surface-entry.chunk.meta legacy\
 
 
-@echo builtin\internal-use
-md builtin\internal-use\
-move alpha-test.chunk builtin\internal-use\
-move alpha-test.chunk.meta builtin\internal-use\
-move cc-sprite-common.chunk builtin\internal-use\sprite-common.chunk
-move cc-sprite-common.chunk.meta builtin\internal-use\sprite-common.chunk.meta
-move cc-sprite-texture.chunk builtin\internal-use\sprite-texture.chunk
-move cc-sprite-texture.chunk.meta builtin\internal-use\sprite-texture.chunk.meta
-move embedded-alpha.chunk builtin\internal-use\
-move embedded-alpha.chunk.meta builtin\internal-use\
-move particle-common.chunk builtin\internal-use\
-move particle-common.chunk.meta builtin\internal-use\
-move particle-trail.chunk builtin\internal-use\
-move particle-trail.chunk.meta builtin\internal-use\
-move particle-vs-gpu.chunk builtin\internal-use\
-move particle-vs-gpu.chunk.meta builtin\internal-use\
-move particle-vs-legacy.chunk builtin\internal-use\
-move particle-vs-legacy.chunk.meta builtin\internal-use\
+@echo builtin\internal
+md builtin\internal\
+move alpha-test.chunk builtin\internal\
+move alpha-test.chunk.meta builtin\internal\
+move cc-sprite-common.chunk builtin\internal\sprite-common.chunk
+move cc-sprite-common.chunk.meta builtin\internal\sprite-common.chunk.meta
+move cc-sprite-texture.chunk builtin\internal\sprite-texture.chunk
+move cc-sprite-texture.chunk.meta builtin\internal\sprite-texture.chunk.meta
+move embedded-alpha.chunk builtin\internal\
+move embedded-alpha.chunk.meta builtin\internal\
+move particle-common.chunk builtin\internal\
+move particle-common.chunk.meta builtin\internal\
+move particle-trail.chunk builtin\internal\
+move particle-trail.chunk.meta builtin\internal\
+move particle-vs-gpu.chunk builtin\internal\
+move particle-vs-gpu.chunk.meta builtin\internal\
+move particle-vs-legacy.chunk builtin\internal\
+move particle-vs-legacy.chunk.meta builtin\internal\
 
 @echo main functions
-md builtin\main-functions\
-move general-vs.chunk builtin\main-functions\
-move general-vs.chunk.meta builtin\main-functions\
-move outline-vs.chunk builtin\main-functions\
-move outline-vs.chunk.meta builtin\main-functions\
-move outline-fs.chunk builtin\main-functions\
-move outline-fs.chunk.meta builtin\main-functions\
+md legacy\main-functions\
+move general-vs.chunk legacy\main-functions\
+move general-vs.chunk.meta legacy\main-functions\
+move outline-vs.chunk legacy\main-functions\
+move outline-vs.chunk.meta legacy\main-functions\
+move outline-fs.chunk legacy\main-functions\
+move outline-fs.chunk.meta legacy\main-functions\
 
 @echo builtin\uniforms
 move cc-global.chunk builtin\uniforms\

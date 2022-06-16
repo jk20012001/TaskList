@@ -1,3 +1,3 @@
 需要维持和chunks更新的:
 lighting\attenuation.chunk
-internal-functions\local-batch.chunk
+functionalities\local-batch.chunk

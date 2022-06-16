@@ -353,11 +353,11 @@ export function migrateChunkFolders(asset: Asset) {
         ['shading-toon', 'legacy/shading-toon'],
         ['standard-surface-entry', 'legacy/standard-surface-entry'],
 
-        ['alpha-test', 'builtin/internal-use/alpha-test'],
-        ['cc-sprite-common', 'builtin/internal-use/sprite-common'],
-        ['cc-sprite-texture', 'builtin/internal-use/sprite-texture'],
-        ['embedded-alpha', 'builtin/internal-use/embedded-alpha'],
-        ['particle-common', 'builtin/internal-use/particle-common'],
+        ['alpha-test', 'builtin/internal/alpha-test'],
+        ['cc-sprite-common', 'builtin/internal/sprite-common'],
+        ['cc-sprite-texture', 'builtin/internal/sprite-texture'],
+        ['embedded-alpha', 'builtin/internal/embedded-alpha'],
+        ['particle-common', 'builtin/internal/particle-common'],
 
         ['cc-global', 'builtin/uniforms/cc-global'],
         ['cc-local', 'builtin/uniforms/cc-local'],
@@ -383,12 +383,12 @@ export function migrateChunkFolders(asset: Asset) {
         ['anti-aliasing', 'post-process/anti-aliasing'],
     ]);
     const mainFunctionMap = new Map([
-        ['vert:\\s+particle-vs-gpu', 'vert: builtin/internal-use/particle-vs-gpu'],
-        ['vert:\\s+particle-vs-legacy', 'vert: builtin/internal-use/particle-vs-legacy'],
-        ['vert:\\s+particle-trail', 'vert: builtin/internal-use/particle-trail'],
-        ['vert:\\s+outline-vs', 'vert: builtin/main-functions/outline-vs'],
-        ['frag:\\s+outline-fs', 'frag: builtin/main-functions/outline-fs'],
-        ['vert:\\s+general-vs', 'vert: builtin/main-functions/general-vs'],
+        ['vert:\\s+particle-vs-gpu', 'vert: builtin/internal/particle-vs-gpu'],
+        ['vert:\\s+particle-vs-legacy', 'vert: builtin/internal/particle-vs-legacy'],
+        ['vert:\\s+particle-trail', 'vert: builtin/internal/particle-trail'],
+        ['vert:\\s+outline-vs', 'vert: legacy/main-functions/outline-vs'],
+        ['frag:\\s+outline-fs', 'frag: legacy/main-functions/outline-fs'],
+        ['vert:\\s+general-vs', 'vert: legacy/main-functions/general-vs'],
     ]);
 
     let effect = readFileSync(asset.source, { encoding: 'utf8' });
