@@ -131,6 +131,9 @@ CCProgram surface-vertex %{
     vec3 worldNormal = In.worldNormal.xyz;
     worldNormal.x += sin(cc_time.x * 3.0);
     worldNormal.y += cos(cc_time.x * 3.0);
+  #if CC_SURFACES_USE_TWO_SIDED
+      worldNormal.xyz *= In.worldNormal.w;
+  #endif
     return normalize(worldNormal);
   }*/
   
