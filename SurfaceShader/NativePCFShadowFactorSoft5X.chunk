@@ -1,0 +1,71 @@
+float NativePCFShadowFactorSoft5X (vec3 shadowNDCPos, sampler2D shadowMap, vec2 shadowMapResolution)
+{
+  vec2 oneTap = 1.0 / shadowMapResolution;  
+  vec2 twoTap = oneTap * 2.0;
+
+  vec2 offset[25];
+  float block[25];
+  offset[0]  = vec2(-twoTap.x, -twoTap.y);
+  offset[1]  = vec2(-oneTap.x, -twoTap.y);
+  offset[2]  = vec2(0.0, -twoTap.y);
+  offset[3]  = vec2(oneTap.x, -twoTap.y);
+  offset[4]  = vec2(twoTap.x, -twoTap.y);
+  offset[5]  = vec2(-twoTap.x, -oneTap.y);
+  offset[6]  = vec2(-oneTap.x, -oneTap.y);
+  offset[7]  = vec2(0.0, -oneTap.y);
+  offset[8]  = vec2(oneTap.x, -oneTap.y);
+  offset[9] = vec2(twoTap.x, -oneTap.y);
+  offset[10] = vec2(-twoTap.x, 0.0);
+  offset[11] = vec2(-oneTap.x, 0.0);
+  offset[12] = vec2(0.0, 0.0);
+  offset[13] = vec2(oneTap.x, 0.0);
+  offset[14] = vec2(twoTap.x, 0.0);
+  offset[15] = vec2(-twoTap.x, oneTap.y);
+  offset[16] = vec2(-oneTap.x, oneTap.y);
+  offset[17] = vec2(0.0, oneTap.y);
+  offset[18] = vec2(oneTap.x, oneTap.y);
+  offset[19] = vec2(twoTap.x, oneTap.y);
+  offset[20] = vec2(-twoTap.x, twoTap.y);
+  offset[21] = vec2(-oneTap.x, twoTap.y);
+  offset[22] = vec2(0.0, twoTap.y);
+  offset[23] = vec2(oneTap.x, twoTap.y);
+  offset[24] = vec2(twoTap.x, twoTap.y);
+  
+  for(int i = 0; i < 25; i++) {
+    #if CC_SHADOWMAP_FORMAT == SHADOWMAP_FORMAT_RGBA8
+      block[i] = step(shadowNDCPos.z, unpackRGBAToDepth(texture(shadowMap, shadowNDCPos.xy + offset[i])));
+    #else
+      block[i] = step(shadowNDCPos.z, texture(shadowMap, shadowNDCPos.xy + offset[i]).x);
+    #endif
+  }
+  
+  vec2 coef = fract(shadowNDCPos.xy * shadowMapResolution);
+  vec2 v1X1 = mix(vec2(block[0], block[5]), vec2(block[1], block[6]), coef.xx);
+  vec2 v1X2 = mix(vec2(block[1], block[6]), vec2(block[2], block[7]), coef.xx);
+  vec2 v1X3 = mix(vec2(block[2], block[7]), vec2(block[3], block[8]), coef.xx);
+  vec2 v1X4 = mix(vec2(block[3], block[8]), vec2(block[4], block[9]), coef.xx);
+  float v1 = mix(v1X1.x, v1X1.y, coef.y) + mix(v1X2.x, v1X2.y, coef.y) + mix(v1X3.x, v1X3.y, coef.y) + mix(v1X4.x, v1X4.y, coef.y);
+  vec2 v2X1 = mix(vec2(block[5], block[10]), vec2(block[6], block[11]), coef.xx);
+  vec2 v2X2 = mix(vec2(block[6], block[11]), vec2(block[7], block[12]), coef.xx);
+  vec2 v2X3 = mix(vec2(block[7], block[12]), vec2(block[8], block[13]), coef.xx);
+  vec2 v2X4 = mix(vec2(block[8], block[13]), vec2(block[9], block[14]), coef.xx);
+  float v2 = mix(v2X1.x, v2X1.y, coef.y) + mix(v2X2.x, v2X2.y, coef.y) + mix(v2X3.x, v2X3.y, coef.y) + mix(v2X4.x, v2X4.y, coef.y);
+  vec2 v3X1 = mix(vec2(block[10], block[15]), vec2(block[11], block[16]), coef.xx);
+  vec2 v3X2 = mix(vec2(block[11], block[16]), vec2(block[12], block[17]), coef.xx);
+  vec2 v3X3 = mix(vec2(block[12], block[17]), vec2(block[13], block[18]), coef.xx);
+  vec2 v3X4 = mix(vec2(block[13], block[18]), vec2(block[14], block[19]), coef.xx);
+  float v3 = mix(v3X1.x, v3X1.y, coef.y) + mix(v3X2.x, v3X2.y, coef.y) + mix(v3X3.x, v3X3.y, coef.y) + mix(v3X4.x, v3X4.y, coef.y);
+  //vec2 v4X1 = mix(vec2(block[10], block[15]), vec2(block[11], block[16]), coef.xx);
+  //vec2 v4X2 = mix(vec2(block[11], block[16]), vec2(block[12], block[17]), coef.xx);
+  //vec2 v4X3 = mix(vec2(block[12], block[17]), vec2(block[13], block[18]), coef.xx);
+  //vec2 v4X4 = mix(vec2(block[13], block[18]), vec2(block[14], block[19]), coef.xx);
+  //float v4 = mix(v4X1.x, v4X1.y, coef.y) + mix(v4X2.x, v4X2.y, coef.y) + mix(v4X3.x, v4X3.y, coef.y) + mix(v4X4.x, v4X4.y, coef.y);
+  float v4 = v3;
+  vec2 v5X1 = mix(vec2(block[15], block[20]), vec2(block[16], block[21]), coef.xx);
+  vec2 v5X2 = mix(vec2(block[16], block[21]), vec2(block[17], block[22]), coef.xx);
+  vec2 v5X3 = mix(vec2(block[17], block[22]), vec2(block[18], block[23]), coef.xx);
+  vec2 v5X4 = mix(vec2(block[18], block[23]), vec2(block[19], block[24]), coef.xx);
+  float v5 = mix(v5X1.x, v5X1.y, coef.y) + mix(v5X2.x, v5X2.y, coef.y) + mix(v5X3.x, v5X3.y, coef.y) + mix(v5X4.x, v5X4.y, coef.y);
+  float fAvg = (v1 + v2 + v3 + v4 + v5) * 0.05;
+  return fAvg;
+}
