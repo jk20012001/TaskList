@@ -57,13 +57,19 @@ cd resources\3d\engine
 rem call npm install gulp
 call npm run build-declaration
 cd ..\..\..\
+cd app\modules\platform-extensions\
+git checkout -- .
+cd ..\..\..\
+rem del workflow\.update-cache.json
+rem pause
 call npm install
+rem node workflow/scripts/build.js "--disable-repl"
 )
 if "%choice%"=="run" (
 if exist resources\3d\engine\bin\.cache\dev\editor\import-map.json (
 rem call npm run build:effect
 rem node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js --engine f:\work\engine\current
-node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js
+rem node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js
 )
 call npm start
 )
@@ -100,10 +106,7 @@ npm install typescript
 )
 
 if "%choice%"=="link" (
-set enginepath=f:\work\engine\current
-md resources\3d
-cd resources\3d
-mklink /J engine !enginepath!
+goto linktoengine
 )
 if "%choice%"=="link2" (
 set /p enginepath=请把引擎文件夹拖到此处:
@@ -112,6 +115,15 @@ cd resources\3d
 mklink /J engine !enginepath!
 )
 
+:linktoengine
+set full=%CD%
+C:\goldapps\ConsoleTools.exe GetPathLastLevel %CD% pathname
+for /f %%i in (c:\envvar.txt)  Do set %%i
+cd ..\..\engine
+mklink /J %pathname% %~dp0resources\3d\engine
+
+
+:end
 pause
 cls
 goto start
