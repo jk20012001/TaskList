@@ -192,10 +192,10 @@ FS 中的函数大部分是只修改一项，在 Surface 函数中直接返回�
 
 | 预先定义宏                                              | 对应的函数定义                                       | 对应的材质模型 | 功能说明                                                     |
 | ------------------------------------------------------- | ---------------------------------------------------- | -------------- | ------------------------------------------------------------ |
-| CC_SURFACES_FRAGMENT_MODIFY_ BASECOLOR_AND_TRANSPARENCY | vec4 SurfacesFragmentModify BaseColorAndTransparency | Common         | 返回修改后的基础色（rgb 通道）和透明值（a 通道）               |
+| CC_SURFACES_FRAGMENT_MODIFY_ BASECOLOR_AND_TRANSPARENCY | vec4 SurfacesFragmentModify BaseColorAndTransparency | Common         | 返回修改后的基础色（rgb 通道）和透明值（a 通道）             |
 | CC_SURFACES_FRAGMENT_MODIFY_ WORLD_NORMAL               | vec3 SurfacesFragmentModify WorldNormal              | Common         | 返回修改后的像素法线（通常是法线贴图）                       |
-| CC_SURFACES_FRAGMENT_MODIFY_ SHARED_DATA                | void SurfacesFragmentModify SharedData               | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改 Surface 结构体内的参数，减少性能耗费 |
-| CC_SURFACES_FRAGMENT_MODIFY_ WORLD_TANGENT_AND_BINORMAL | void SurfacesFragmentModify WorldTangentAndBinormal  | Standard PBR   | 修改 Surface 结构体内的世界切空间向量                          |
+| CC_SURFACES_FRAGMENT_MODIFY_ SHARED_DATA                | void SurfacesFragmentModify SharedData               | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改 Surface 结构体内的参数，减少性能耗费，类似legacy shader中的surf()函数 |
+| CC_SURFACES_FRAGMENT_MODIFY_ WORLD_TANGENT_AND_BINORMAL | void SurfacesFragmentModify WorldTangentAndBinormal  | Standard PBR   | 修改 Surface 结构体内的世界切空间向量                        |
 | CC_SURFACES_FRAGMENT_MODIFY_ EMISSIVE                   | vec3 SurfacesFragmentModify Emissive                 | Standard PBR   | 返回修改后的自发光颜色                                       |
 | CC_SURFACES_FRAGMENT_MODIFY_ PBRPARAMS                  | vec4 SurfacesFragmentModify PBRParams                | Standard PBR   | 返回修改后的 PBR 参数（ao, roughness, metallic, specularIntensity） |
 | CC_SURFACES_FRAGMENT_MODIFY_ ANISOTROPY_PARAMS          | vec4 SurfacesFragmentModify AnisotropyParams         | Standard PBR   | 返回修改后的各向异性参数（rotation, shape, unused, unused）  |
@@ -334,7 +334,7 @@ Pass shadow-caster-fs:
 
 为了方便逐像素对比，我们使用全屏调试而非画中画的显示方式，可以快速在同一幅画面中切换不同数据来定位渲染错误所在，也可使用取色器来探知像素的具体数值。
 
-另外 Surface Shader 还内置了**无理数可视化**的功能，一旦有一些像素出现异常的<font color=#ff0033> **红色(255, 0, 51)** </font>，则说明这些像素的渲染计算出现了无理数，请使用单项调试模式来检查模型切线或其他相关数据。
+另外 Surface Shader 还内置了**无理数可视化**的功能，一旦有一些像素出现异常的<font color=#ff0033> **红色(255, 0, 51)**</font>和<font color=#00ff33> **绿色(0, 255, 51)** </font>交替闪烁，则说明这些像素的渲染计算出现了无理数，请使用单项调试模式来检查模型切线或其他相关数据。
 
 渲染调试功能细分为如下三种：
 
