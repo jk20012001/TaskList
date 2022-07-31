@@ -115,15 +115,17 @@ cd resources\3d
 mklink /J engine !enginepath!
 )
 
+
+:end
+pause
+cls
+goto start
+
+
 :linktoengine
 set full=%CD%
 C:\goldapps\ConsoleTools.exe GetPathLastLevel %CD% pathname
 for /f %%i in (c:\envvar.txt)  Do set %%i
 cd ..\..\engine
 mklink /J %pathname% %~dp0resources\3d\engine
-
-
-:end
-pause
-cls
-goto start
+goto end
