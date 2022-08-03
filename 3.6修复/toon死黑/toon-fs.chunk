@@ -124,11 +124,11 @@ vec4 CCSurfacesShading(in SurfacesMaterialData surfaceData, in LightingResult li
   // shadowed area equals to back lighting area
   LightingIntermediateData lightingData;
   lightingData.NoL = -1.0;
-  vec3 noLightDiffuse, noLightSpecular;
-  CCSurfacesLightingCalculateColorWithLighting(noLightDiffuse, noLightSpecular, surfaceData, lightingData);
+  vec3 backLightingDiffuse, backLightingSpecular;
+  CCSurfacesLightingCalculateColorWithLighting(backLightingDiffuse, backLightingSpecular, surfaceData, lightingData);
 
   color.xyz +=
-    mix(lightingResult.directDiffuse, lightingResult.lightmapColor, lightmapCoef) * mix(noLightDiffuse, lightingResult.diffuseColorWithLighting, lightingResult.shadow)
+    mix(lightingResult.directDiffuse, lightingResult.lightmapColor, lightmapCoef) * mix(backLightingDiffuse, lightingResult.diffuseColorWithLighting, lightingResult.shadow)
     + lightingResult.directSpecular * lightingResult.specularColorWithLighting * lightingResult.shadow
     ;
 #endif
