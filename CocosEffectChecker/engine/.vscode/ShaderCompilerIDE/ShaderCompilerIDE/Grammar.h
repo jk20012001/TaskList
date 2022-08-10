@@ -11,7 +11,7 @@
 #ifndef _BASE_TYPE_DEFINED
 #define _BASE_TYPE_DEFINED
 
-struct _VECTOR2 { float x, y;float operator [](UINT index) { return 0; } };
+struct _VECTOR2 { float x, y;float operator [](uint index) { return 0; } };
 struct _VECTOR3 : _VECTOR2 { float z;};
 struct _VECTOR4 : _VECTOR3 { float w;};
 
@@ -51,10 +51,10 @@ typedef _GRAMMARVECTOR4 float4;
 typedef _GRAMMARVECTOR4 int4;
 typedef _GRAMMARVECTOR4 uint4;
 
-struct float3x3 { _VECTOR3 operator [](UINT index); };
-struct float3x4 { _VECTOR3 operator [](UINT index); };
-struct float4x3 { _VECTOR4 operator [](UINT index); };
-struct float4x4 { _VECTOR4 operator [](UINT index); };
+struct float3x3 { _VECTOR3 operator [](uint index); };
+struct float3x4 { _VECTOR3 operator [](uint index); };
+struct float4x3 { _VECTOR4 operator [](uint index); };
+struct float4x4 { _VECTOR4 operator [](uint index); };
 typedef float4x4 Matrix;
 typedef float4x4 matrix;
 typedef float4x4 Matrix4;
@@ -314,8 +314,7 @@ anytype pow(anytype 底数, anytype 指数);
 anytype exp(anytype 以自然对数为底的指数);
 anytype exp2(anytype 以2为底的指数);
 
-//返回输入数据的偏导绝对值之和,即对两个偏导分别取绝对值后的和,相当于在内部先取了绝对值再相加的梯度 return abs(ddx)+abs(ddy)
-anytype fwidth(anytype 参数说明见注释);
+anytype fwidth(anytype Data, const char *_info = "返回输入数据的偏导绝对值之和,即对两个偏导分别取绝对值后的和,相当于在内部先取了绝对值再相加的梯度 return abs(ddx)+abs(ddy)");
 anytype cosh(anytype 双曲正弦);
 anytype frexp(anytype Data, __out anytype OutData, const char *_info = "分解一个数字,返回其尾数,参数2为输出的指数,以10为底");
 anytype ldexp(anytype 参数说明见注释, anytype 以二为底的指数, const char *_info = "先根据参数2计算以2为底的幂再乘参数1");
@@ -419,12 +418,10 @@ anytype textureOffset(sampler any_type_tex, floatVECType vTextureCoord, INTVECTy
 anytype textureLod(sampler any_type_tex, floatVECType vTextureCoord, float lod);
 anytype textureLodOffset(sampler any_type_tex, floatVECType vTextureCoord, float lod, INTVECType vOffset);
 
-#define textureQueryLod //CalcLevelOfDetail, __VERSION__>=400
-#define texelFetch //Load两个, __VERSION__>=300
-#define texelFetchOffset
-#define textureSize //GetDimensions三个, __VERSION__>=130
-#define textureQueryLevels //__VERSION__>=400
-#define textureSamples
+//包含所有采样相关的proj/grad/lod/fetch函数 https://docs.gl/el3/textureSize
+anytype texelFetch(sampler any_type_tex, floatVECType vTexelCoord, int lod); //Load三个, __VERSION__>=300
+anytype texelFetchOffset(sampler any_type_tex, floatVECType vTexelCoord, int lod, INTVECType vOffset); //__VERSION__>=300
+INTVECType textureSize(sampler any_type_tex, int lod); //GetDimensions三个, __VERSION__>=130
 #define textureGather //Garther三个
 #define textureGatherOffset
 #define textureGatherOffsets
@@ -433,12 +430,19 @@ anytype textureLodOffset(sampler any_type_tex, floatVECType vTextureCoord, float
 #define samplerGradOffset
 
 //__VERSION__ >= 400
+vec2 textureQueryLod(sampler any_type_tex, floatVECType vTextureCoord); //CalcLevelOfDetail
+int textureQueryLevels(sampler any_type_tex, const char* _info = "查询mip数量, >=430"); //__VERSION__ >= 430
+int textureSamples(sampler MSAAtex, const char* _info = "查询MSAA采样点数量, >=450"); //__VERSION__ >= 450
+
+//__VERSION__ >= 300
 anytype dFdx(anytype ShaderInputData);
 anytype dFdy(anytype ShaderInputData);
-anytype dFdxCoarse(anytype ShaderInputData, const char *_info = "低精度");
-anytype dFdyCoarse(anytype ShaderInputData, const char *_info = "低精度");
-anytype dFdxFine(anytype ShaderInputData, const char *_info = "高精度");
-anytype dFdyFine(anytype ShaderInputData, const char *_info = "高精度");
+anytype fwidth(anytype ShaderInputData, const char* _info = "dFdx + dFdy");
+anytype dFdxCoarse(anytype ShaderInputData, const char *_info = "低精度，GLES不支持");
+anytype dFdyCoarse(anytype ShaderInputData, const char *_info = "低精度，GLES不支持");
+anytype dFdxFine(anytype ShaderInputData, const char *_info = "高精度，GLES不支持");
+anytype dFdyFine(anytype ShaderInputData, const char *_info = "高精度，GLES不支持");
+
 //数值变换
 anytype fract(anytype Data, const char *_info = "取其小数部分");
 anytype mix(anytype Data1_Left, anytype Data2_Right, anytype Coef_DirectMulToData2);

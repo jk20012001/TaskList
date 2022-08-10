@@ -233,23 +233,40 @@ CCProgram surface-fragment %{
   }
 
   #define CC_SURFACES_FRAGMENT_MODIFY_ANISOTROPY_PARAMS
-  vec4 SurfacesFragmentModifyAnisotropyParams()
+  vec4 SurfacesFragmentModifyAnisotropyParams(out float isRotation)
   {
     float anisotropyRotation = anisotropyParam.y * PI;
     float anisotropyShape = anisotropyParam.x;
     #if IS_ANISOTROPY && USE_ANISOTROPY_MAP
       // Rotation angle should disable trilinear filtering
       vec4 tex = texture(anisotropyMap, DEFAULT_UV);
-      vec4 reference = texture(anisotropyMapPoint, DEFAULT_UV);
-      vec4 sample1 = texture(anisotropyMapPoint, DEFAULT_UV + vec2(0.0, 0.000244140625));
-      vec4 sample2 = texture(anisotropyMapPoint, DEFAULT_UV - vec2(0.0, 0.000244140625));
-      if(abs(sample1.y - reference.y) > 0.9 || abs(sample2.y - reference.y) > 0.9)
-        tex.y = reference.y;
+      if(true)
+      {
+          vec4 reference = texture(anisotropyMapPoint, DEFAULT_UV);
+          vec2 oneTap = vec2(0.0, 0.000244140625);
+          float threshold = 0.2;
+          vec4 sample1 = texture(anisotropyMapPoint, DEFAULT_UV + oneTap);
+          vec4 sample2 = texture(anisotropyMapPoint, DEFAULT_UV - oneTap);
+          vec4 sample3 = texture(anisotropyMapPoint, DEFAULT_UV + oneTap * 2.0);
+          vec4 sample4 = texture(anisotropyMapPoint, DEFAULT_UV - oneTap * 2.0);
+          vec4 sample5 = texture(anisotropyMapPoint, DEFAULT_UV + oneTap * 3.0);
+          vec4 sample6 = texture(anisotropyMapPoint, DEFAULT_UV - oneTap * 3.0);
+          vec4 sample7 = texture(anisotropyMapPoint, DEFAULT_UV + oneTap * 4.0);
+          vec4 sample8 = texture(anisotropyMapPoint, DEFAULT_UV - oneTap * 4.0);
+          if (abs(sample1.y - reference.y) > threshold || abs(sample2.y - reference.y) > threshold
+              || abs(sample3.y - reference.y) > threshold || abs(sample4.y - reference.y) > threshold
+              || abs(sample5.y - reference.y) > threshold || abs(sample6.y - reference.y) > threshold
+              || abs(sample7.y - reference.y) > threshold || abs(sample8.y - reference.y) > threshold
+              )
+              tex.y = reference.y;
+      }
       anisotropyRotation = fract(anisotropyRotation * 0.5 + tex.y) * PI2;
       // less value is better for SP exported shape
       anisotropyShape *= tex.x;
     #endif
-      return vec4(anisotropyRotation, anisotropyShape, 0.0, 0.0);
+
+    isRotation = 1.0;
+    return vec4(anisotropyShape, anisotropyRotation, 0.0, 0.0);
   }
 
   #define CC_SURFACES_FRAGMENT_MODIFY_EMISSIVE
