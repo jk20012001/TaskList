@@ -26,7 +26,7 @@
 set /p choice=«Î ‰»Î:
 @echo=
 
-set BRANCHNAME=v3.6.1
+set BRANCHNAME=v3.7.0
 cd /d %~dp0
 setlocal enabledelayedexpansion
 
@@ -84,6 +84,7 @@ git checkout -- .
 cd ..\..\..\
 rem del workflow\.update-cache.json
 rem pause
+rasdial jinkun
 call npm install
 rem node workflow/scripts/build.js "--disable-repl"
 )
