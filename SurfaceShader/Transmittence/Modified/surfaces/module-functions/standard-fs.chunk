@@ -131,12 +131,19 @@ vec4 CCSurfacesShading(in SurfacesMaterialData surfaceData, in LightingResult li
   color.xyz +=
     ( lightingResult.lightmapColor * lightingResult.diffuseColorWithLighting
     + lightingResult.directDiffuse * lightingResult.diffuseColorWithLighting
-    + lightingResult.directSpecular * lightingResult.specularColorWithLighting)
+    + lightingResult.directSpecular * lightingResult.specularColorWithLighting
+  #if CC_SURFACES_LIGHTING_TRT
+    + lightingResult.directTRT * lightingResult.specularColorWithLighting
+  #endif
+    )
     * lightingResult.shadow;
 
   color.xyz +=
     ( lightingResult.environmentDiffuse * lightingResult.diffuseColorWithLighting
     + lightingResult.environmentSpecular * lightingResult.specularColorWithLighting)
+  #if CC_SURFACES_LIGHTING_TRT
+    + lightingResult.environmentTRT * lightingResult.specularColorWithLighting
+  #endif
     * lightingResult.ao;
 
   color.xyz += lightingResult.emissive;

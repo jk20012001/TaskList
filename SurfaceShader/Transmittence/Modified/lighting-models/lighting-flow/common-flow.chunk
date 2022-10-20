@@ -33,7 +33,7 @@
           #if CC_SURFACES_LIGHTING_TRANSMITTENCE
             lightingData.shadowPosAndDepth.xy = shadowNDCPosWithBias.xy;
             lightingData.shadowPosAndDepth.z = shadowPos.z;
-            lightingData.shadowPosAndDepth.w = GetViewSpaceDepthFromNDCDepth_Perspective(SampleShadowMap(shadowNDCPosWithBias.xyz, cc_spotShadowMap), cc_shadowInvProjDepthInfo.x, cc_shadowInvProjDepthInfo.y);
+            lightingData.shadowPosAndDepth.w = GetViewSpaceDepthFromNDCDepth_Perspective(SampleShadowMap(shadowNDCPosWithBias.xyz, cc_spotShadowMap), shadowNDCPosWithBias.w, cc_shadowInvProjDepthInfo.x, cc_shadowInvProjDepthInfo.y);
           #endif
         }
       #endif
@@ -57,7 +57,10 @@
         lightingResult.directSpecular += specularLighting * multiplier;
 
         #if CC_SURFACES_LIGHTING_TRANSMITTENCE
-          lightingResult.transmittence = CCSurfacesLightingCalculateTransmittence(lightingData, cc_lightColor[i]);
+          lightingResult.transmittence = CCSurfacesLightingCalculateTransmittence(lightingResult, lightingData, cc_lightColor[i]);
+        #endif
+        #if CC_SURFACES_LIGHTING_TRT
+          CCSurfacesLightingCalculateDirectTRT(lightingResult.directTRT, lightingData, cc_lightColor[i]);
         #endif
       }
     }
@@ -114,10 +117,15 @@
       #endif
 
       // apply SSR, local probe & global probe
-      CCSurfacesLightingCalculateEnvironment(lightingResult, lightingData);
+      CCSurfacesLightingCalculateEnvironment(lightingResult.environmentDiffuse, lightingResult.environmentSpecular, lightingData, cc_ambientSky.w);
       
       #if CC_SURFACES_LIGHTING_TRANSMITTENCE
-        lightingResult.transmittence = CCSurfacesLightingCalculateTransmittence(lightingData, cc_mainLitColor);
+        lightingResult.transmittence = CCSurfacesLightingCalculateTransmittence(lightingResult, lightingData, cc_mainLitColor);
+        lightingResult.transmittence += CCSurfacesLightingCalculateTransmittenceWithEnvironmentLighting(lightingResult, lightingData);
+      #endif
+      #if CC_SURFACES_LIGHTING_TRT
+        CCSurfacesLightingCalculateDirectTRT(lightingResult.directTRT, lightingData, cc_mainLitColor);
+        CCSurfacesLightingCalculateEnvironmentTRT(lightingResult.environmentTRT, lightingData, cc_ambientSky.w);
       #endif
 
       // apply screen-space shadow and ao

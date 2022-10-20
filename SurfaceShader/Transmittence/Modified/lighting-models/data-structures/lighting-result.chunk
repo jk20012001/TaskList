@@ -12,5 +12,5 @@ struct LightingResult
 #if CC_SURFACES_LIGHTING_TRANSMITTENCE
   vec3 transmittence;
 #endif  
-  vec3 scattered;
+  //vec3 scattered;
 };
