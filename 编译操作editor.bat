@@ -12,7 +12,7 @@
 @echo env: 编译原生绑定所需的环境变量NDK_ROOT及npm所需的环境变量NODE_PATH等
 @echo npm: 全局安装npm所需的库
 @echo py: 全局安装python所需的库
-@echo link: 符号链接resources下的引擎文件夹--写死
+@echo link: 符号链接resources下的引擎文件夹--自动随文件夹名
 @echo link2: 符号链接resources下的引擎文件夹--手动指定
 @echo=
 @echo init: 初始化环境(解决找不到cocos-for-editor分支等问题)
@@ -81,6 +81,8 @@ call npm run build-declaration
 cd ..\..\..\
 cd app\modules\platform-extensions\
 git checkout -- .
+cd ..\..\..\resources\3d\engine\
+call npm install
 cd ..\..\..\
 rem del workflow\.update-cache.json
 rem pause
@@ -148,7 +150,7 @@ goto start
 :linktoengine
 set full=%CD%
 C:\goldapps\ConsoleTools.exe GetPathLastLevel %CD% pathname
-for /f %%i in (c:\envvar.txt)  Do set %%i
+for /f %%i in (c:\templog\envvar.txt)  Do set %%i
 cd ..\..\engine
 mklink /J %pathname% %~dp0resources\3d\engine
 goto end

@@ -1,4 +1,4 @@
-## 表面着色器（Surface Shader）
+# 表面着色器（Surface Shader）
 
 随着渲染对画面要求越来越高，着色器的实现也更加复杂，为了提供高效、统一的着色器流程，在 v3.5.1 中，我们新增了 Surface Shader 框架。开发者可以在 **资源管理器 -> internal -> effect -> surfaces** 以及 **资源管理器 -> internal -> chunk -> surfaces** 中找到对应的着色器以及着色器片段。
 
@@ -89,10 +89,14 @@ Surface Shader 内部计算时会用到一些宏开关，需要根据 Effect 中
 | CC_SURFACES_USE_SECOND_UV                             | BOOL | 是否使用2uv                                                  |
 | CC_SURFACES_USE_TWO_SIDED                             | BOOL | 是否使用双面法线                                             |
 | CC_SURFACES_USE_TANGENT_SPACE                         | BOOL | 是否使用切空间（使用法线图或各向异性时必须开启）             |
-| CC_SURFACES_TRANSFER_LOCAL_POS                        | BOOL | 是否在 FS 中访问模型空间坐标                                   |
+| CC_SURFACES_TRANSFER_LOCAL_POS                        | BOOL | 是否在 FS 中访问模型空间坐标                                 |
 | CC_SURFACES_LIGHTING_ANISOTROPIC                      | BOOL | 是否开启各向异性材质                                         |
 | CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT | UINT | 各向异性环境光卷积采样数，为 0 表示关闭卷积计算，仅当各向异性开启时有效 |
-| CC_SURFACES_USE_REFLECTION_DENOISE                    | BOOL | 是否开启环境反射除噪                                         |
+| CC_SURFACES_LIGHTING_USE_FRESNEL                      | BOOL | 是否通过相对折射率 ior 计算菲涅耳系数                        |
+| CC_SURFACES_LIGHTING_TRANSMITTENCE                    | BOOL | 是否开启背面穿透漫射光（如叶片等）                           |
+| CC_SURFACES_LIGHTING_TRANSMIT_SPECULAR                | BOOL | 是否开启背面穿透高光（如折射光等）                           |
+| CC_SURFACES_LIGHTING_TRT                              | BOOL | 是否开启透射后内部反射出的光线（如头发材质等）               |
+| CC_SURFACES_USE_REFLECTION_DENOISE                    | BOOL | 是否开启环境反射除噪，仅 legacy 兼容模式下生效               |
 | CC_SURFACES_USE_LEGACY_COMPATIBLE_LIGHTING            | BOOL | 是否开启 legacy 兼容光照模式，可使渲染效果和 legacy/standard.effect 完全一致，便于升级 |
 
 > **注意**： 这些宏可以不定义，系统内部会自动定义为默认值 0；也可以直接定义为 0 或其他值，表示在此 Effect 中强制关闭或打开，禁止用户调节。
@@ -157,7 +161,7 @@ Surface Shader 内部计算时会用到一些宏开关，需要根据 Effect 中
 >
 > 用这种方式的好处是所有的用户自定义动画与材质的代码只需要写一份，却可以在各种渲染用途中保持统一。
 
-Surface Shader 在内部提供了简单的默认函数，所以 **这些函数并不是必须定义的**，**如果你想重载某函数，需要预定义该函数对应的宏来完成**。这些函数命名以 `Surfaces + ShaderStage 名` 打头，后跟功能描述。可以在 [`editor/assets/chunks/surfaces/default-functions`](https://github.com/cocos/cocos-engine/tree/v3.5.1/editor/assets/chunks/surfaces/default-functions) 中查看不同材质模型中各 Surface 函数的具体定义与实现，如：
+Surface Shader 在内部提供了简单的默认函数，所以 **这些函数并不是必须定义的**，**如果你想重载某函数，需要预定义该函数对应的宏来完成**。这些函数命名以 `Surfaces + ShaderStage 名` 打头，后跟功能描述。可以在 [`editor/assets/chunks/surfaces/default-functions`](https://github.com/cocos/cocos-engine/tree/v3.7.0/editor/assets/chunks/surfaces/default-functions) 中查看不同材质模型中各 Surface 函数的具体定义与实现，如：
 
 ```glsl
 #define CC_SURFACES_VERTEX_MODIFY_WORLD_POS
@@ -178,13 +182,17 @@ vec3 SurfacesVertexModifyWorldPos(in SurfacesStandardVertexIntermediate In)
 
 VS 中的处理和材质模型关系相对比较小，所以这里都使用通用函数，函数参数均为 `SurfacesStandardVertexIntermediate` 结构体，存放的是 VS 输入输出的数据。用户无需再关心具体的顶点输入输出流程处理，只需要聚焦到某个数据是否需要及如何修改。
 
-| 预先定义宏                             | 对应的函数定义                       | 对应的材质模型 | 功能说明                                            |
-| -------------------------------------- | ------------------------------------ | -------------- | --------------------------------------------------- |
-| CC_SURFACES_VERTEX_MODIFY_LOCAL_POS    | vec3 SurfacesVertexModifyLocalPos    | Common         | 返回修改后的模型空间坐标                            |
-| CC_SURFACES_VERTEX_MODIFY_WORLD_POS    | vec3 SurfacesVertexModifyWorldPos    | Common         | 返回修改后的世界空间坐标（世界空间动画）            |
-| CC_SURFACES_VERTEX_MODIFY_CLIP_POS     | vec4 SurfacesVertexModifyClipPos     | Common         | 返回修改后的剪裁（NDC）空间坐标（通常用于修改深度） |
-| CC_SURFACES_VERTEX_MODIFY_UV           | void SurfacesVertexModifyUV          | Common         | 修改结构体内的 UV0 和 UV1 （使用 tiling 等）              |
-| CC_SURFACES_VERTEX_MODIFY_WORLD_NORMAL | vec3 SurfacesVertexModifyWorldNormal | Common         | 返回修改后的世界空间法线（世界空间动画）            |
+| 预先定义宏                                  | 对应的函数定义                           | 对应的材质模型 | 功能说明                                                     |
+| ------------------------------------------- | ---------------------------------------- | -------------- | ------------------------------------------------------------ |
+| CC_SURFACES_VERTEX_MODIFY_LOCAL_POS         | vec3 SurfacesVertexModifyLocalPos        | Common         | 返回修改后的模型空间坐标                                     |
+| CC_SURFACES_VERTEX_MODIFY_LOCAL_NORMAL      | vec3 SurfacesVertexModifyLocalNormal     | Common         | 返回修改后的模型空间法线                                     |
+| CC_SURFACES_VERTEX_MODIFY_LOCAL_TANGENT     | vec4 SurfacesVertexModifyLocalTangent    | Common         | 返回修改后的模型空间切线和镜像法线标记                       |
+| CC_SURFACES_VERTEX_MODIFY_LOCAL_SHARED_DATA | void SurfacesVertexModifyLocalSharedData | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，在世界变换前调用，直接修改 SurfaceStandardVertexIntermediate 结构体内的三个Local参数 |
+| CC_SURFACES_VERTEX_MODIFY_WORLD_POS         | vec3 SurfacesVertexModifyWorldPos        | Common         | 返回修改后的世界空间坐标（世界空间动画）                     |
+| CC_SURFACES_VERTEX_MODIFY_CLIP_POS          | vec4 SurfacesVertexModifyClipPos         | Common         | 返回修改后的剪裁（NDC）空间坐标（通常用于修改深度）          |
+| CC_SURFACES_VERTEX_MODIFY_UV                | void SurfacesVertexModifyUV              | Common         | 修改结构体内的 UV0 和 UV1 （使用 tiling 等）                 |
+| CC_SURFACES_VERTEX_MODIFY_WORLD_NORMAL      | vec3 SurfacesVertexModifyWorldNormal     | Common         | 返回修改后的世界空间法线（世界空间动画）                     |
+| CC_SURFACES_VERTEX_MODIFY_ SHARED_DATA      | void SurfacesVertexModify SharedData     | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改 SurfaceStandardVertexIntermediate 结构体内的参数，减少性能耗费 |
 
 #### 3、FS 对应的函数列表
 
@@ -195,7 +203,7 @@ FS 中的函数大部分是只修改一项，在 Surface 函数中直接返回�
 | CC_SURFACES_FRAGMENT_MODIFY_ BASECOLOR_AND_TRANSPARENCY | vec4 SurfacesFragmentModify BaseColorAndTransparency | Common         | 返回修改后的基础色（rgb 通道）和透明值（a 通道）             |
 | CC_SURFACES_FRAGMENT_ALPHA_CLIP_ONLY                    | vec4 SurfacesFragmentModify AlphaClipOnly            | Common         | 不需要获取颜色仅处理透贴的Pass中使用。如渲染到阴影图等，不重载此函数可能导致阴影没有透贴效果 |
 | CC_SURFACES_FRAGMENT_MODIFY_ WORLD_NORMAL               | vec3 SurfacesFragmentModify WorldNormal              | Common         | 返回修改后的像素法线（通常是法线贴图）                       |
-| CC_SURFACES_FRAGMENT_MODIFY_ SHARED_DATA                | void SurfacesFragmentModify SharedData               | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改 Surface 结构体内的参数，减少性能耗费，类似legacy shader中的surf()函数 |
+| CC_SURFACES_FRAGMENT_MODIFY_ SHARED_DATA                | void SurfacesFragmentModify SharedData               | Common         | 若某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改 Surface 结构体内的参数，减少性能耗费，类似legacy shader中的surf()函数。**需要在定义函数前 include 必要的头文件** |
 | CC_SURFACES_FRAGMENT_MODIFY_ WORLD_TANGENT_AND_BINORMAL | void SurfacesFragmentModify WorldTangentAndBinormal  | Standard PBR   | 修改 Surface 结构体内的世界切空间向量                        |
 | CC_SURFACES_FRAGMENT_MODIFY_ EMISSIVE                   | vec3 SurfacesFragmentModify Emissive                 | Standard PBR   | 返回修改后的自发光颜色                                       |
 | CC_SURFACES_FRAGMENT_MODIFY_ PBRPARAMS                  | vec4 SurfacesFragmentModify PBRParams                | Standard PBR   | 返回修改后的 PBR 参数（ao, roughness, metallic, specularIntensity） |
@@ -204,6 +212,7 @@ FS 中的函数大部分是只修改一项，在 Surface 函数中直接返回�
 | CC_SURFACES_FRAGMENT_MODIFY_ TOON_STEP_AND_FEATHER      | vec4 SurfacesFragmentModify ToonStepAndFeather       | Toon           | 返回修改后的参数                                             |
 | CC_SURFACES_FRAGMENT_MODIFY_ TOON_SHADOW_COVER          | vec4 SurfacesFragmentModify ToonShadowCover          | Toon           | 返回修改后的参数                                             |
 | CC_SURFACES_FRAGMENT_MODIFY_ TOON_SPECULAR              | vec4 SurfacesFragmentModify ToonSpecular             | Toon           | 返回修改后的参数                                             |
+| CC_SURFACES_LIGHTING_MODIFY_FINAL_RESULT                | void SurfacesLightingModifyFinalResult               | Common         | 自定义光照模型，可以在之前计算的光照结果上再次修改，比如添加轮廓光等。**需要在定义函数前 include 必要的头文件** |
 
 #### 4、VS 输入值的获取
 
@@ -327,19 +336,21 @@ Pass shadow-caster-fs:
 #include <shading-entries/main-functions/render-to-shadowmap/fs>
 ```
 
-
-
 ## 渲染调试功能
 
-<font color=#ff0000>**只有使用 Surface Shader 框架的材质，内置的渲染调试功能才可以生效**</font>。通过在编辑器的场景预览窗口右上角按钮选择对应的调试模式即可同屏查看模型、材质、光照及其他计算数据，在渲染效果异常的时候可以快速定位问题。
+> **注意**：只有使用 Surface Shader 框架的材质，内置的渲染调试功能才可以生效。
+
+通过在编辑器的场景预览窗口右上角按钮选择对应的调试模式即可同屏查看模型、材质、光照及其他计算数据，在渲染效果异常的时候可以快速定位问题。
+
+![debug-view](img/debug-view.jpg)
 
 为了方便逐像素对比，我们使用全屏调试而非画中画的显示方式，可以快速在同一幅画面中切换不同数据来定位渲染错误所在，也可使用取色器来探知像素的具体数值。
 
-另外 Surface Shader 还内置了**无理数可视化**的功能，一旦有一些像素出现异常的<font color=#ff0033> **红色(255, 0, 51)**</font>和<font color=#00ff33> **绿色(0, 255, 51)** </font>交替闪烁，则说明这些像素的渲染计算出现了无理数，请使用单项调试模式来检查模型切线或其他相关数据。
+另外 Surface Shader 还内置了 **无理数可视化** 的功能，一旦有一些像素出现异常的<font color=#ff0033> 红色(255, 0, 51) </font>和<font color=#00ff33> 绿色(0, 255, 51) </font>交替闪烁，则说明这些像素的渲染计算出现了无理数，请使用单项调试模式来检查模型切线或其他相关数据。
 
-渲染调试功能细分为如下三种：
+渲染调试功能细分为如下三种：<br>
 
-### 1、公共选项：
+### 1、公共选项
 
 无论单项还是组合模式中都生效的调试选项，包括：
 
@@ -348,13 +359,13 @@ Pass shadow-caster-fs:
 | 光照信息带固有色 | 勾选则显示正常材质光照，勾掉则显示白模纯光照的效果。         | 可更明显的查看AO、GI等间接光相关的影响。                     |
 | 级联阴影染色     | 级联阴影从近到远逐层染色，分布为偏红、绿、蓝、黄，超出阴影范围的区域无染色。 | 可查看并确认场景阴影的精细度。<br />如果三四层占比太少说明阴影过于精细，应当增大阴影可视距离。<br />如果一二层占比太少说明阴影过于粗糙，应当减小阴影可视距离。 |
 
-### 2、单项模式：
+### 2、单项模式
 
 调试重点<font color=#ff8000>聚焦在某个需要测试的数据上</font>，整个场景都将此数据可视化输出。
 
 可调试的数据包括四大类：
 
-#### I、原始模型数据：
+#### I、原始模型数据
 
 | 名称             | 功能                      | 说明及调试技巧                                               | 依赖项                                                       |
 | ---------------- | ------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -370,7 +381,7 @@ Pass shadow-caster-fs:
 | 投影深度Z        | 显示（0-1非线性变化）深度 | 远裁面过大会导致近景深度值也会偏高                           |                                                              |
 | 线性深度W        | 显示（0-1线性变化）深度   | 远裁面过大会导致近景深度值也会偏高                           |                                                              |
 
-#### II、原始材质数据：
+#### II、原始材质数据
 
 | 名称                    | 功能                                                   | 说明及调试技巧                                         | 依赖项                                                       |
 | ----------------------- | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------ |
@@ -384,7 +395,7 @@ Pass shadow-caster-fs:
 | 粗糙度                  | 同名称                                                 |                                                        |                                                              |
 | 镜面反射强度            | 显示非金属基准镜面反射率F0的倍增                       | 如果镜面反射都为黑色，请检查此项数据是否设置为0        |                                                              |
 
-#### III、光照结果数据：
+#### III、光照结果数据
 
 | 名称           | 功能                                | 说明及调试技巧 | 依赖项                                           |
 | -------------- | ----------------------------------- | -------------- | ------------------------------------------------ |
@@ -399,13 +410,13 @@ Pass shadow-caster-fs:
 | 阴影           | 显示平行光、聚光灯、点光的阴影      |                | 必须在场景面板和光源中开启阴影，物体开启接收阴影 |
 | 环境光遮蔽     | 显示材质中设置的AO贴图及实时AO的值  |                |                                                  |
 
-#### IV、其他数据：
+#### IV、其他数据
 
 | 名称   | 功能                         | 说明及调试技巧 | 依赖项                   |
 | ------ | ---------------------------- | -------------- | ------------------------ |
 | 雾因子 | 显示雾效因子，越大说明雾越浓 |                | 必须在场景面板中开启雾效 |
 
-### 3、组合模式：
+### 3、组合模式
 
 调试重点<font color=#ff8000>聚焦在总体的渲染表现上</font>，可以屏蔽或打开每个模块，模块之间互不关联，可查看不同模块之间对渲染效果的影响。
 
@@ -428,15 +439,11 @@ Pass shadow-caster-fs:
 | 色调映射       | 开启/禁用色调映射       | 如果场景色彩与原材质差异过大，可尝试关闭此选项查看是否正常，说明场景面板中不该勾选UseHDR | 色彩空间 |
 | 伽马矫正       | 开启/禁用伽马矫正       | 如果场景色彩异常浓艳与偏暗，可尝试关闭此选项查看是否正常，说明贴图资源可能被多次伽马矫正了 | 色彩空间 |
 
-
-
 ## 进阶使用方法
 
 1. 自行添加 vs 输出与 fs 输入：VS新定义 varying 变量之后在某个 Surface 函数中计算并输出该值
 2. FS 新定义 varying 变量之后在某个 Surface 函数中获取并使用该值
 3. 甚至可以在不同的 Shader 主函数中混用 Surface Shader 和 Legacy Shader（但是要保证 varying 顶点数据在两个阶段一致）。
-
-
 
 ## 公共函数库
 
