@@ -93,7 +93,7 @@ Surface Shader 内部计算时会用到一些宏开关，需要根据 Effect 中
 | CC_SURFACES_LIGHTING_ANISOTROPIC                      | BOOL | 是否开启各向异性材质                                         |
 | CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT | UINT | 各向异性环境光卷积采样数，为 0 表示关闭卷积计算，仅当各向异性开启时有效 |
 | CC_SURFACES_LIGHTING_USE_FRESNEL                      | BOOL | 是否通过相对折射率 ior 计算菲涅耳系数                        |
-| CC_SURFACES_LIGHTING_TRANSMITTENCE                    | BOOL | 是否开启背面穿透漫射光（如叶片等）                           |
+| CC_SURFACES_LIGHTING_TRANSMIT_DIFFUSE                 | BOOL | 是否开启背面穿透漫射光（如叶片等）                           |
 | CC_SURFACES_LIGHTING_TRANSMIT_SPECULAR                | BOOL | 是否开启背面穿透高光（如折射光等）                           |
 | CC_SURFACES_LIGHTING_TRT                              | BOOL | 是否开启透射后内部反射出的光线（如头发材质等）               |
 | CC_SURFACES_USE_REFLECTION_DENOISE                    | BOOL | 是否开启环境反射除噪，仅 legacy 兼容模式下生效               |
@@ -438,6 +438,10 @@ Pass shadow-caster-fs:
 | 雾             | 开启/禁用雾效           | 如果场景颜色异常变灰，可尝试关闭此选项以查看是否是雾参数设置不当所致 | 环境     |
 | 色调映射       | 开启/禁用色调映射       | 如果场景色彩与原材质差异过大，可尝试关闭此选项查看是否正常，说明场景面板中不该勾选UseHDR | 色彩空间 |
 | 伽马矫正       | 开启/禁用伽马矫正       | 如果场景色彩异常浓艳与偏暗，可尝试关闭此选项查看是否正常，说明贴图资源可能被多次伽马矫正了 | 色彩空间 |
+
+### 4、运行时使用渲染调试
+
+使用引擎内置资源中的预设体 debug-view-runtime-control，将它拖到场景 Canvas 节点下即可在运行时使用 UI 来进行渲染调试。
 
 ## 进阶使用方法
 
