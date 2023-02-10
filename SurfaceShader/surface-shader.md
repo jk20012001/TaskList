@@ -441,13 +441,42 @@ Pass shadow-caster-fs:
 
 ### 4、运行时使用渲染调试
 
-使用引擎内置资源中的预设体 debug-view-runtime-control，将它拖到场景 Canvas 节点下即可在运行时使用 UI 来进行渲染调试。
+使用引擎内置资源中的预设体  `tools/debug-view-runtime-control`，将它拖到场景 Canvas 节点下即可在运行时使用 UI 来进行渲染调试。
 
-## 进阶使用方法
+## 定制化表面着色器
 
-1. 自行添加 vs 输出与 fs 输入：VS新定义 varying 变量之后在某个 Surface 函数中计算并输出该值
-2. FS 新定义 varying 变量之后在某个 Surface 函数中获取并使用该值
-3. 甚至可以在不同的 Shader 主函数中混用 Surface Shader 和 Legacy Shader（但是要保证 varying 顶点数据在两个阶段一致）。
+虽然 Surface Shader 提供了大多数场景材质都能适配的光照模型，但其功能还是较为固定的。对于某些特殊的、风格化的材质，**用户需要使用完全定制化的光照甚至是色彩计算**，比如说需要轮廓光、额外的补光、非真实的环境照明等等。我们也为此种需求提供了如下解决方案：
+
+#### 1、自行添加 vs 输出与 fs 输入：
+
+VS新定义 varying 变量之后在某个 Surface 函数中计算并输出该值
+FS 新定义 varying 变量之后在某个 Surface 函数中获取并使用该值
+
+甚至可以在不同的 Shader 主函数中混用 Surface Shader 和 Legacy Shader（不推荐，使用时要保证 varying 顶点数据在两个阶段一致）。
+
+#### 2、使用 Surface 函数自定义材质信息和光照结果：
+
+在 Surface 函数中添加如下代码，其中XXXXX 是当前的**材质模型名称**
+
+首先将自定义数据写入材质信息 surfaceData 中
+
+然后使用 surfaceData 和 lightingData 在内部计算好的光照结果基础上进行修改或直接重新计算（光照信息如法线、光方向、视线方向等都在 lightingData 中），结果写入 result 的各项成员即可。
+
+```glsl
+#include <surfaces/data-structures/XXXXX>
+#define CC_SURFACES_FRAGMENT_MODIFY_SHARED_DATA
+void SurfacesFragmentModifySharedData(inout SurfacesMaterialData surfaceData)
+{
+    // set user-defined data to surfaceData
+}
+
+#include <lighting-models/includes/common>
+#define CC_SURFACES_LIGHTING_MODIFY_FINAL_RESULT
+void SurfacesLightingModifyFinalResult(inout LightingResult result, in LightingIntermediateData lightingData, in SurfacesMaterialData surfaceData, in LightingMiscData miscData)
+{
+    // use surfaceData and lightingData for customizing lighting result
+}
+```
 
 ## 公共函数库
 
@@ -459,14 +488,14 @@ Surface 内部已经自动包含了常用的公共函数头文件，根据类型
 
 | 文件夹名 | 函数用途                                 |
 | -------- | ---------------------------------------- |
-| color    | 色彩相关功能（颜色空间、tonemapping 等）  |
+| color    | 色彩相关功能（颜色空间、tone-mapping 等） |
 | data     | 数据相关功能（压缩解压缩等）             |
 | debug    | Debug View 相关功能                       |
 | effect   | 场景特效相关功能（水、雾等）             |
-| lighting | 光照相关功能（brdf、bsdf、衰减、烘焙等） |
+| lighting | 光照相关功能（bxdf、反射、衰减、烘焙等） |
 | math     | 数学库（坐标变换、数值判定和运算等）     |
 | mesh     | 模型相关功能（材质转换、模型动画等）     |
-| shadow   | 阴影相关功能（pcf、hcs 等）               |
+| shadow   | 阴影相关功能（pcf、pcss 等）        |
 | texture  | 贴图相关功能（采样、mip 计算等）          |
 
 [^1]: 不支持自定义几何体实例化属性。
