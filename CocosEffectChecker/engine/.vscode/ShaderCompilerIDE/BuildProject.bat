@@ -1,4 +1,5 @@
 @echo off
+rem argument is engine folder
 cd /d %~dp0..\EffectChecker
 del timestamp.ini >nul 2>nul
 cd /d %~dp0ShaderCompilerIDE\Tools\
