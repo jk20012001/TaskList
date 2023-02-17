@@ -460,7 +460,7 @@ FS 新定义 varying 变量之后在某个 Surface 函数中获取并使用该�
 
 首先将自定义数据写入材质信息 surfaceData 中
 
-然后使用 surfaceData 和 lightingData 在内部计算好的光照结果基础上进行修改或直接重新计算（光照信息如法线、光方向、视线方向等都在 lightingData 中），结果写入 result 的各项成员即可。
+然后使用 surfaceData 和 lightingData 在内部计算好的光照结果基础上进行修改或直接重新计算（光照信息如法线、光方向、视线方向等都在 lightingData 中），结果写入 result 的各项成员即可。对于局部光源（点光、聚光灯等）而言，此函数会逐光源执行。
 
 ```glsl
 #include <surfaces/data-structures/XXXXX>
@@ -476,6 +476,56 @@ void SurfacesLightingModifyFinalResult(inout LightingResult result, in LightingI
 {
     // use surfaceData and lightingData for customizing lighting result
 }
+```
+
+#### 3、使用自定义的 Surface 基础函数：
+
+有时候需要制作一些公用的 Surface 函数供不同的 Effect 使用以降低代码量和维护成本。在系统内部是以函数名称作为功能匹配的，所以：
+
+最简单的方法是生成一个着色器片段 .chunk 文件，定义一些名称不同但功能、参数和返回值都相同的函数，然后在 Effect 文件中先 include 此片段，然后在 Surface 函数中调用它，如：
+
+```glsl
+// user-defined-common-surface.chunk:
+void FragmentModifySharedData(inout SurfacesMaterialData surfaceData)
+{
+    // set user-defined data to surfaceData
+}
+
+// effect
+#include <user-defined-common-surface.chunk>
+#define CC_SURFACES_FRAGMENT_MODIFY_SHARED_DATA
+void SurfacesFragmentModifySharedData(inout SurfacesMaterialData surfaceData)
+{
+    FragmentModifySharedData(surfaceData);
+    // user-defined code
+    surfaceData.XXX = XXX;
+}
+```
+第二种方法是使用宏将同名的 Surface 函数包裹起来，写法类似 default-function 文件夹中定义的默认函数，这样可以起到重载的功效，即**需要定义的函数就重载，不需要改变的函数就不写**，Effect 会变得很简洁。
+
+但需要注意，**重载函数定义要放在前面**，即在 Effect 文件中先定义需要重载的 Surface 函数，再在后面 include 基函数的定义 chunk，如：
+
+```glsl
+// user-defined-common-surface.chunk:
+// base surface function
+#ifndef CC_SURFACES_FRAGMENT_MODIFY_SHARED_DATA
+#define CC_SURFACES_FRAGMENT_MODIFY_SHARED_DATA
+void SurfacesFragmentModifySharedData(inout SurfacesMaterialData surfaceData)
+{
+    .................
+}
+#endif
+
+// effect
+// this function needs overriding
+#define CC_SURFACES_FRAGMENT_MODIFY_SHARED_DATA
+void SurfacesFragmentModifySharedData(inout SurfacesMaterialData surfaceData)
+{
+    .............
+}
+// base functions should place after override functions
+#include <user-defined-common-surface.chunk>
+
 ```
 
 ## 公共函数库
