@@ -6,7 +6,7 @@
         {
             "label": "Cocos Effect Checker",
             "type": "shell",
-            "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
+            "command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
 				"0",
                 "${file}",
@@ -33,7 +33,7 @@
         {
             "label": "Cocos Effect Checker With Performance",
             "type": "shell",
-            "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
+            "command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
 				"1",
                 "${file}",
@@ -60,7 +60,7 @@
         {
             "label": "Cocos Effect Checker -- All Effects",
             "type": "shell",
-            "command": ".vscode\\EffectChecker\\CocosEffectChecker.exe",
+            "command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
             "args": [
                 //"${fileDirname}\\",
 				"0",
@@ -88,7 +88,7 @@
 		{
             "label": "Cocos Effect Editor",
             "type": "shell",
-            "command": ".vscode\\ShaderCompilerIDE\\OpenProject.bat",
+            "command": "@PATH@.vscode\\ShaderCompilerIDE\\OpenProject.bat",
             "args": [
             ],
             "group": {
@@ -110,8 +110,9 @@
 		{
             "label": "Cocos Effect Editor With Rebuild Project",
             "type": "shell",
-            "command": ".vscode\\ShaderCompilerIDE\\RebuildProject.bat",
+            "command": "@PATH@.vscode\\ShaderCompilerIDE\\RebuildProject.bat",
             "args": [
+				"${workspaceFolder}\\"
             ],
             "group": {
                 "kind": "build",
