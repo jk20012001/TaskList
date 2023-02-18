@@ -130,5 +130,29 @@
             // Use the standard MS compiler pattern to detect errors, warnings and infos
             "problemMatcher": "$msCompile"
         }
-    ]
+ 		{
+            "label": "Generate Parse Info For Cocos Effect VSCode Plugin",
+            "type": "shell",
+            "command": "@PATH@.vscode\\ShaderCompilerIDE\\GenerateParseInfo.bat",
+            "args": [
+				"${workspaceFolder}\\editor\\assets\\tools\\parsed-effects.txt"
+				"${workspaceFolder}\\"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "always"
+                "echo": false,
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        }
+   ]
 }
