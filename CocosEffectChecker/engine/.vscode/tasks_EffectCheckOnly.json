@@ -6,12 +6,14 @@
         {
             "label": "Cocos Effect Checker",
             "type": "shell",
-            "command": "@PATH@EffectChecker\\CocosEffectChecker.exe",
-            "args": [
-				"0",
-                "${file}",
-                "${workspaceFolder}\\"
-            ],
+			"windows": {
+				"command": "@PATH@EffectChecker\\CocosEffectChecker.exe",
+				"args": [
+					"0",
+					"${file}",
+					"${workspaceFolder}\\"
+				],
+			},
             "group": {
                 "kind": "build",
                 "isDefault": true

@@ -6,12 +6,14 @@
         {
             "label": "Cocos Effect Checker",
             "type": "shell",
-            "command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
-            "args": [
-				"0",
-                "${file}",
-                "${workspaceFolder}\\"
-            ],
+			"windows": {
+				"command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
+				"args": [
+					"0",
+					"${file}",
+					"${workspaceFolder}\\"
+				],
+			},
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -33,12 +35,14 @@
         {
             "label": "Cocos Effect Checker With Performance",
             "type": "shell",
-            "command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
-            "args": [
-				"1",
-                "${file}",
-                "${workspaceFolder}\\"
-            ],
+			"windows": {
+				"command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
+				"args": [
+					"1",
+					"${file}",
+					"${workspaceFolder}\\"
+				],
+			},
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -60,13 +64,15 @@
         {
             "label": "Cocos Effect Checker -- All Effects",
             "type": "shell",
-            "command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
-            "args": [
-                //"${fileDirname}\\",
-				"0",
-                "${workspaceFolder}\\editor\\assets\\effects\\",
-                "${workspaceFolder}\\"
-            ],
+			"windows": {
+				"command": "@PATH@.vscode\\EffectChecker\\CocosEffectChecker.exe",
+				"args": [
+					//"${fileDirname}\\",
+					"0",
+					"${workspaceFolder}\\editor\\assets\\effects\\",
+					"${workspaceFolder}\\"
+				],
+			},
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -88,9 +94,11 @@
 		{
             "label": "Cocos Effect Editor",
             "type": "shell",
-            "command": "@PATH@.vscode\\ShaderCompilerIDE\\OpenProject.bat",
-            "args": [
-            ],
+			"windows": {
+				"command": "@PATH@.vscode\\ShaderCompilerIDE\\OpenProject.bat",
+				"args": [
+				],
+			},
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -110,10 +118,12 @@
 		{
             "label": "Cocos Effect Editor With Rebuild Project",
             "type": "shell",
-            "command": "@PATH@.vscode\\ShaderCompilerIDE\\RebuildProject.bat",
-            "args": [
-				"${workspaceFolder}\\"
-            ],
+			"windows": {
+				"command": "@PATH@.vscode\\ShaderCompilerIDE\\RebuildProject.bat",
+				"args": [
+					"${workspaceFolder}\\"
+				],
+			},
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -133,11 +143,13 @@
  		{
             "label": "Generate Parse Info For Cocos Effect VSCode Plugin",
             "type": "shell",
-            "command": "@PATH@.vscode\\ShaderCompilerIDE\\GenerateParseInfo.bat",
-            "args": [
-				"${workspaceFolder}\\editor\\assets\\tools\\parsed-effects.txt"
-				"${workspaceFolder}\\"
-            ],
+			"windows": {
+				"command": "@PATH@.vscode\\ShaderCompilerIDE\\GenerateParseInfo.bat",
+				"args": [
+					"${workspaceFolder}\\editor\\assets\\tools\\parsed-effect-info.json"
+					"${workspaceFolder}\\"
+				],
+			},
             "group": {
                 "kind": "build",
                 "isDefault": false

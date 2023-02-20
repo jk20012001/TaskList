@@ -336,6 +336,24 @@ Pass shadow-caster-fs:
 #include <shading-entries/main-functions/render-to-shadowmap/fs>
 ```
 
+## VSCode 插件（实验性）
+
+> **注意**：只有使用 Surface Shader 框架的材质，内置的渲染调试功能才可以生效。
+
+#### 1、自动补全和语法着色
+
+在 VSCode 应用商店中搜索扩展 Cocos Effect，即可启用 .effect 文件的引擎内置函数、宏和全局变量的自动补全、跳转、语法着色等功能。
+
+> **注意**：由于是实验性功能，此功能目前仅支持部分引擎内置常用代码的感应，不支持用户代码自动感应。
+
+#### 2、语法检查及错误跳转
+
+当前窗口打开一个 .effect 文件，然后在终端菜单--运行任务....选择Cocos Effect Checker即可。
+
+工具会自动编译并给出对应的错误提示，在提示上按住 Ctrl 点击鼠标左键即可跳转到对应代码行。
+
+> **注意**：由于是实验性功能，此任务目前只支持 Windows 系统。
+
 ## 渲染调试功能
 
 > **注意**：只有使用 Surface Shader 框架的材质，内置的渲染调试功能才可以生效。
