@@ -178,7 +178,7 @@ vec3 SurfacesVertexModifyWorldPos(in SurfacesStandardVertexIntermediate In)
 
 > **注意**：用这种方式的好处是方便扩展多种不同的材质模型和代码版本升级，新版增加的函数可以用新的名称和参数，仍然可以调用旧版定义的函数获取计算结果，无需写重复代码，也不用担心升级后编译报错。
 
-#### 2、VS 对应的函数列表
+#### 2、VS 对应的常用函数列表
 
 VS 中的处理和材质模型关系相对比较小，所以这里都使用通用函数，函数参数均为 `SurfacesStandardVertexIntermediate` 结构体，存放的是 VS 输入输出的数据。用户无需再关心具体的顶点输入输出流程处理，只需要聚焦到某个数据是否需要及如何修改。
 
@@ -194,7 +194,7 @@ VS 中的处理和材质模型关系相对比较小，所以这里都使用通�
 | CC_SURFACES_VERTEX_MODIFY_WORLD_NORMAL      | vec3 SurfacesVertexModifyWorldNormal     | Common         | 返回修改后的世界空间法线（世界空间动画）                     |
 | CC_SURFACES_VERTEX_MODIFY_ SHARED_DATA      | void SurfacesVertexModify SharedData     | Common         | 如果某些贴图和计算需要在多个材质节点中使用，可在此函数中进行，直接修改 SurfaceStandardVertexIntermediate 结构体内的参数，减少性能耗费 |
 
-#### 3、FS 对应的函数列表
+#### 3、FS 对应的常用函数列表
 
 FS 中的函数大部分是只修改一项，在 Surface 函数中直接返回即可。有些函数可能会修改多项（如 UV 和切空间向量），此时会在参数列表中传入多个值用于修改。具体属于哪种情况请参考函数定义。
 
