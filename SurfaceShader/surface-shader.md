@@ -93,9 +93,10 @@ Surface Shader 内部计算时会用到一些宏开关，需要根据 Effect 中
 | CC_SURFACES_LIGHTING_ANISOTROPIC                      | BOOL | 是否开启各向异性材质                                         |
 | CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT | UINT | 各向异性环境光卷积采样数，为 0 表示关闭卷积计算，仅当各向异性开启时有效 |
 | CC_SURFACES_LIGHTING_USE_FRESNEL                      | BOOL | 是否通过相对折射率 ior 计算菲涅耳系数                        |
-| CC_SURFACES_LIGHTING_TRANSMIT_DIFFUSE                 | BOOL | 是否开启背面穿透漫射光（如叶片等）                           |
-| CC_SURFACES_LIGHTING_TRANSMIT_SPECULAR                | BOOL | 是否开启背面穿透高光（如折射光等）                           |
-| CC_SURFACES_LIGHTING_TRT                              | BOOL | 是否开启透射后内部反射出的光线（如头发材质等）               |
+| CC_SURFACES_LIGHTING_TRANSMIT_DIFFUSE                 | BOOL | 是否开启背面穿透漫射光（如头发、叶片、耳朵等）                           |
+| CC_SURFACES_LIGHTING_TRANSMIT_SPECULAR                | BOOL | 是否开启背面穿透高光（如水面、玻璃折射等）                           |
+| CC_SURFACES_LIGHTING_TRT                              | BOOL | 是否开启透射后内部镜面反射出的光线（如头发材质等）           |
+| CC_SURFACES_LIGHTING_TT                               | BOOL | 是否开启透射后内部漫反射出的光线（用于头发材质）             |
 | CC_SURFACES_USE_REFLECTION_DENOISE                    | BOOL | 是否开启环境反射除噪，仅 legacy 兼容模式下生效               |
 | CC_SURFACES_USE_LEGACY_COMPATIBLE_LIGHTING            | BOOL | 是否开启 legacy 兼容光照模式，可使渲染效果和 legacy/standard.effect 完全一致，便于升级 |
 
@@ -247,6 +248,7 @@ FS 的输入值目前作为宏来使用，大部分输入值在内部做了容�
 | FSInput_worldTangent  | vec3  | N/A                            | World Tangent 世界切线 |
 | FSInput_mirrorNormal  | float | N/A                            | Mirror Normal Sign 镜像法线标记 |
 | FSInput_localPos      | vec4  | CC_SURFACES_TRANSFER_LOCAL_POS | Local Position 局部坐标 |
+| FSInput_clipPos       | vec4  | CC_SURFACES_TRANSFER_CLIP_POS  | Clip Position 投影/裁切空间坐标 |
 
 ### Shader Assembly
 
@@ -495,6 +497,8 @@ void SurfacesLightingModifyFinalResult(inout LightingResult result, in LightingI
     // use surfaceData and lightingData for customizing lighting result
 }
 ```
+
+如果希望在重载函数内可以直接调用现成的内置光照模块函数，可以将 lighting-models/includes/common 改为对应光照模型使用的头文件，如 lighting-models/includes/standard
 
 #### 3、使用自定义的 Surface 基础函数：
 
