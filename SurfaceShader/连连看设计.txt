@@ -1,0 +1,17 @@
+预积分图:
+	支持默认资源的uuid以及flag从参表中隐藏
+	支持资源固定映射表
+
+光照模型:
+	支持配置生成代码后自动添加ModifyLightingResult这样的重载函数, 需要映射关系
+	支持配置节点集合映射为surfaceData变量名
+	支持配置Remapping Macros
+
+
+预积分皮肤:	预积分图直接使用固定代码提供,然后在material里根据名称映射表给一个固定的资源uuid
+			然后添加ModifyLightingResult
+
+特殊模板节点:
+	MakeVector SplitVector
+	
+自定义函数节点, 自定义代码节点如何支持

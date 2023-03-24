@@ -26,7 +26,7 @@ Surface Shader 仍然是基于 [Cocos Effect 的语法](effect-syntax.md)，以�
 | -------------------- | -------------------- | --- |
 | 渲染到场景（默认）   | render-to-scene      ||
 | 渲染到阴影贴图       | render-to-shadowmap  ||
-| 渲染到环境贴图       | render-to-reflectmap | 引擎预留 |
+| 渲染到环境贴图       | render-to-reflectmap | 可选 |
 | 渲染卡通描边         | misc/silhouette-edge ||
 | 渲染天空             | misc/sky             ||
 | 后期处理或通用计算 Pass | misc/quad            | 引擎预留 |
@@ -87,14 +87,14 @@ Surface Shader 内部计算时会用到一些宏开关，需要根据 Effect 中
 | :---------------------------------------------------- | ---- | ------------------------------------------------------------ |
 | CC_SURFACES_USE_VERTEX_COLOR                          | BOOL | 是否使用顶点色                                               |
 | CC_SURFACES_USE_SECOND_UV                             | BOOL | 是否使用2uv                                                  |
-| CC_SURFACES_USE_TWO_SIDED                             | BOOL | 是否使用双面法线                                             |
+| CC_SURFACES_USE_TWO_SIDED                             | BOOL | 是否使用双面法线，用于双面光照                               |
 | CC_SURFACES_USE_TANGENT_SPACE                         | BOOL | 是否使用切空间（使用法线图或各向异性时必须开启）             |
 | CC_SURFACES_TRANSFER_LOCAL_POS                        | BOOL | 是否在 FS 中访问模型空间坐标                                 |
 | CC_SURFACES_LIGHTING_ANISOTROPIC                      | BOOL | 是否开启各向异性材质                                         |
 | CC_SURFACES_LIGHTING_ANISOTROPIC_ENVCONVOLUTION_COUNT | UINT | 各向异性环境光卷积采样数，为 0 表示关闭卷积计算，仅当各向异性开启时有效 |
 | CC_SURFACES_LIGHTING_USE_FRESNEL                      | BOOL | 是否通过相对折射率 ior 计算菲涅耳系数                        |
-| CC_SURFACES_LIGHTING_TRANSMIT_DIFFUSE                 | BOOL | 是否开启背面穿透漫射光（如头发、叶片、耳朵等）                           |
-| CC_SURFACES_LIGHTING_TRANSMIT_SPECULAR                | BOOL | 是否开启背面穿透高光（如水面、玻璃折射等）                           |
+| CC_SURFACES_LIGHTING_TRANSMIT_DIFFUSE                 | BOOL | 是否开启背面穿透漫射光（如头发、叶片、耳朵等）               |
+| CC_SURFACES_LIGHTING_TRANSMIT_SPECULAR                | BOOL | 是否开启背面穿透高光（如水面、玻璃折射等）                   |
 | CC_SURFACES_LIGHTING_TRT                              | BOOL | 是否开启透射后内部镜面反射出的光线（如头发材质等）           |
 | CC_SURFACES_LIGHTING_TT                               | BOOL | 是否开启透射后内部漫反射出的光线（用于头发材质）             |
 | CC_SURFACES_USE_REFLECTION_DENOISE                    | BOOL | 是否开启环境反射除噪，仅 legacy 兼容模式下生效               |
@@ -241,7 +241,7 @@ FS 的输入值目前作为宏来使用，大部分输入值在内部做了容�
 | --------------------- | ----- | ------------------------------ | ------------------        |
 | FSInput_worldPos      | vec3  | N/A                            | World Position 世界坐标 |
 | FSInput_worldNormal   | vec3  | N/A                            | World Normal 世界法线 |
-| FSInput_faceSideSign  | float | N/A                            | Two Side Sign 双面材质标记 |
+| FSInput_faceSideSign  | float | N/A                            | Two Side Sign 物理正反面标记，可用于双面材质 |
 | FSInput_texcoord      | vec2  | N/A                            | UV0                       |
 | FSInput_texcoord1     | vec2  | N/A                            | UV1                       |
 | FSInput_vertexColor   | vec4  | N/A                            | Vertex Color 顶点颜色 |
@@ -469,14 +469,14 @@ Pass shadow-caster-fs:
 
 #### 1、自行添加 vs 输出与 fs 输入：
 
-VS新定义 varying 变量之后在某个 Surface 函数中计算并输出该值
-FS 新定义 varying 变量之后在某个 Surface 函数中获取并使用该值
+VS 阶段新定义 varying 变量之后在某个 Surface 函数中计算并输出该值
+FS 阶段新定义 varying 变量之后在某个 Surface 函数中获取并使用该值
 
-甚至可以在不同的 Shader 主函数中混用 Surface Shader 和 Legacy Shader（不推荐，使用时要保证 varying 顶点数据在两个阶段一致）。
+甚至可以在不同阶段的 Shader 主函数中混用 Surface Shader 和 Legacy Shader（不推荐，使用时要保证 varying 顶点数据在两个阶段一致）。
 
 #### 2、使用 Surface 函数自定义材质信息和光照结果：
 
-在 Surface 函数中添加如下代码，其中XXXXX 是当前的**材质模型名称**
+在 Surface 函数中添加如下代码，其中 XXXXX 是当前的**材质模型名称**
 
 首先将自定义数据写入材质信息 surfaceData 中
 
@@ -498,7 +498,7 @@ void SurfacesLightingModifyFinalResult(inout LightingResult result, in LightingI
 }
 ```
 
-如果希望在重载函数内可以直接调用现成的内置光照模块函数，可以将 lighting-models/includes/common 改为对应光照模型使用的头文件，如 lighting-models/includes/standard
+如果希望<font color=#ff0000>在重载函数内可以直接调用现成的内置光照模块函数</font>，可以将 lighting-models/includes/common 改为对应光照模型使用的头文件，如 lighting-models/includes/standard
 
 #### 3、使用自定义的 Surface 基础函数：
 
