@@ -1,0 +1,57 @@
+ Be especially careful with UINT variables, which must be converted to int before being passed in
+ Fetching integer parts
+ Rounding
+ Take the integer that is greater than or equal to it and closest to it
+ Take the integer that is less than or equal to it and closest to it
+ Floating-point special remainder function, equivalent to Data % Divisor
+ return the fractional part, parameter 2 is the output of the integer part, the sign of these two parts will be the same as the input value
+ Turn radians into degrees
+ Turn degrees into radians
+ TRUE if all elements are non-zero
+ Returns TRUE if any one element is non-zero
+ whether it is an irrational number
+ whether it is infinitely large or infinitely small
+ whether it is finite, remove the possibility of irrational numbers and infinite size values, mainly used to judge the validity
+ return A <= B or B >= A floating point number, remove the bool value conversion
+ Left-hand rule
+ Matrix ranking
+ IncidentDirection is from elsewhere to pixel
+ IncidentDirection is from elsewhere to pixel
+ Can only be used in ShaderModel1
+ Double type and safe calculation of a*b+c
+ Returns A*B+C
+ Returns both sine and cosine
+ Calculates the arctangent of a given value, no quadrant can be determined
+ Computes the arctangent of y/x and can determine the quadrant
+ Base on the natural logarithm e
+ Base on 10
+ Base on 2
+ Exponent with natural logarithm base
+ Exponent with a base of 2
+ Returns the sum of the absolute values of the partial derivatives of the input data, i.e., the sum of the absolute values of each of the two partial derivatives, which is equivalent to taking the absolute values internally before adding the gradients return abs(ddx)+abs(ddy)
+ Hyperbolic sine
+ decompose a number and return its tail, parameter 2 is the exponent of the output, with a base of 10
+ return Multiplier * 2^Power
+ Do Hermite smoothing for the specified parameter 3, so that it changes from linear to curved, if the parameter 3 falls outside the min and max range, then Clamp, note that it is not a real Hermite curve, does not involve the tangent vector, there is not much controllability, can only be seen as a typical Hermite curve smoothing only
+ Query the number of mip, __VERSION__>=430
+ Query the number of MSAA sampling points, __VERSION__>=450
+ return abs(dFdx) + abs(dFdy)
+ Low precision, not supported by GLES
+ Low precision, not supported by GLES
+ High precision, not supported by GLES
+ High precision, not supported by GLES
+ Take its fractional part
+ Floating-point-specific remainder function, equivalent to Data % divide
+ Equivalent to mad
+ 1 / sqrt(Data)
+ Calculate the product of two matrices one by one for each element
+ equivalent to asuint, reads the floating point value as a UINT number bit by bit, without changing the bit value
+ equivalent to asint, reads the floating point value as INT bit by bit, without changing the bit value
+ equivalent to asfloat, which reads UINT numbers as floating point values bit by bit, without changing the bit value
+ Equivalent to asfloat, reads int numbers as floating point values bit by bit, without changing the bit value
+ Make a judgment for each element of Data1 and Data2
+ Judgment for each element of Data1 and Data2
+ Judge each element of Data1 and Data2
+ Make a judgment for each element of Data1 and Data2
+ Judgment for each element of Data1 and Data2
+ Judgment for each element of Data1 and Data2

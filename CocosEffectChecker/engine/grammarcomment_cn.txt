@@ -1,0 +1,57 @@
+ 要特别小心UINT型的变量，必须转成int型的再传入
+ 取整数部分
+ 取四舍五入
+ 取大于等于它且最接近它的整数
+ 取小于等于它且最接近它的整数
+ 浮点数专用的求余函数，相当于Data % Divisor
+ 返回小数部分，参数2为输出的整数部分，这两部分的符号将与输入数值相同
+ 把弧度变成度
+ 把度变成弧度
+ 所有元素非0才返回TRUE
+ 任意一个元素非0就返回TRUE
+ 是否为无理数
+ 是否为无限大或无限小
+ 是否为有限的，去掉了无理数和无限大小值的可能，主要用于判有效
+ 返回A<=B或B>=A的浮点数，去掉bool值转换
+ 左手定则
+ 矩阵求秩
+ IncidentDirection是从别处到像素
+ IncidentDirection是从别处到像素
+ 只能用在ShaderModel1
+ double类型并且安全的计算a*b+c
+ 返回A*B+C
+ 同时返回正弦和余弦
+ 计算指定值的反正切，无法确定象限
+ 计算y/x的反正切，可以确定象限
+ 以自然对数e为底
+ 以10为底
+ 以2为底
+ 以自然对数为底的指数
+ 以2为底的指数
+ 返回输入数据的偏导绝对值之和，即对两个偏导分别取绝对值后的和，相当于在内部先取了绝对值再相加的梯度 return abs(ddx)+abs(ddy)
+ 双曲正弦
+ 分解一个数字，返回其尾数，参数2为输出的指数，以10为底
+ return Multiplier * 2^Power
+ 对指定的参数3做Hermite平滑修正，使其由线性变为曲线，若参数3落在min和max范围外，则Clamp，注意它并非真正的Hermite曲线，不牵扯切线向量，没有太多的可控性，只能视为做了一种典型的Hermite曲线性平滑而已
+ 查询mip数量，__VERSION__>=430
+ 查询MSAA采样点数量，__VERSION__>=450
+ return abs(dFdx) + abs(dFdy)
+ 低精度，GLES不支持
+ 低精度，GLES不支持
+ 高精度，GLES不支持
+ 高精度，GLES不支持
+ 取其小数部分
+ 浮点数专用的求余函数，相当于Data % 除数
+ 相当于mad
+ 1 / sqrt(Data)
+ 对两个矩阵每个元素挨个计算乘积
+ 相当于asuint，逐bit将浮点值读取为UINT数，不改变bit值
+ 相当于asint，逐bit将浮点值读取为int数，不改变bit值
+ 相当于asfloat，逐bit将UINT数读取为浮点值，不改变bit值
+ 相当于asfloat，逐bit将int数读取为浮点值，不改变bit值
+ 对Data1和Data2的每个元素做判断
+ 对Data1和Data2的每个元素做判断
+ 对Data1和Data2的每个元素做判断
+ 对Data1和Data2的每个元素做判断
+ 对Data1和Data2的每个元素做判断
+ 对Data1和Data2的每个元素做判断

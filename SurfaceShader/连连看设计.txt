@@ -4,12 +4,19 @@
 
 光照模型:
 	支持配置生成代码后自动添加ModifyLightingResult这样的重载函数, 需要映射关系
-	支持配置节点集合映射为surfaceData变量名
 	支持配置Remapping Macros
+
+输出节点:
+	支持配置节点映射为surfaceData变量名以及此变量属于哪个宏
+	支持输出到surfaceData变量后的附加代码, 支持%s等通配符替换实际变量名, 用于支持2ndSpecular相关的几项
+	
 
 
 预积分皮肤:	预积分图直接使用固定代码提供,然后在material里根据名称映射表给一个固定的资源uuid
 			然后添加ModifyLightingResult
+
+2ndSpecular: TRT / DualLobe / ClearCoat / Wet等
+			不能给TRT等宏, 只能给2ND_SPECULAR宏, 然后节点需要附加代码来实现standard-fs中TRT / DualLobe / ClearCoat / Wet对应的运算
 
 特殊模板节点:
 	MakeVector SplitVector
