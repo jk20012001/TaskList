@@ -7,7 +7,9 @@
 	支持配置Remapping Macros
 
 输出节点:
+	统一使用ModifySharedData函数体来输出
 	支持配置节点映射为surfaceData变量名以及此变量属于哪个宏
+	支持配置相关include（如special-effects等），用于支持皮肤4S强度输出等
 	支持输出到surfaceData变量后的附加代码, 支持%s等通配符替换实际变量名, 用于支持2ndSpecular相关的几项
 	
 
@@ -16,7 +18,7 @@
 			然后添加ModifyLightingResult
 
 2ndSpecular: TRT / DualLobe / ClearCoat / Wet等
-			不能给TRT等宏, 只能给2ND_SPECULAR宏, 然后节点需要附加代码来实现standard-fs中TRT / DualLobe / ClearCoat / Wet对应的运算
+			不能给TRT等宏, 只能给2ND_SPECULAR宏, 然后节点需要附加代码来实现standard-fs中TRT / DualLobe / ClearCoat / Wet对应的运算和赋值
 
 特殊模板节点:
 	MakeVector SplitVector

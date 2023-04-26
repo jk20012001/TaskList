@@ -26,13 +26,13 @@
 set /p choice=«Î ‰»Î:
 @echo=
 
-set BRANCHNAME=v3.7.0
+set BRANCHNAME=develop
 cd /d %~dp0
 setlocal enabledelayedexpansion
 
 if %choice%==1 call npm run build
 if %choice%==2 copy /y npm run build-declaration
-if %choice%==3 python %~dp0resources\3d\engine\native\tools\tojs\genbindings.py
+if %choice%==3 python %~dp0resources\3d\engine\native\tools\tojs\genbindings.py && node %~dp0resources\3d\engine\native\tools\swig-config\genbindings.js
 if %choice%==4 node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js
 if "%choice%"=="effect" node .\app\modules\engine-extensions\extensions\engine-extends\static\effect-compiler\build.js F:\Work\editor\current\resources\3d\engine\editor\assets\effects\surfaces\standard.effect
 if %choice%==5 (
@@ -56,22 +56,13 @@ rem call npm run build-declaration
 )
 if "%choice%"=="reset" (
 cd app\modules\editor-extensions\
-git reset --hard
-git fetch
-git branch --set-upstream-to=origin/%BRANCHNAME% __editor__
-git pull
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
 cd ..\..\..\
 cd app\modules\engine-extensions\
-git reset --hard
-git fetch
-git branch --set-upstream-to=origin/%BRANCHNAME% __editor__
-git pull
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
 cd ..\..\..\
 cd app\modules\platform-extensions\
-git reset --hard
-git fetch
-git branch --set-upstream-to=origin/%BRANCHNAME% __editor__
-git pull
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
 cd ..\..\..\
 )
 if "%choice%"=="b" (
