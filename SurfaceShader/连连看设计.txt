@@ -1,18 +1,45 @@
-预积分图:
-	支持默认资源的uuid以及flag从参表中隐藏
-	支持资源固定映射表
+UI需求:
+	弧线, 高亮显示
+	画框分group加title及group移动
+	
 
-光照模型:
-	支持配置生成代码后自动添加ModifyLightingResult这样的重载函数, 需要映射关系
-	支持配置Remapping Macros
 
-输出节点:
+/////////////////////////////////////////////////////////////基本功能
+Shader Graph类型:
+	2D / unlit 3D / Surface, 只改FS?要不要支持VS
+	VS代码都定死, 只有Surface支持VS部分的Surface函数
+
+Shader输入节点:
+	输入节点配置对应的ShaderStageName, 对三种ShaderGraph类型需要配置不同的名称:
+		如Surface名为NodeName的输入节点配置为@ShaderStageName@Input_@CodeName@
+		其他两种类型基本都是FS的Input变量, 配合定死的VS代码写死名称即可v_@CodeName@
+
+Shader输出节点:
 	统一使用ModifySharedData函数体来输出
 	支持配置节点映射为surfaceData变量名以及此变量属于哪个宏
 	支持配置相关include（如special-effects等），用于支持皮肤4S强度输出等
 	支持输出到surfaceData变量后的附加代码, 支持%s等通配符替换实际变量名, 用于支持2ndSpecular相关的几项
-	
 
+内置/通用/引擎功能性函数节点:
+	配置include位置, 节点名称和输入输出类型
+	可以使用工具自动生成配置, 类似parsed-data
+	根据vec类型支持r/g/b/a/rgb/rgba等输出
+
+特殊模板节点:
+	MakeVector SplitVector
+	
+Shader代码框架:	
+	不管是什么类型的Graph, 都需要在Shader框架中给定一个相对完整的支持所有通用/引擎功能性函数节点的include, 否则就需要对某些include附加配置include dependency, 用于一些特殊的有依赖性的chunk, 相当麻烦
+	Surface光照模型:
+		支持配置生成代码后自动添加ModifyLightingResult这样的重载函数, 需要映射关系
+		支持配置Remapping Macros?
+
+
+
+/////////////////////////////////////////Surface高级代码处理
+预积分图:
+	支持默认资源的uuid以及flag从参表中隐藏
+	支持资源固定映射表
 
 预积分皮肤:	预积分图直接使用固定代码提供,然后在material里根据名称映射表给一个固定的资源uuid
 			然后添加ModifyLightingResult
@@ -20,7 +47,5 @@
 2ndSpecular: TRT / DualLobe / ClearCoat / Wet等
 			不能给TRT等宏, 只能给2ND_SPECULAR宏, 然后节点需要附加代码来实现standard-fs中TRT / DualLobe / ClearCoat / Wet对应的运算和赋值
 
-特殊模板节点:
-	MakeVector SplitVector
-	
+
 自定义函数节点, 自定义代码节点如何支持

@@ -64,6 +64,9 @@ cd ..\..\..\
 cd app\modules\platform-extensions\
 call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
 cd ..\..\..\
+cd resources\3d\engine\native\external\
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
+cd ..\..\..\
 )
 if "%choice%"=="b" (
 cd resources\3d\engine
@@ -77,8 +80,9 @@ call npm install
 cd ..\..\..\
 rem del workflow\.update-cache.json
 rem pause
-rasdial jinkun
+c:\goldapps\dllfunc goldfx.dll toolVPNDial jinkun
 call npm install
+rasdial jinkun /disconnect
 rem node workflow/scripts/build.js "--disable-repl"
 )
 if "%choice%"=="run" (
