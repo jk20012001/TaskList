@@ -18,6 +18,7 @@
 @echo init: 初始化环境(解决找不到cocos-for-editor分支等问题)
 @echo clean: 清理仓库(解决编不过的问题)
 @echo reset: reset app modules下的工程到引擎分支最新版无修改的状态
+@echo resetall: reset editor engine 以及app modules下的工程到引擎分支最新版无修改的状态
 @echo b: 完全编译(如果编辑器编不过的话请手动更新app\modules\engine-extensions到正确的版本)
 @echo=
 @echo fix1: 修复完全编译时MODULE_NOT_FOUND的问题
@@ -54,20 +55,14 @@ rem call npm install gulp
 rem call npm install
 rem call npm run build-declaration
 )
-if "%choice%"=="reset" (
-cd app\modules\editor-extensions\
+if "%choice%"=="resetall" (
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat master %BRANCHNAME% origin
+cd resources\3d\engine\
 call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
 cd ..\..\..\
-cd app\modules\engine-extensions\
-call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
-cd ..\..\..\
-cd app\modules\platform-extensions\
-call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
-cd ..\..\..\
-cd resources\3d\engine\native\external\
-call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
-cd ..\..\..\
+call :resetappgit
 )
+if "%choice%"=="reset" call :resetappgit
 if "%choice%"=="b" (
 cd resources\3d\engine
 rem call npm install gulp
@@ -149,3 +144,18 @@ for /f %%i in (c:\templog\envvar.txt)  Do set %%i
 cd ..\..\engine
 mklink /J %pathname% %~dp0resources\3d\engine
 goto end
+
+:resetappgit
+cd app\modules\editor-extensions\
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
+cd ..\..\..\
+cd app\modules\engine-extensions\
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
+cd ..\..\..\
+cd app\modules\platform-extensions\
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
+cd ..\..\..\
+cd resources\3d\engine\native\external\
+call F:\SysApps\Reg\Functional\Apps\GitReset.bat __editor__ %BRANCHNAME% origin
+cd ..\..\..\
+goto :EOF
