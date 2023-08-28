@@ -12,15 +12,17 @@ Shader Graph类型:
 	粒子待调研？
 
 Shader输入节点:
-	输入节点配置对应的ShaderStageName, 对种ShaderGraph框架需要配置不同的名称:
+	★输入节点配置对应的ShaderStageName, 对种ShaderGraph框架需要配置不同的名称:
 		如Surface名为NodeName的输入节点配置为@ShaderStageName@Input_@CodeName@
 		其他两种类型基本都是FS的Input变量, 配合定死的VS代码写死名称即可v_@CodeName@
+		支持配置节点属于哪个UI+Surface宏, 所有输出到此变量的相关代码都要包在宏里, 并构建macro remapping
+
 
 Shader输出节点:
-	统一使用ModifySharedData函数体来输出
+	统一使用ModifySharedData函数体来输出, 类似surf函数
 	同时根据clip节点构建AlphaClip函数
-	支持配置每个节点变量的默认值
-	支持配置节点映射为surfaceData变量名以及此变量属于哪个UI+Surface宏, 所有输出到此变量的相关代码都要包在宏里, 并构建macro remapping
+	?支持配置每个节点变量的默认值
+	★支持配置节点映射为surfaceData变量名以及此变量属于哪个UI+Surface宏, 所有输出到此变量的相关代码都要包在宏里, 并构建macro remapping
 	支持配置相关include（如special-effects等），用于支持皮肤4S强度输出等
 	支持输出到surfaceData变量后的附加代码, 支持%s等通配符替换实际变量名, 用于支持2ndSpecular相关的几项
 
@@ -39,7 +41,7 @@ Shader输出节点:
 特殊节点：
 	多种类型输出slot，需要手写ts
 
-难点：
+*难点：
 	函数节点有些输入输出类型支持多种基础类型，要写成重载形式，有些是定死的类型不能换
 	定义一些类型集合的类型，必须保证最终类型必须一致
 	这个配置可能是一个ts函数，需要用parsed-data自动生成这个ts函数

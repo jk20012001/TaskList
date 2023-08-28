@@ -1,5 +1,6 @@
 :start
 @echo off
+@echo %~dp0
 @echo 请选择:
 @echo 1: 编译editor(快速)
 @echo 2: 编译ts引擎声明
@@ -51,6 +52,8 @@ rd profiles /s /q
 rd temp /s /q
 rd local /s /q
 rd bin /s /q
+rd "%AppData%\Cocos" /s /q
+rd "%AppData%\CocosCreator" /s /q
 rem call npm install gulp
 rem call npm install
 rem call npm run build-declaration
@@ -65,7 +68,7 @@ call :resetappgit
 if "%choice%"=="reset" call :resetappgit
 if "%choice%"=="b" (
 cd resources\3d\engine
-rem call npm install gulp
+call npm install
 call npm run build-declaration
 cd ..\..\..\
 cd app\modules\platform-extensions\
