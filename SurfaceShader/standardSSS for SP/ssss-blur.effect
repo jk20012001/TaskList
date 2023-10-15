@@ -1,0 +1,339 @@
+// Copyright (c) 2017-2020 Xiamen Yaji Software Co., Ltd.
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: blur-vs
+      frag: copy-fs
+      pass: copy-pass
+      depthTest: false
+      depthWrite: false
+    - vert: blur-vs
+      frag: ssssBlurX-fs
+      pass: ssss-blurX
+      depthStencilState:
+        depthTest: false
+        depthWrite: false
+        stencilTestFront: true
+        stencilFuncFront: equal
+        stencilRef: 0x78 # [0~255],use 120
+    - vert: blur-vs
+      frag: ssssBlurY-fs
+      pass: ssss-blurY
+      depthStencilState:
+        depthTest: false
+        depthWrite: false
+        stencilTestFront: true
+        stencilFuncFront: equal
+        stencilRef: 0x78 # [0~255],use 120
+}%
+
+CCProgram blur-vs %{
+  #include <./post-process/chunks/vs>
+}%
+
+CCProgram copy-fs %{
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #include <common/data/packing>
+
+  #pragma rate depthRaw pass
+  uniform sampler2D depthRaw;
+
+  in vec2 v_uv;
+
+  layout(location = 0) out vec4 fragColor;
+
+  void main() {
+    float depth = texture(depthRaw, v_uv).r;
+    fragColor = packDepthToRGBA(depth);
+  }
+}%
+
+CCProgram ssssBlur %{
+  precision highp float;
+  #include <common/common-define>
+  #include <common/math/number>
+  #include <common/data/packing>
+  #include <common/color/gamma>
+  #include <common/math/coordinates>
+
+  #pragma define NUMKERNEL 25
+  #pragma define RANGE (NUMKERNEL > 20 ? 3.0 : 2.0)
+
+  uniform blurUBO {
+    highp vec4 blurInfo; // x: ssssFov; y: ssssWidth; z: boundingBox; w: scale;
+    highp vec4 kernel[NUMKERNEL];
+  };
+  #pragma rate colorTex pass
+  uniform sampler2D colorTex;
+  #pragma rate depthTex pass
+  uniform sampler2D depthTex;
+  #pragma rate noiseTex pass
+  uniform sampler2D noiseTex; // point wrap sampler
+
+
+  // force clamped sample
+  vec2 fixUV(vec2 uv)
+  {
+    return saturate(uv);
+  }
+
+
+  /**
+   * @param texcoord The usual quad texture coordinates.
+   * @param dir Direction of the blur:
+   *   - First pass:   float2(1.0, 0.0)
+   *   - Second pass:  float2(0.0, 1.0)
+   */
+  vec4 blur(vec2 texcoord, vec2 dir) {
+    float ssssFov = blurInfo.x;
+    // This parameter specifies the global level of subsurface scattering
+    // or, in other words, the width of the filter. It's specified in
+    // world space units.
+    float ssssWidth = blurInfo.y;
+    float boundingBox = blurInfo.z;
+    float depthUnitScale = boundingBox * blurInfo.w;
+    // Fetch color of current pixel:
+    // Use Sample_Point_Clamp
+    vec4 colorM = texture(colorTex, texcoord);
+    #if !CC_USE_HDR
+       colorM = vec4(LinearToSRGB(colorM.rgb), colorM.a);
+    #endif
+
+    // valid range is 0 - 0.9, same as skin output alpha
+    // msaa do not support ranged intensity, fallback to boolean
+    float threshold = 0.9, rangeScale = 1.0 / 0.9;
+    // #if MSAA_ENABLE
+      // threshold = 0.0;
+      // rangeScale = 1.0;
+    // #endif
+    float SSSS_STRENGTH_SOURCE = colorM.a > threshold ? 0.0 : colorM.a * rangeScale;
+    #define SSSS_STRENGTH_SOURCE_INLOOP (color.a > threshold ? 0.0 : color.a * rangeScale)
+
+    // Fetch linear depth of current pixel:
+    // Use Sample_Point_Clamp
+    float depthHS = unpackRGBAToDepth(texture(depthTex, texcoord)) * 2.0 - 1.0; // -1.0 ~ +1.0
+    float depthM = -GetCameraDepthRH(depthHS, cc_matProj);
+
+    // Calculate the ssssWidth scale (1.0 for a unit plane sitting on the projection window):
+    float distanceToProjectionWindow = 1.0 / tan(0.5 * ssssFov);
+    float scale = distanceToProjectionWindow / depthM * depthUnitScale;
+
+    // Calculate the final step to fetch the surrounding pixels:
+    vec2 finalStep = vec2(ssssWidth) * vec2(scale) * dir;
+    // Modulate it using the alpha channel.
+    finalStep *= vec2(SSSS_STRENGTH_SOURCE);
+    // Divide by 3 as the kernels range from -3 to 3.
+    finalStep *= vec2(1.0 / RANGE);
+
+    // Accumulate the center sample:
+    vec4 colorBlurred = colorM;
+    colorBlurred.rgb *= kernel[0].rgb;
+
+    // Accumulate the other samples:
+    for (int i = 1; i < NUMKERNEL; i++) {
+      // Fetch color and depth for current sample:
+      vec2 offset = texcoord + vec2(kernel[i].a) * finalStep;
+      // Use Sample_Point_Clamp
+      vec4 color = texture(colorTex, fixUV(offset));
+      #if !CC_USE_HDR
+         color = vec4(LinearToSRGB(color.rgb), color.a);
+      #endif
+
+      // caution for NaN
+      //if (isnan(dot(color, color)) || isinf(dot(color, color))) continue;
+
+      // If the difference in depth is huge, we lerp color back to "colorM":
+      float depthHS = unpackRGBAToDepth(texture(depthTex, fixUV(offset))) * 2.0 - 1.0;
+      float depth = -GetCameraDepthRH(depthHS, cc_matProj);
+      float s = saturate(100.0 / depthUnitScale * distanceToProjectionWindow * ssssWidth * abs(depthM - depth));
+      color.rgb = mix(color.rgb, colorM.rgb, s);
+
+      colorBlurred.rgb += kernel[i].rgb * mix(colorM.rgb, color.rgb, SSSS_STRENGTH_SOURCE_INLOOP);
+    }
+    #if !CC_USE_HDR
+       colorBlurred = vec4(SRGBToLinear(colorBlurred.rgb), colorBlurred.a);
+    #endif
+    return colorBlurred;
+  }
+
+  vec3 sssGetWorldPosition(vec2 texcoord)
+  {
+    vec3 ndc = vec3(texcoord, texture(depthTex, texcoord).x);
+    ndc.xyz = 2.0 * ndc.xyz - vec3(1.0);
+    CC_HANDLE_SAMPLE_NDC_FLIP_STATIC(ndc.y);
+    return GetWorldPosFromNDCPosRH(ndc, cc_matProj, cc_matViewProjInv);
+
+    // P = projectionInverseMatrix * P;
+    // return P.xyz / P.w;
+  }
+  // Invert of the CDF of [samples_pdf * 2 * Pi * r] for importance sampling
+  vec3 samplesICDF(float x, vec3 d)
+  {
+    d = max(vec3(1e-4), d);
+    return -3.0 * log(x) * d;
+  }
+vec3 sssPDF(vec3 r, vec3 d)
+{
+    d = max(vec3(1e-4), d);
+    return (exp(-r / d) + exp(-r / (3.0 * d))) / max(vec3(1e-5), 8.0 * M_PI * d * r);
+}
+
+// Samples distribution (approx. of sss_pdf)
+vec3 samplesPDF(vec3 r, vec3 d)
+{
+    d = max(vec3(1e-4), d);
+    return exp(-r / (3.0 * d)) / (6.0 * M_PI * d * r);
+}
+  vec4 depthBasedStandardSSS(vec2 texcoord) {
+    float ssssWidth = blurInfo.y;
+    float boundingBox = blurInfo.z;
+    float depthUnitScale = boundingBox * blurInfo.w;
+    vec3 sssCoeffs = vec3(1.0); //也可以是天空色，它代表了各波长光线的散射系数
+    // Fetch color of current pixel:
+    // Use Sample_Point_Clamp
+    vec4 colorM = texture(colorTex, texcoord);
+    #if !CC_USE_HDR
+       colorM = vec4(LinearToSRGB(colorM.rgb), colorM.a);
+    #endif
+
+    // valid range is 0 - 0.9, same as skin output alpha
+    // msaa do not support ranged intensity, fallback to boolean
+    float threshold = 0.9, rangeScale = 1.0 / 0.9;
+    // #if MSAA_ENABLE
+      // threshold = 0.0;
+      // rangeScale = 1.0;
+    // #endif
+    // SSSS_STRENGTH_SOURCE is translucency
+    // colorM.rgb is diffuseShading
+    float SSSS_STRENGTH_SOURCE = colorM.a > threshold ? 0.0 : colorM.a * rangeScale;
+    #define SSSS_STRENGTH_SOURCE_INLOOP (color.a > threshold ? 0.0 : color.a * rangeScale)
+
+  	float noise = texture(noiseTex, texcoord).x;
+    #define GOLDEN_RATIO 0.618034
+
+////////////////////////////////////////////////
+  vec3 convoluted = vec3(1.0);
+  if(SSSS_STRENGTH_SOURCE < EPSILON_LOWP)
+  {
+	  vec3 currPos = sssGetWorldPosition(tex_coord);
+	  
+    //pre-judgement
+    mat2 projMat2d = mat2(cc_matProj);
+		float dmax = max(max(d.x, d.y), d.z);
+		float dz = dmax / -currPos.z;
+		if (determinant(projMat2d) * dz < EPSILON_LOWP)
+			return colorM;
+	
+	  // Scale sample distribution with z
+  	vec3 dz = colorM.rgb / -currPos.z;
+
+	  vec3 X = vec3(0.0), W = vec3(0.0);
+	  for (int i = 0; i < 64; i++)
+    {
+	  	// Fibonacci spiral
+	  	float r = (i + 0.5) / 64;
+	  	float t = 2.0 * PI * (GOLDEN_RATIO * i + noise);
+	  	vec3 icdf = samplesICDF(r, dz);
+	  	vec2 T = projMat2d * vec2(cos(t), sin(t));
+
+  		vec2 CoordsR = texcoord + icdf.r * T;
+  		vec2 CoordsG = texcoord + icdf.g * T;
+  		vec2 CoordsB = texcoord + icdf.b * T;
+
+  		vec2 Dr = texture(colorTex, CoordsR).ra;
+  		vec2 Dg = texture(colorTex, CoordsG).ga;
+  		vec2 Db = texture(colorTex, CoordsB).ba;
+
+  		// Re-weight samples with the scene 3D distance and SSS profile instead of 2D importance sampling weights
+  		// SSS mask in alpha
+  		vec3 dist = vec3(
+  			distance(currPos, sssGetWorldPosition(CoordsR)),
+  			distance(currPos, sssGetWorldPosition(CoordsG)),
+  			distance(currPos, sssGetWorldPosition(CoordsB)));
+
+		  vec3 Weights = vec3(Dr.y, Dg.y, Db.y) * sssPDF(dist, d.rgb) / samplesPDF(icdf, dz);
+		  X += Weights * vec3(Dr.x, Dg.x, Db.x);
+		  W += Weights;
+    }
+  }
+////////////////////////////////////////////////
+
+    return colorM.rgb * vec4(convoluted, 1.0);
+
+    // Fetch linear depth of current pixel:
+    // Use Sample_Point_Clamp
+    float depthHS = unpackRGBAToDepth(texture(depthTex, texcoord)) * 2.0 - 1.0; // -1.0 ~ +1.0
+    float depthM = -GetCameraDepthRH(depthHS, cc_matProj);
+
+    // Calculate the ssssWidth scale (1.0 for a unit plane sitting on the projection window):
+    float distanceToProjectionWindow = 1.0 / tan(0.5 * ssssFov);
+    float scale = distanceToProjectionWindow / depthM * depthUnitScale;
+
+    // Calculate the final step to fetch the surrounding pixels:
+    vec2 finalStep = vec2(ssssWidth) * vec2(scale) * dir;
+    // Modulate it using the alpha channel.
+    finalStep *= vec2(SSSS_STRENGTH_SOURCE);
+    // Divide by 3 as the kernels range from -3 to 3.
+    finalStep *= vec2(1.0 / RANGE);
+
+    // Accumulate the center sample:
+    vec4 colorBlurred = colorM;
+    colorBlurred.rgb *= kernel[0].rgb;
+
+    // Accumulate the other samples:
+    for (int i = 1; i < NUMKERNEL; i++) {
+      // Fetch color and depth for current sample:
+      vec2 offset = texcoord + vec2(kernel[i].a) * finalStep;
+      // Use Sample_Point_Clamp
+      vec4 color = texture(colorTex, fixUV(offset));
+      #if !CC_USE_HDR
+         color = vec4(LinearToSRGB(color.rgb), color.a);
+      #endif
+
+      // caution for NaN
+      //if (isnan(dot(color, color)) || isinf(dot(color, color))) continue;
+
+      // If the difference in depth is huge, we lerp color back to "colorM":
+      float depthHS = unpackRGBAToDepth(texture(depthTex, fixUV(offset))) * 2.0 - 1.0;
+      float depth = -GetCameraDepthRH(depthHS, cc_matProj);
+      float s = saturate(100.0 / depthUnitScale * distanceToProjectionWindow * ssssWidth * abs(depthM - depth));
+      color.rgb = mix(color.rgb, colorM.rgb, s);
+
+      colorBlurred.rgb += kernel[i].rgb * mix(colorM.rgb, color.rgb, SSSS_STRENGTH_SOURCE_INLOOP);
+    }
+    #if !CC_USE_HDR
+       colorBlurred = vec4(SRGBToLinear(colorBlurred.rgb), colorBlurred.a);
+    #endif
+    return colorBlurred;
+  }  
+}%
+
+CCProgram ssssBlurX-fs %{
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #include <ssssBlur>
+
+  in vec2 v_uv;
+
+  layout(location = 0) out vec4 fragColor;
+
+  void main() {
+    fragColor = blur(v_uv, vec2(1.0, 0.0));
+  }
+}%
+
+CCProgram ssssBlurY-fs %{
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #include <ssssBlur>
+
+  in vec2 v_uv;
+
+  layout(location = 0) out vec4 fragColor;
+
+  void main() {
+    fragColor = vec4(blur(v_uv, vec2(0.0, 1.0)).rgb, 1.0);
+  }
+}%
