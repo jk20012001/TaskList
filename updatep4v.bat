@@ -29,3 +29,6 @@ if exist ACMEngineBinary %PERFORCE% clean ACMEngineBinary...#head & %PERFORCE% s
 if exist p4v\0_config %PERFORCE% clean p4v\0_config...#head & %PERFORCE% sync p4v\0_config...#head
 if exist p4v\ACMobileClient %PERFORCE% clean p4v\ACMobileClient...#head & %PERFORCE% sync p4v\ACMobileClient...#head
 if exist p4v\ACMEngineBinary %PERFORCE% clean p4v\ACMEngineBinary...#head & %PERFORCE% sync p4v\ACMEngineBinary...#head
+
+c:\goldapps\dllfunc goldfx.dll TTSSpeak 更新结束
+c:\goldapps\dllfunc goldfx.dll toolMessageBox P4V更新结束
