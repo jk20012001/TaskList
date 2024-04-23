@@ -22,13 +22,25 @@ SET PERFORCE="C:\Program Files\Perforce\p4.exe"
 %PERFORCE% set P4PORT=9.135.5.15:9666
 %PERFORCE% set P4CLIENT=%workspace%
 
-rem https://www.perforce.com/manuals/cmdref/Content/CmdRef/p4_clean.html
-if exist 0_config %PERFORCE% clean 0_config...#head & %PERFORCE% sync 0_config...#head
-if exist ACMobileClient %PERFORCE% clean ACMobileClient...#head & %PERFORCE% sync ACMobileClient...#head
-if exist ACMEngineBinary %PERFORCE% clean ACMEngineBinary...#head & %PERFORCE% sync ACMEngineBinary...#head
-if exist p4v\0_config %PERFORCE% clean p4v\0_config...#head & %PERFORCE% sync p4v\0_config...#head
-if exist p4v\ACMobileClient %PERFORCE% clean p4v\ACMobileClient...#head & %PERFORCE% sync p4v\ACMobileClient...#head
-if exist p4v\ACMEngineBinary %PERFORCE% clean p4v\ACMEngineBinary...#head & %PERFORCE% sync p4v\ACMEngineBinary...#head
+call :CleanAndUpdate 0_config
+call :CleanAndUpdate ACMobileClient
+call :CleanAndUpdate ACMEngineBinary
+call :CleanAndUpdate p4v\0_config
+call :CleanAndUpdate p4v\ACMobileClient
+call :CleanAndUpdate p4v\ACMEngineBinary
 
 c:\goldapps\dllfunc goldfx.dll TTSSpeak 更新结束
 c:\goldapps\dllfunc goldfx.dll toolMessageBox P4V更新结束
+exit
+
+
+:CleanAndUpdate
+rem https://www.perforce.com/manuals/cmdref/Content/CmdRef/p4_clean.html
+rem clean必须cd到指定路径内再执行才可以, 并且不能带路径参数
+rem sync最好是指定路径, 它不会管当前路径, 不指定路径的话会将整个workspace全部更新一遍
+if not exist %1 goto :EOF
+cd %1
+%PERFORCE% clean -e
+cd /d %~dp0
+%PERFORCE% sync %1...#head
+goto :EOF
