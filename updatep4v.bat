@@ -43,8 +43,10 @@ rem sync×îºÃÊÇÖ¸¶¨Â·¾¶, Ëü²»»á¹Üµ±Ç°Â·¾¶, ²»Ö¸¶¨Â·¾¶µÄ»°»á½«Õû¸öworkspaceÈ«²¿¸üÐ
 if not exist %1 goto :EOF
 cd %1
 if "%bClean%"=="y" %PERFORCE% clean -e
-if exist bin\ACMobileClient.uproject copy /y bin\ACMobileClient.uproject .
-if not exist bin\path.ini copy %~dp0path.ini bin\
+if exist bin (
+	if exist bin\ACMobileClient.uproject copy /y bin\ACMobileClient.uproject .
+	if not exist bin\path.ini copy %~dp0path.ini bin\
+)
 cd /d %~dp0
 %PERFORCE% sync %1...#head
 goto :EOF
