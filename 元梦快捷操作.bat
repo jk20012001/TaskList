@@ -5,6 +5,7 @@
 @echo cmdline:		选择并Push UE4CommandLine到元梦
 @echo ui:			执行UnrealInsight
 @echo ios:			修改IOS的DefaultEngine, 需要将ini拷到%~dp0下
+@echo editor:		启动编辑器和工程, 需要将工程文件夹拖到bat上
 @echo initproj:		元梦新工程初始化, 需要将工程文件夹拖到bat上
 @echo cleanproj:	清理工程释放空间, 需要将工程文件夹拖到bat上
 @echo initandroid:	添加安卓打包所需的环境变量
@@ -22,6 +23,10 @@ if "%choice%"=="cmdline"   call %EXEC% UEMobilePushCommandLine 0 %PackageName% %
 if "%choice%"=="ui"		call %EXEC% UEMobileExecUnrealInsight
 if "%choice%"=="ios"		call %EXEC% UEModifyDefaultEngineIOSRuntime %~dp0DefaultEngine.ini & pause
 
+if "%choice%"=="editor"	(
+	cd /d %1\ue4_tracking_rdcsp\Engine\Binaries\Win64
+	start "" UE4Editor "%1\LetsGo\LetsGo.uproject" -skipcompile
+)
 if "%choice%"=="initproj"	(
 	cd /d %1\ue4_tracking_rdcsp\
 	setup.bat --threads=16 --cache=E:\ue4_caches
