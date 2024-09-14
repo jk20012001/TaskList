@@ -36,24 +36,23 @@ function LocateFolder() {
 # 颜色值(31-47), "内容文本"
 function echocolor() {
 	ECHOCONTENT=`printf "\033[%sm%s\033[0m" "$1" "$2"`
-	echo -e $ECHOCONTENT
+	echo $ECHOCONTENT
 	ECHOCONTENT=""
 }
 
 # 引擎文件夹
-LocateFolder "$1" 引擎根文件夹 $TEMPFILE1
+LocateFolder "$1" 项目根文件夹 $TEMPFILE1
 WORKDIR=$RETURNDIR
-echocolor 34 "引擎根文件夹为: $WORKDIR"
+echocolor 34 "项目根文件夹为: $WORKDIR"
 
 # 功能提示
 echo 请选择:
 echo init:			初始化新Clone的引擎及生成项目
-echo editor:		编辑器打开项目
-echo initmini:			初始化及生成小包项目
-echo editormini:		编辑器打开小包项目
+echo mini:			生成小包项目
+echo openmini:		编辑器打开小包项目
 read CHOICE
 
-if [ "$CHOICE" = "initmini" ] || [ "$CHOICE" = "editormini" ]; then
+if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
 	LocateFolder "$2" 小包工程路径 $TEMPFILE2
 	MINIPROJECTDIR=$RETURNDIR
 	echocolor 34 "小包工程路径为: $MINIPROJECTDIR"
@@ -72,10 +71,11 @@ if [ "$CHOICE" = "init" ]; then
 	sh $WORKDIR/ue4_tracking_rdcsp/Setup.sh --force
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
 	
-	# 玩法隔离软链接ln -s -f $WORKDIR/letsgo_common/clientTools/Export/pbin/StarP/ $WORKDIR/LetsGo/Content/Feature/StarP/Script/Export/pbin
+	# 玩法隔离软链接
+	ln -s -f $WORKDIR/letsgo_common/clientTools/Export/pbin/StarP/ $WORKDIR/LetsGo/Content/Feature/StarP/Script/Export/pbin
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 
-elif [ "$CHOICE" = "initmini" ]; then
+elif [ "$CHOICE" = "mini" ]; then
 	if [ -d "$MINIPROJECTDIR/Plugins/MoeMSDK" ]; then
 		echo MoeMSDK文件夹已存在, 忽略拷贝
 	else
@@ -93,16 +93,11 @@ elif [ "$CHOICE" = "initmini" ]; then
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$MINIPROJECTDIR/$PROJECTNAME.uproject" -game -engine
 	XCODEPROJECT=$MINIPROJECTDIR/$PROJECTNAME.xcworkspace
 
-elif [ "$CHOICE" = "editor" ]; then
-	echocolor 34 "即将用编辑器打开$WORKDIR/LetsGo/LetsGo.uproject"
-	open $WORKDIR/ue4_tracking_rdcsp/Engine/Binaries/Mac/UE4Editor.app $WORKDIR/LetsGo/LetsGo.uproject -skipcompile
-	read; exit
-
-elif [ "$CHOICE" = "editormini" ]; then
+elif [ "$CHOICE" = "openmini" ]; then
 	PROJECTNAME=${MINIPROJECTDIR##*/}
-	echocolor 34 "工程名为: $PROJECTNAME, 即将用编辑器打开$MINIPROJECTDIR/$PROJECTNAME.uproject"
+	echocolor 34 "工程名为: $PROJECTNAME, 即将打开$MINIPROJECTDIR/$PROJECTNAME.uproject"
 	open $WORKDIR/ue4_tracking_rdcsp/Engine/Binaries/Mac/UE4Editor.app $MINIPROJECTDIR/$PROJECTNAME.uproject
-	read; exit
+	exit
 fi
 
 
@@ -115,4 +110,3 @@ echo 菜单Edit Scheme Test-Info设为Development Client，调试Arguments勾掉
 echo
 echo 如果生成时报错插件的Binaries文件夹无法访问, 需要彻底删掉ugit仓库重新clone
 open /Applications/XCode.app $XCODEPROJECT
-read
