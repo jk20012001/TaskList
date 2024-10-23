@@ -1,18 +1,20 @@
 @echo off
 @echo 请选择:
-@echo lua:			Push LUA脚本以调试元梦手机包, 需要先复制需要推送的文件列表到剪贴板(非文件名), 会自动执行lua3
+@echo lua:			Push LUA脚本以调试元梦手机包, 需要先复制需要推送的文件列表到剪贴板(非文件名)
 @echo lua3:			修改并Push三个固定LUA脚本到手机以运行本地Cook的包
 @echo cmdline:		选择并Push UE4CommandLine到安卓手机, Insight和renderdoc都需要
+@echo shipping:		修改本地代码以便配合Shipping包资源
 @echo renderdoc:		修改本地代码以便安卓打包抓帧, 启动com.tencent.letsgo/com.epicgames.ue4.GameActivityExt
 @echo console:		发送控制台命令到安卓手机, 分号分隔
-@echo runui:			执行UnrealInsight
-@echo ios:			修改IOS的DefaultEngine, 需要将ini拷到%~dp0下
+@echo runui:			选择Trace的CommandLine并执行UnrealInsight
+@echo ios:			修改IOS的DefaultEngine, 需要将ini拷到%~dp0下, 拷完无需重新Generate工程, 直接编译即可
 @echo initandroid:		添加安卓打包所需的环境变量
 @echo dumplog:		dump安卓log
 @echo editor:			启动编辑器和工程, 需要将工程文件夹拖到bat上
 @echo runcook:		Push安卓本地cook的资源和三个固定LUA脚本到手机, 并启动游戏, 需要将工程文件夹拖到bat上
 @echo initproj:		元梦新工程初始化, 需要将工程文件夹拖到bat上
 @echo checklink:		检查工程是否已经运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
+@echo relink:			强制运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
 @echo cleanproj:		清理工程释放空间, 需要将工程文件夹拖到bat上
 @echo xlspath:		打开配表目录, 需要将工程文件夹拖到bat上
 set /p choice=请输入:
@@ -26,11 +28,10 @@ set CONSOLETOOLS=C:\goldapps\ConsoleTools.exe
 
 
 if "%choice%"=="lua"		call %EXEC% UEMobilePushStarPLUAScriptsInClipboard %PackageName% & pause & exit
-if "%choice%"=="lua3"		call %EXEC% UEMobilePushStarPLUAScriptsForDebug & pause & exit
+if "%choice%"=="lua3"		call %EXEC% UEMobilePushStarPLUAScriptsForDebug 1 & pause & exit
 if "%choice%"=="cmdline"	call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & pause & exit
-if "%choice%"=="renderdoc"	call %EXEC% UEMobileModifyCodeForRenderDoc & echo 修改完成, 需要重新编译工程 & pause & exit
-if "%choice%"=="console"	call %EXEC% UESendConsoleString "r.Shadow.CacheMobileCSM 0;r.GpuFoliage 0;" & pause & exit  rem r.MeshDrawCommands.UseCachedCommands 0
-if "%choice%"=="runui"		call %EXEC% UEMobileExecUnrealInsight & pause & exit
+if "%choice%"=="console"	call %EXEC% UESendConsoleString 0 & pause & exit  rem r.MeshDrawCommands.UseCachedCommands 0
+if "%choice%"=="runui"		call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & call %EXEC% UEMobileExecUnrealInsight & pause & exit
 if "%choice%"=="ios"		call %EXEC% UEModifyDefaultEngineIOSRuntime %~dp0DefaultEngine.ini & pause & exit
 if "%choice%"=="initandroid"	(
 	%EXEC% toolSetUserEnvironmentValue AGDE_JAVA_HOME "C:\Program Files\Java\jdk-20\"
@@ -43,7 +44,7 @@ if "%choice%"=="initandroid"	(
 	pause & exit
 )
 if "%choice%"=="dumplog"	(
-	rd "%TEMP%\Saved\Logs\" /s /q
+	rd "%TEMP%\Saved\" /s /q
 	%CONSOLETOOLS% GetADBDeviceID
 	for /f %%i in (c:\templog\envvar.txt)  Do set %%i
 	adb -s !ADBDEVICEID! pull "/storage/emulated/0/Android/data/%PackageName%/files/UE4Game/LetsGo/LetsGo/Saved/" "%TEMP%\Saved"
@@ -66,6 +67,8 @@ if not exist "%PROJECTDIR%" (
 echo %PROJECTDIR% >"%RECORDFILE%"
 call %CONSOLETOOLS% echocolor ff0000ff "当前选择的项目文件夹为%PROJECTDIR%"
 
+if "%choice%"=="shipping"	call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="renderdoc"	call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="xlspath"	explorer "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\" && pause & exit
 if "%choice%"=="runcook"	(
 	set SRC_DIR=%PROJECTDIR%\output\Patch\1.0.8.1\Android\1.0.8.1\
@@ -99,22 +102,26 @@ if "%choice%"=="initproj"	(
 )
 if "%choice%"=="checklink"	(
 	%CONSOLETOOLS% IsPathLink "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\pbin\"
-	if not !ERRORLEVEL! == 1 echo 未完成玩法隔离，请执行bat后再更新仓库 & explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat & pause
+	if not !ERRORLEVEL! == 1 (
+		rd "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\pbin\"
+		echo 未完成玩法隔离，请执行bat后再更新仓库
+		explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat" & pause
+	)
 	%CONSOLETOOLS% IsPathLink "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\"
-	if not !ERRORLEVEL! == 1 echo 未执行MakeLinkForExportDir.bat，请执行bat后再更新仓库 & explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat & pause
+	if not !ERRORLEVEL! == 1 (
+		rd "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\"
+		echo 未执行MakeLinkForExportDir.bat，请执行bat后再更新仓库
+		explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat" & pause
+	)
 	echo 已完成玩法隔离和执行过MakeLinkForExportDir.bat & pause
 	exit
-	if exist "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\pbin\" (
-		%EXEC% toolGetFileLinked "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\pbin\"
-	) else (
-		echo 未完成玩法隔离，请执行bat后再更新仓库 & explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat
-	)
-	if exist "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\" (
-		%EXEC% toolGetFileLinked "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\"
-	) else (
-		echo 未执行MakeLinkForExportDir.bat，请执行bat后再更新仓库 & explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat
-	)
-	pause
+)
+if "%choice%"=="relink" (
+	rd "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\pbin\"
+	rd "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\"
+	explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat"
+	explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat"
+	echo 请在弹出的文件夹中执行bat后再更新仓库 & pause
 )
 if "%choice%"=="cleanproj"	(
 	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\Engine
