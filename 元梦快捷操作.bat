@@ -17,6 +17,8 @@
 @echo relink:			强制运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
 @echo cleanproj:		清理工程释放空间, 需要将工程文件夹拖到bat上
 @echo xlspath:		打开配表目录, 需要将工程文件夹拖到bat上
+@echo commandlet:		运行commandlet, 需要将工程文件夹拖到bat上
+@echo rockhlod:		需要将工程文件夹拖到bat上
 set /p choice=请输入:
 
 
@@ -123,7 +125,7 @@ if "%choice%"=="relink" (
 	explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat"
 	echo 请在弹出的文件夹中执行bat后再更新仓库 & pause
 )
-if "%choice%"=="cleanproj"	(
+if "%choice%"=="cleanproj" (
 	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\Engine
 	if exist Intermediate rd /s /q Intermediate
 	cd ..\..\LetsGo
@@ -134,4 +136,19 @@ if "%choice%"=="cleanproj"	(
 	del /s /q /f "%PROJECTDIR%\LetsGo\Plugins\*.pdb"
 	rem D:\Tools\Tools\File\Everything\Everything_x64.exe -filename %PROJECTDIR%\*.pdb
 	pause
+)
+if "%choice%"=="commandlet" (
+	set /p COMMANDLET=输入命令行: 
+	%PROJECTDIR%\ue4_tracking_rdcsp\Engine\Binaries\Win64\UE4Editor.exe %PROJECTDIR%\LetsGo\LetsGo.uproject -skipcompile %COMMANDLET%
+)
+set CMDLETEXEC=%PROJECTDIR%\ue4_tracking_rdcsp\Engine\Binaries\Win64\UE4Editor.exe %PROJECTDIR%\LetsGo\LetsGo.uproject -skipcompile
+set ROCKDIR=%PROJECTDIR%\LetsGo\Content\Feature\StarP\Scenes\StarP_Runtime\Rock\
+if "%choice%"=="rockhlod" (
+	echo 请删除所有子文件夹 & explorer "%ROCKDIR%" & pause
+	echo 执行后续Commandlet...
+	%CMDLETEXEC% -run=HlodCommandlet CleanHlodCommon %PROJECTDIR%\LetsGo\Content\Feature\StarP\Scenes\StarP_Runtime Normal -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
+	%CMDLETEXEC% -run=ExportStreamingLevelsCommandlet CutWorld /Game/Feature/StarP/Scenes/StarP_Runtime /Game/Feature/StarP/Scenes/StarP_World/StarP -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
+	%CMDLETEXEC% -run=HlodCommandlet BuildLevelLODs /Game/Feature/StarP/Scenes/StarP_Runtime/StarP_Optimize StarP -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
+	%CMDLETEXEC% -run=HlodCommandlet BuildRockHlod /Game/Feature/StarP/Scenes/StarP_Runtime/StarP_Optimize StarP -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
+	%CMDLETEXEC% -run=HlodCommandlet BuildRockFarProxy /Game/Feature/StarP/Scenes/StarP_Runtime/StarP_Optimize -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
 )
