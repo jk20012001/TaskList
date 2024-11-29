@@ -16,7 +16,7 @@
 @echo checklink:		检查工程是否已经运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
 @echo relink:			强制运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
 @echo cleanproj:		清理工程释放空间, 需要将工程文件夹拖到bat上
-@echo xlspath:		打开配表目录, 需要将工程文件夹拖到bat上
+@echo xlspath:		打开配表目录, 修改完还要执行bat重新打表生成pbin, 需要将工程文件夹拖到bat上
 @echo commandlet:		运行commandlet, 需要将工程文件夹拖到bat上
 @echo rockhlod:		需要将工程文件夹拖到bat上
 set /p choice=请输入:
@@ -71,7 +71,7 @@ call %CONSOLETOOLS% echocolor ff0000ff "当前选择的项目文件夹为%PROJECTDIR%"
 
 if "%choice%"=="shipping"	call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="renderdoc"	call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
-if "%choice%"=="xlspath"	explorer "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\" && pause & exit
+if "%choice%"=="xlspath"	explorer "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\" & pause & explorer /select,"%PROJECTDIR%\letsgo_common\excel\ClientExcelConverter-LetsGo.bat" & pause & exit
 if "%choice%"=="runcook"	(
 	set SRC_DIR=%PROJECTDIR%\output\Patch\1.0.8.1\Android\1.0.8.1\
 	set DEST_DIR=/storage/emulated/0/Android/data/com.tencent.letsgo/files/UE4Game/LetsGo/LetsGo/Content/Paks

@@ -48,6 +48,7 @@ echocolor 34 "项目根文件夹为: $WORKDIR"
 # 功能提示
 echo 请选择:
 echo init:			初始化新Clone的引擎及生成项目
+echo reset:			强制更新后重新生成ini及项目
 echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
 read CHOICE
@@ -73,6 +74,13 @@ if [ "$CHOICE" = "init" ]; then
 	
 	# 玩法隔离软链接
 	ln -s -f $WORKDIR/letsgo_common/clientTools/Export/pbin/StarP/ $WORKDIR/LetsGo/Content/Feature/StarP/Script/Export/pbin
+	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
+
+elif [ "$CHOICE" = "reset" ]; then
+	echo 修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按任意键继续...
+	open $WORKDIR/LetsGo/Config
+	read
+	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 
 elif [ "$CHOICE" = "mini" ]; then
