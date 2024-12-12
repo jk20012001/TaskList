@@ -51,9 +51,11 @@ echo init:			初始化新Clone的引擎及生成项目
 echo reset:			强制更新后重新生成ini及项目
 echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
+echo forcedel:		强制删除工程目录
 read CHOICE
 
 if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
+	echo 先用编辑器新建一个C++项目
 	LocateFolder "$2" 小包工程路径 $TEMPFILE2
 	MINIPROJECTDIR=$RETURNDIR
 	echocolor 34 "小包工程路径为: $MINIPROJECTDIR"
@@ -91,7 +93,7 @@ elif [ "$CHOICE" = "mini" ]; then
 		if [ -d "./MoeMSDK" ]; then
 			cp -r ./MoeMSDK $MINIPROJECTDIR/Plugins/
 		else
-			echo 未找到MoeMSDK文件夹, 只能自行拷贝到$MINIPROJECTDIR/Plugins下
+			echo 当前目录下未找到MoeMSDK文件夹, 只能自行拷贝到$MINIPROJECTDIR/Plugins下
 			read
 		fi
 	fi
@@ -105,6 +107,10 @@ elif [ "$CHOICE" = "openmini" ]; then
 	PROJECTNAME=${MINIPROJECTDIR##*/}
 	echocolor 34 "工程名为: $PROJECTNAME, 即将打开$MINIPROJECTDIR/$PROJECTNAME.uproject"
 	open $WORKDIR/ue4_tracking_rdcsp/Engine/Binaries/Mac/UE4Editor.app $MINIPROJECTDIR/$PROJECTNAME.uproject
+	exit
+
+elif [ "$CHOICE" = "forcedel" ]; then
+	sudo rm -rf $WORKDIR/
 	exit
 fi
 

@@ -15,6 +15,7 @@
 @echo initproj:		元梦新工程初始化, 需要将工程文件夹拖到bat上
 @echo checklink:		检查工程是否已经运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
 @echo relink:			强制运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
+@echo linktool:			为工程link自定义工具插件
 @echo cleanproj:		清理工程释放空间, 需要将工程文件夹拖到bat上
 @echo xlspath:		打开配表目录, 修改完还要执行bat重新打表生成pbin, 需要将工程文件夹拖到bat上
 @echo commandlet:		运行commandlet, 需要将工程文件夹拖到bat上
@@ -124,6 +125,9 @@ if "%choice%"=="relink" (
 	explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat"
 	explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat"
 	echo 请在弹出的文件夹中执行bat后再更新仓库 & pause
+)
+if "%choice%"=="linktool" (
+	mklink /J %PROJECTDIR%\LetsGo\Plugins\GoldfxTool F:\SysApps\UEPlugins\GoldfxTool\
 )
 if "%choice%"=="cleanproj" (
 	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\Engine
