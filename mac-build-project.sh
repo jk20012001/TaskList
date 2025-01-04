@@ -6,7 +6,8 @@ if [ ! -d "$TMPDIR/mac-build-project/" ]; then
 fi
 TEMPFILE1=$TMPDIR/mac-build-project/ARG1.txt
 TEMPFILE2=$TMPDIR/mac-build-project/ARG2.txt
-
+BATPATH=`dirname "$0"`
+echo 当前路径为$PWD
 
 # 参数为: 命令行传入的路径, 提示名, 记录路径的临时文件
 function LocateFolder() {
@@ -68,7 +69,7 @@ if [ "$CHOICE" = "init" ]; then
 	echo 如果Clone出Cant Write LFS的错, 要在完整访问所有磁盘的权限中添加ugit, 另外ugit设置-高级-LFS并发改为8
 	echo 保证系统设置-网络-防火墙已关掉, 不然下载Dependencies时会连不上cdn.unrealengine.com
 	echo 保证系统设置-隐私与安全性-完全磁盘访问权限中的XCode已打开
-	echo 修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按任意键继续...
+	echo 修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按回车键继续...
 	open $WORKDIR/LetsGo/Config
 	read
 	sh $WORKDIR/ue4_tracking_rdcsp/Setup.sh --force
@@ -79,7 +80,7 @@ if [ "$CHOICE" = "init" ]; then
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 
 elif [ "$CHOICE" = "reset" ]; then
-	echo 修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按任意键继续...
+	echo 修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按回车键继续...
 	open $WORKDIR/LetsGo/Config
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
@@ -90,8 +91,8 @@ elif [ "$CHOICE" = "mini" ]; then
 		echo MoeMSDK文件夹已存在, 忽略拷贝
 	else
 		mkdir "$MINIPROJECTDIR/Plugins"
-		if [ -d "./MoeMSDK" ]; then
-			cp -r ./MoeMSDK $MINIPROJECTDIR/Plugins/
+		if [ -d "$BATPATH/MoeMSDK" ]; then
+			cp -r $BATPATH/MoeMSDK $MINIPROJECTDIR/Plugins/
 		else
 			echo 当前目录下未找到MoeMSDK文件夹, 只能自行拷贝到$MINIPROJECTDIR/Plugins下
 			read
