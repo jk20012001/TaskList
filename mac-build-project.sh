@@ -35,6 +35,7 @@ function LocateFolder() {
 	echo $RETURNDIR > $3
 }
 # 颜色值(31-47), "内容文本"
+# 30黑色	31红色	32绿色	33黄色	34蓝色	35紫色	36浅蓝	37灰色
 function echocolor() {
 	ECHOCONTENT=`printf "\033[%sm%s\033[0m" "$1" "$2"`
 	echo $ECHOCONTENT
@@ -50,6 +51,7 @@ echocolor 34 "项目根文件夹为: $WORKDIR"
 echo 请选择:
 echo init:			初始化新Clone的引擎及生成项目
 echo reset:			强制更新后重新生成ini及项目
+echo open:			打开编辑器和主项目
 echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
 echo forcedel:		强制删除工程目录
@@ -80,7 +82,7 @@ if [ "$CHOICE" = "init" ]; then
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 
 elif [ "$CHOICE" = "reset" ]; then
-	echo 修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按回车键继续...
+	echo 修改LetsGo/Config/DefaultEngine.ini加ios签名信息后, 按回车键继续...
 	open $WORKDIR/LetsGo/Config
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
@@ -98,16 +100,29 @@ elif [ "$CHOICE" = "mini" ]; then
 			read
 		fi
 	fi
+	echo 修改Config/DefaultEngine.ini加ios签名信息后, 按回车键继续...
+	open $MINIPROJECTDIR/Config
+	read	
 	PROJECTNAME=${MINIPROJECTDIR##*/}
 	echocolor 34 "工程名为: $PROJECTNAME, 即将生成此工程的XCode WorkSpace"
+	echocolor 31 "如果生成时报错找不到GVoice和MSDKAdjust模块, 可以从$MINIPROJECTDIR/Plugins/MoeMSDK/Source/MoeMSDK/MoeMSDK.Build.cs中注释掉"
+	echo 按回车键继续...
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$MINIPROJECTDIR/$PROJECTNAME.uproject" -game -engine
 	XCODEPROJECT=$MINIPROJECTDIR/$PROJECTNAME.xcworkspace
 
+elif [ "$CHOICE" = "open" ]; then
+	cd $WORKDIR/ue4_tracking_rdcsp/Engine/Binaries/Mac/UE4Editor.app/Contents/MacOS
+	echocolor 34 "工程名为: LetsGo, 即将打开$WORKDIR/LetsGo/LetsGo.uproject"
+	# 记住不能用open命令, 会缺参数, 或提示缺dll等各种问题, 要直接执行或用sudo才可以
+	./UE4Editor "$WORKDIR/LetsGo/LetsGo.uproject"
+	exit
+
 elif [ "$CHOICE" = "openmini" ]; then
 	PROJECTNAME=${MINIPROJECTDIR##*/}
 	echocolor 34 "工程名为: $PROJECTNAME, 即将打开$MINIPROJECTDIR/$PROJECTNAME.uproject"
-	open $WORKDIR/ue4_tracking_rdcsp/Engine/Binaries/Mac/UE4Editor.app $MINIPROJECTDIR/$PROJECTNAME.uproject
+	cd $WORKDIR/ue4_tracking_rdcsp/Engine/Binaries/Mac/UE4Editor.app/Contents/MacOS
+	./UE4Editor $MINIPROJECTDIR/$PROJECTNAME.uproject
 	exit
 
 elif [ "$CHOICE" = "forcedel" ]; then
@@ -120,8 +135,8 @@ fi
 echo
 echo
 echocolor 34 "准备启动XCode并打开工程: $XCODEPROJECT"
-echo 菜单Edit Scheme Run--Info设为Development Editor，调试Arguments勾上所有项, 选择调试目标为Mac
-echo 菜单Edit Scheme Test-Info设为Development Client，调试Arguments勾掉所有项, 选择调试目标为iPhone之后才会出现如下选项: 工程设置-Target-每一项-Build Settings-Code Signing Entitlements-Development Client中删掉IOS SDK项
+echocolor 32 "菜单Edit Scheme Run--Info设为Development Editor，调试Arguments勾上所有项, 选择调试目标为Mac"
+echocolor 32 "菜单Edit Scheme Test-Info设为Development Client，调试Arguments勾掉所有项, 选择调试目标为iPhone之后才会出现如下选项: 工程设置-Target-每一项-Build Settings-Code Signing Entitlements-Development Client中删掉IOS SDK项"
 echo
-echo 如果生成时报错插件的Binaries文件夹无法访问, 需要彻底删掉ugit仓库重新clone
+echocolor 31 "如果生成时报错插件的Binaries文件夹无法访问, 需要彻底删掉ugit仓库重新clone"
 open /Applications/XCode.app $XCODEPROJECT
