@@ -67,6 +67,9 @@ fi
 if [ "$CHOICE" = "init" ]; then
 	# 有时候需要这样set PATH, 否则无法调用GenerateProjectFiles.sh
 	# set export PATH=$PATH:$WORKDIR/ue4_tracking_rdcsp
+
+	# 玩法隔离软链接
+	ln -s -f $WORKDIR/letsgo_common/clientTools/Feature/StarP/Export $WORKDIR/LetsGo/Content/Feature/StarP/Script/Export
 	
 	echo 如果Clone出Cant Write LFS的错, 要在完整访问所有磁盘的权限中添加ugit, 另外ugit设置-高级-LFS并发改为8
 	echo 保证系统设置-网络-防火墙已关掉, 不然下载Dependencies时会连不上cdn.unrealengine.com
@@ -77,8 +80,6 @@ if [ "$CHOICE" = "init" ]; then
 	sh $WORKDIR/ue4_tracking_rdcsp/Setup.sh --force
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
 	
-	# 玩法隔离软链接
-	ln -s -f $WORKDIR/letsgo_common/clientTools/Export/pbin/StarP/ $WORKDIR/LetsGo/Content/Feature/StarP/Script/Export/pbin
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 
 elif [ "$CHOICE" = "reset" ]; then
