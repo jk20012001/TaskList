@@ -106,7 +106,7 @@ elif [ "$CHOICE" = "mini" ]; then
 	read	
 	PROJECTNAME=${MINIPROJECTDIR##*/}
 	echocolor 34 "工程名为: $PROJECTNAME, 即将生成此工程的XCode WorkSpace"
-	echocolor 31 "如果生成时报错找不到GVoice和MSDKAdjust模块, 可以从$MINIPROJECTDIR/Plugins/MoeMSDK/Source/MoeMSDK/MoeMSDK.Build.cs中注释掉"
+	echocolor 31 "如果后续XCode生成时报错找不到GVoice / MSDKAdjust / TDM等等一大堆模块, 可以根据提示从$MINIPROJECTDIR/Plugins/MoeMSDK/下的MoeMSDK.Build.cs或MoeMSDK.uplugin中统统注释掉, 除了CrashSight和Unlua之外都删光也没关系"
 	echo 按回车键继续...
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$MINIPROJECTDIR/$PROJECTNAME.uproject" -game -engine

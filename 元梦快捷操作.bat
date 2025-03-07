@@ -29,7 +29,7 @@ set ProjectName=LetsGo
 set EXEC=C:\goldapps\DLLFunc.exe goldfx.dll
 set CONSOLETOOLS=C:\goldapps\ConsoleTools.exe
 
-
+:Start
 if "%choice%"=="lua"		call %EXEC% UEMobilePushStarPLUAScriptsInClipboard %PackageName% & pause & exit
 if "%choice%"=="lua3"		call %EXEC% UEMobilePushStarPLUAScriptsForDebug 1 & pause & exit
 if "%choice%"=="cmdline"	call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & pause & exit
@@ -51,8 +51,9 @@ if "%choice%"=="dumplog"	(
 	%CONSOLETOOLS% GetADBDeviceID
 	for /f %%i in (c:\templog\envvar.txt)  Do set %%i
 	adb -s !ADBDEVICEID! pull "/storage/emulated/0/Android/data/%PackageName%/files/UE4Game/LetsGo/LetsGo/Saved/" "%TEMP%\Saved"
-	if exist "%TEMP%\Saved\Logs\" explorer "%TEMP%\Saved\Logs\"
-	pause & exit
+	rem if exist "%TEMP%\Saved\Logs\" explorer "%TEMP%\Saved\Logs\"
+	if exist "%TEMP%\Saved\Logs\LetsGo.log" "%TEMP%\Saved\Logs\LetsGo.log"
+	pause & goto Start
 )
 
 rem 以下都是需要提供引擎路径的
