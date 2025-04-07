@@ -20,6 +20,7 @@
 @echo xlspath:		打开配表目录, 修改完还要执行bat重新打表生成pbin, 需要将工程文件夹拖到bat上
 @echo commandlet:		运行commandlet, 需要将工程文件夹拖到bat上
 @echo rockhlod:		需要将工程文件夹拖到bat上
+@echo pso:			需要将工程文件夹拖到bat上
 set /p choice=请输入:
 
 
@@ -47,12 +48,15 @@ if "%choice%"=="initandroid"	(
 	pause & exit
 )
 if "%choice%"=="dumplog"	(
-	rd "%TEMP%\Saved\" /s /q
 	%CONSOLETOOLS% GetADBDeviceID
 	for /f %%i in (c:\templog\envvar.txt)  Do set %%i
-	adb -s !ADBDEVICEID! pull "/storage/emulated/0/Android/data/%PackageName%/files/UE4Game/LetsGo/LetsGo/Saved/" "%TEMP%\Saved"
-	rem if exist "%TEMP%\Saved\Logs\" explorer "%TEMP%\Saved\Logs\"
-	if exist "%TEMP%\Saved\Logs\LetsGo.log" "%TEMP%\Saved\Logs\LetsGo.log"
+	rem rd "%TEMP%\Saved\" /s /q
+	rem adb -s !ADBDEVICEID! pull "/storage/emulated/0/Android/data/%PackageName%/files/UE4Game/LetsGo/LetsGo/Saved/" "%TEMP%\Saved"
+	md "%TEMP%\Saved\" >nul 2>nul
+	adb -s !ADBDEVICEID! pull "/storage/emulated/0/Android/data/%PackageName%/files/UE4Game/LetsGo/LetsGo/Saved/Logs/LetsGo.log" "%TEMP%\Saved\LetsGo.log"
+	adb -s !ADBDEVICEID! pull "/storage/emulated/0/Android/data/%PackageName%/files/UE4Game/LetsGo/LetsGo/Saved/Profiling/" "%TEMP%\Saved"
+	if exist "%TEMP%\Saved\LetsGo.log" "%TEMP%\Saved\LetsGo.log"
+	if exist "%TEMP%\Saved\Profiling\MemReports\" explorer "%TEMP%\Saved\Profiling\MemReports\"
 	pause & goto Start
 )
 
@@ -157,3 +161,5 @@ if "%choice%"=="rockhlod" (
 	%CMDLETEXEC% -run=HlodCommandlet BuildRockHlod /Game/Feature/StarP/Scenes/StarP_Runtime/StarP_Optimize StarP -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
 	%CMDLETEXEC% -run=HlodCommandlet BuildRockFarProxy /Game/Feature/StarP/Scenes/StarP_Runtime/StarP_Optimize -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
 )
+
+if "%choice%"=="pso" %EXEC% StarPPSOPrepare %PROJECTDIR%\
