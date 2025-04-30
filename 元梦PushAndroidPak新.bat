@@ -1,5 +1,5 @@
-rem 参数1是apk路径
 @echo off
+rem 参数1是apk路径
 setlocal enabledelayedexpansion
 set CONSOLETOOLS=C:\goldapps\ConsoleTools.exe
 set ZIPTOOLS=D:\Tools\Compress\Compressor\7-Zip\7z.exe
@@ -8,13 +8,15 @@ set ZIPTOOLS=D:\Tools\Compress\Compressor\7-Zip\7z.exe
 if %ERRORLEVEL%==1 echo 路径中不能包含中文! & pause & exit
 
 set UNZIP_DIR=%~dp1%~n1\
-%ZIPTOOLS% x -y "%~1" -o"%UNZIP_DIR%"
-%ZIPTOOLS% x -y %UNZIP_DIR%assets\main.obb.png -o"%UNZIP_DIR%"
+set SRC_DIR=%UNZIP_DIR%LetsGo\Content\Paks\
+if not exist "%SRC_DIR%" (
+	%ZIPTOOLS% x -y "%~1" -o"%UNZIP_DIR%" -bso0
+	%ZIPTOOLS% x -y %UNZIP_DIR%assets\main.obb.png -o"%UNZIP_DIR%" -bso0
+)
 
 %CONSOLETOOLS% GetADBDeviceID	
 for /f %%i in (c:\templog\envvar.txt)  Do set %%i
 
-set SRC_DIR=%UNZIP_DIR%LetsGo\Content\Paks\
 set DEST_DIR=/storage/emulated/0/Android/data/com.tencent.letsgo/files/UE4Game/LetsGo/LetsGo/Content/Paks
 
 if not exist "%SRC_DIR%" echo 未能成功解压%UNZIP_DIR%assets\main.obb.png, 无法找到%UNZIP_DIR%LetsGo\Content\Paks\ & pause & exit
