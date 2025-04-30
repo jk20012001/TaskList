@@ -77,7 +77,15 @@ call %CONSOLETOOLS% echocolor ff0000ff "当前选择的项目文件夹为%PROJECTDIR%"
 
 if "%choice%"=="shipping"	call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="renderdoc"	call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
-if "%choice%"=="xlspath"	explorer "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\" & pause & explorer /select,"%PROJECTDIR%\letsgo_common\excel\ClientExcelConverter-LetsGo.bat" & pause & exit
+if "%choice%"=="xlspath"	(
+	if exist "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\" (
+		explorer "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\"
+	) else (
+		explorer "%PROJECTDIR%\letsgo_common\mod_protos\starp\excel\xls\"
+	)
+	pause & explorer /select,"%PROJECTDIR%\letsgo_common\excel\ClientExcelConverter-LetsGo.bat"
+	pause & exit
+)
 if "%choice%"=="runcook"	(
 	set SRC_DIR=%PROJECTDIR%\output\Patch\1.0.8.1\Android\1.0.8.1\
 	set DEST_DIR=/storage/emulated/0/Android/data/com.tencent.letsgo/files/UE4Game/LetsGo/LetsGo/Content/Paks
