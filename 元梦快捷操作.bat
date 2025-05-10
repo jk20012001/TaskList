@@ -117,9 +117,9 @@ if "%choice%"=="initproj"	(
 	pause
 )
 if "%choice%"=="checklink"	(
-	%CONSOLETOOLS% IsPathLink "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\pbin\"
+	%CONSOLETOOLS% IsPathLink "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\"
 	if not !ERRORLEVEL! == 1 (
-		rd "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\pbin\"
+		rd "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\"
 		echo 未完成玩法隔离，请执行bat后再更新仓库
 		explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat" & pause
 	)
@@ -133,7 +133,7 @@ if "%choice%"=="checklink"	(
 	exit
 )
 if "%choice%"=="relink" (
-	rd "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\pbin\"
+	rd "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\"
 	rd "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\"
 	explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat"
 	explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat"
