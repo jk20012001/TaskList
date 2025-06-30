@@ -55,6 +55,7 @@ echo open:			打开编辑器和主项目
 echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
 echo forcedel:		强制删除工程目录
+echo copyipa:		复制ipa中的资源以便真机调试
 read CHOICE
 
 if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
@@ -131,6 +132,22 @@ elif [ "$CHOICE" = "forcedel" ]; then
 	exit
 fi
 
+elif [ "$CHOICE" = "copyipa" ]; then
+	echocolor 34 "1. Edit Project: Build Settings搜索code sign, 将Development Client下的IOS文件夹设置删掉"
+	echocolor 34 "2. Edit Schema: 将运行参数全部勾掉, 选择Development Client并连接手机生成一遍"
+	echo "3. 请将ipa文件拖到此处并回车:"
+	read IPAFILE
+	IPAPATH=`dirname "$IPAFILE"`
+	IPANAME=`basename "$IPAFILE"` .ipa
+	ZIPFILE="$IPAPATH$IPANAME.zip"
+	ZIPPATH="$IPAPATH$IPANAME/"
+	mv $IPAFILE $ZIPFILE
+	unzip -d $ZIPPATH $ZIPFILE
+	BATPATH=`dirname "$0"`
+	cp -r $ZIPPATHPayload/LetsGoClient.app/cookeddata $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
+	cp -r $ZIPPATHPayload/LetsGoClient.app/Manifest_NonUFSFiles_IOS.txt $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/	
+	exit
+fi
 
 # 打开项目
 echo

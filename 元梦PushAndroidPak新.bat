@@ -22,7 +22,6 @@ set DEST_DIR=/storage/emulated/0/Android/data/com.tencent.letsgo/files/UE4Game/L
 if not exist "%SRC_DIR%" echo 未能成功解压%UNZIP_DIR%assets\main.obb.png, 无法找到%UNZIP_DIR%LetsGo\Content\Paks\ & pause & exit
 
 adb -s !ADBDEVICEID! shell "mkdir -p %DEST_DIR%"
-adb -s !ADBDEVICEID! push "%FILE_TO_PUSH%" "%DEST_DIR%"
 for /r "%SRC_DIR%" %%I in (*) do adb -s !ADBDEVICEID! push "%%I" "%DEST_DIR%"
 rem rd %UNZIP_DIR% /s /q
 echo Done! & pause
