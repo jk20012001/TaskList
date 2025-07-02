@@ -20,6 +20,7 @@ for /f %%i in (c:\templog\envvar.txt)  Do set %%i
 set DEST_DIR=/storage/emulated/0/Android/data/com.tencent.letsgo/files/UE4Game/LetsGo/LetsGo/Content/Paks
 
 if not exist "%SRC_DIR%" echo 未能成功解压%UNZIP_DIR%assets\main.obb.png, 无法找到%UNZIP_DIR%LetsGo\Content\Paks\ & pause & exit
+for /r "%SRC_DIR%" %%I in (res_base-Android_ASTCClient.pak) do echo 请保证本地代码(尤其是Starp/LetsGoCommon/Engine仓库)也得是%%~tI这个时间的, 否则会出现Global Shader找不到等崩溃
 
 adb -s !ADBDEVICEID! shell "mkdir -p %DEST_DIR%"
 for /r "%SRC_DIR%" %%I in (*) do adb -s !ADBDEVICEID! push "%%I" "%DEST_DIR%"

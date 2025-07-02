@@ -56,6 +56,7 @@ echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
 echo forcedel:		强制删除工程目录
 echo copyipa:		复制ipa中的资源以便真机调试
+echo cxrqq:			显示CRXQQ工程中的两条命令
 read CHOICE
 
 if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
@@ -76,7 +77,7 @@ if [ "$CHOICE" = "init" ]; then
 	echo 保证系统设置-网络-防火墙已关掉, 不然下载Dependencies时会连不上cdn.unrealengine.com
 	echo 保证系统设置-隐私与安全性-完全磁盘访问权限中的XCode已打开
 	echo 修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按回车键继续...
-	open $WORKDIR/LetsGo/Config
+	open -R $WORKDIR/LetsGo/Config/DefaultEngine.ini
 	read
 	sh $WORKDIR/ue4_tracking_rdcsp/Setup.sh --force
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
@@ -85,7 +86,7 @@ if [ "$CHOICE" = "init" ]; then
 
 elif [ "$CHOICE" = "reset" ]; then
 	echo 修改LetsGo/Config/DefaultEngine.ini加ios签名信息后, 按回车键继续...
-	open $WORKDIR/LetsGo/Config
+	open -R $WORKDIR/LetsGo/Config/DefaultEngine.ini
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
@@ -103,7 +104,7 @@ elif [ "$CHOICE" = "mini" ]; then
 		fi
 	fi
 	echo 修改Config/DefaultEngine.ini加ios签名信息后, 按回车键继续...
-	open $MINIPROJECTDIR/Config
+	open -R $MINIPROJECTDIR/Config/DefaultEngine.ini
 	read	
 	PROJECTNAME=${MINIPROJECTDIR##*/}
 	echocolor 34 "工程名为: $PROJECTNAME, 即将生成此工程的XCode WorkSpace"
@@ -130,10 +131,9 @@ elif [ "$CHOICE" = "openmini" ]; then
 elif [ "$CHOICE" = "forcedel" ]; then
 	sudo rm -rf $WORKDIR/
 	exit
-fi
 
 elif [ "$CHOICE" = "copyipa" ]; then
-	echocolor 34 "1. Edit Project: Build Settings搜索code sign, 将Development Client下的IOS文件夹设置删掉"
+	echocolor 34 "1. Edit Project: Build Settings搜索code signing entitlement, 将Development Client下的IOS文件夹设置删掉"
 	echocolor 34 "2. Edit Schema: 将运行参数全部勾掉, 选择Development Client并连接手机生成一遍"
 	echo "3. 请将ipa文件拖到此处并回车:"
 	read IPAFILE
@@ -146,6 +146,20 @@ elif [ "$CHOICE" = "copyipa" ]; then
 	BATPATH=`dirname "$0"`
 	cp -r $ZIPPATHPayload/LetsGoClient.app/cookeddata $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
 	cp -r $ZIPPATHPayload/LetsGoClient.app/Manifest_NonUFSFiles_IOS.txt $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/	
+	exit
+	
+elif [ "$CHOICE" = "cxrqq" ]; then
+	echo "先保证已将ipa文件复制到$WORKDIR/../ReCodesignQQ/APP/下并已经用xcode打开ReCodesignQQ工程"
+	read
+	echo "1. 请将下载的dSYM文件拖到此处并回车:"
+	read DSYMFILE
+	echo "2. 请复制流水线上显示的构建机引擎文件夹路径到此处并回车:"
+	read BUILDPATH
+	echo Run后请输入如下三条指令:
+	echo command script import "$WORKDIR/ue4_tracking_rdcsp/Engine/Extras/LLDBDataFormatters/UE4DataFormatters.py"
+	echo settings set target.source-map "$BUILDPATH" "$WORKDIR/ue4_tracking_rdcsp/"
+	echo target symbols add "$DSYMFILE"
+	read
 	exit
 fi
 
