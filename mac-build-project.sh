@@ -55,7 +55,7 @@ echo open:			打开编辑器和主项目
 echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
 echo forcedel:		强制删除工程目录
-echo copyipa:		复制ipa中的资源以便真机调试
+echo copyipa:		复制流水线包中的资源以便真机调试
 echo cxrqq:			显示CRXQQ工程中的两条命令
 read CHOICE
 
@@ -133,31 +133,37 @@ elif [ "$CHOICE" = "forcedel" ]; then
 	exit
 
 elif [ "$CHOICE" = "copyipa" ]; then
-	echocolor 34 "1. Edit Project: Build Settings搜索code signing entitlement, 将Development Client下的IOS文件夹设置删掉"
-	echocolor 34 "2. Edit Schema: 将运行参数全部勾掉, 选择Development Client并连接手机生成一遍"
-	echo "3. 请将ipa文件拖到此处并回车:"
+	echocolor 32 "1. 请参考open命令后显示的设置事项保证Build和Run都能成功"
+	echo "2. 请将ipa文件拖到此处并回车:"
 	read IPAFILE
 	IPAPATH=`dirname "$IPAFILE"`
-	IPANAME=`basename "$IPAFILE"` .ipa
-	ZIPFILE="$IPAPATH$IPANAME.zip"
-	ZIPPATH="$IPAPATH$IPANAME/"
+	IPANAME=`basename "$IPAFILE" .ipa`
+	ZIPFILE="$IPAPATH/$IPANAME.zip"
+	ZIPPATH="$IPAPATH/$IPANAME"
 	mv $IPAFILE $ZIPFILE
-	unzip -d $ZIPPATH $ZIPFILE
-	BATPATH=`dirname "$0"`
-	cp -r $ZIPPATHPayload/LetsGoClient.app/cookeddata $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
-	cp -r $ZIPPATHPayload/LetsGoClient.app/Manifest_NonUFSFiles_IOS.txt $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/	
+	unzip -d $ZIPPATH/ $ZIPFILE
+	mv $ZIPFILE $IPAFILE
+	if [ -e $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/ ]; then
+		echo 删除$WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/文件夹, 请输入登录密码
+		sudo rm -rf $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/
+	fi
+	cp -r $ZIPPATH/Payload/LetsGoClient.app/cookeddata $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
+	cp -r $ZIPPATH/Payload/LetsGoClient.app/Manifest_NonUFSFiles_IOS.txt $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/	
+	sudo rm -rf $ZIPPATH/
 	exit
 	
 elif [ "$CHOICE" = "cxrqq" ]; then
-	echo "先保证已将ipa文件复制到$WORKDIR/../ReCodesignQQ/APP/下并已经用xcode打开ReCodesignQQ工程"
-	read
-	echo "1. 请将下载的dSYM文件拖到此处并回车:"
+	echo "先保证已将ipa文件下载到$WORKDIR/../ReCodesignQQ/APP/下并已经用xcode打开ReCodesignQQ工程"
+	echo "1. 请将下载并解压好的dSYM文件拖到此处并回车:"
 	read DSYMFILE
 	echo "2. 请复制流水线上显示的构建机引擎文件夹路径到此处并回车:"
-	read BUILDPATH
+	read REMOTEENGINEPATH
+	echo "3. 请复制本地引擎文件夹路径到此处并回车:"
+	read LOCALENGINEPATH
 	echo Run后请输入如下三条指令:
-	echo command script import "$WORKDIR/ue4_tracking_rdcsp/Engine/Extras/LLDBDataFormatters/UE4DataFormatters.py"
-	echo settings set target.source-map "$BUILDPATH" "$WORKDIR/ue4_tracking_rdcsp/"
+	# $WORKDIR/ue4_tracking_rdcsp/Engine/
+	echo command script import "$LOCALENGINEPATH/Extras/LLDBDataFormatters/UE4DataFormatters.py"
+	echo settings set target.source-map "$REMOTEENGINEPATH" "$LOCALENGINEPATH"
 	echo target symbols add "$DSYMFILE"
 	read
 	exit
