@@ -108,7 +108,7 @@ elif [ "$CHOICE" = "mini" ]; then
 	read	
 	PROJECTNAME=${MINIPROJECTDIR##*/}
 	echocolor 34 "工程名为: $PROJECTNAME, 即将生成此工程的XCode WorkSpace"
-	echocolor 31 "如果后续XCode生成时报错找不到GVoice / MSDKAdjust / TDM等等一大堆模块, 可以根据提示从$MINIPROJECTDIR/Plugins/MoeMSDK/下的MoeMSDK.Build.cs或MoeMSDK.uplugin中统统注释掉, 除了CrashSight和Unlua之外都删光也没关系"
+	echocolor 31 "如果后续XCode生成时报错找不到GVoice / MSDKAdjust / TDM等等一大堆模块, 可以根据提示从$MINIPROJECTDIR/Plugins/MoeMSDK/下的MoeMSDK.Build.cs和MoeMSDK.uplugin中统统注释掉, 全部删光一个不留都没关系"
 	echo 按回车键继续...
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$MINIPROJECTDIR/$PROJECTNAME.uproject" -game -engine
@@ -146,6 +146,11 @@ elif [ "$CHOICE" = "copyipa" ]; then
 	if [ -e $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/ ]; then
 		echo 删除$WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/文件夹, 请输入登录密码
 		sudo rm -rf $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/
+	fi
+	if [ -e $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/ ]; then
+		echo 删除失败, 请手动删除LetsGoClient.app/cookeddata文件夹
+		read
+		open $WORKDIR/LetsGo/Binaries/IOS/Payload/
 	fi
 	cp -r $ZIPPATH/Payload/LetsGoClient.app/cookeddata $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
 	cp -r $ZIPPATH/Payload/LetsGoClient.app/Manifest_NonUFSFiles_IOS.txt $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/	

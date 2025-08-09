@@ -1,6 +1,7 @@
 @echo off
 @echo 请选择:
 @echo lua:			Push LUA脚本以调试元梦手机包, 需要先复制需要推送的文件列表到剪贴板(非文件名)
+@echo luapc:			Push LUA脚本以调试元梦PC端包, 需要先复制需要推送的文件列表到剪贴板(非文件名)
 @echo lua3:			修改并Push三个固定LUA脚本到手机以运行本地Cook的包
 @echo cmdline:		选择并Push UE4CommandLine到安卓手机, Insight和renderdoc都需要
 @echo shipping:		修改本地代码以便配合Shipping包资源
@@ -31,7 +32,8 @@ set EXEC=C:\goldapps\DLLFunc.exe goldfx.dll
 set CONSOLETOOLS=C:\goldapps\ConsoleTools.exe
 
 :Start
-if "%choice%"=="lua"		call %EXEC% UEMobilePushStarPLUAScriptsInClipboard %PackageName% & pause & exit
+if "%choice%"=="lua"		call %EXEC% UEPushStarPLUAScriptsInClipboard %PackageName% & pause & exit
+if "%choice%"=="luapc"		call %EXEC% UEPushStarPLUAScriptsInClipboard PC & pause & exit
 if "%choice%"=="lua3"		call %EXEC% UEMobilePushStarPLUAScriptsForDebug 1 & pause & exit
 if "%choice%"=="cmdline"	call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & pause & exit
 if "%choice%"=="console"	call %EXEC% UESendConsoleString 0 & pause & exit  rem r.MeshDrawCommands.UseCachedCommands 0
@@ -81,7 +83,7 @@ if "%choice%"=="xlspath"	(
 	rem if exist "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\" (
 	rem 	explorer "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\"
 	rem ) else (
-		explorer "%PROJECTDIR%\letsgo_common\mod_protos\starp\excel\xls\"
+		explorer /select,"%PROJECTDIR%\letsgo_common\mod_protos\starp\excel\xls\D_SPAndroid设备控制台指令配置.xlsx"
 	rem )
 	pause & explorer /select,"%PROJECTDIR%\letsgo_common\excel\ClientExcelConverter-LetsGo.bat"
 	exit
@@ -112,20 +114,21 @@ if "%choice%"=="initproj"	(
 	)
 	cd ..\LetsGo\
 	call MakeLinkForExportDir.bat
-	cd ..\LetsGo\Tools\FeatureTool\
-	call MakeSubDirSymbolicLinks.bat
 	pause
 )
+
+set LINKDIR1=LetsGo\Content\Feature\StarP\Script\Export\
+set LINKDIR2=LetsGo\Content\LetsGo\Script\Export\
 if "%choice%"=="checklink"	(
-	%CONSOLETOOLS% IsPathLink "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\"
+	%CONSOLETOOLS% IsPathLink "%PROJECTDIR%\%LINKDIR1%"
 	if not !ERRORLEVEL! == 1 (
-		rd "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\"
+		rd "%PROJECTDIR%\%LINKDIR1%"
 		echo 未完成玩法隔离，请执行bat后再更新仓库
-		explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat" & pause
+		explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat" & pause
 	)
-	%CONSOLETOOLS% IsPathLink "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\"
+	%CONSOLETOOLS% IsPathLink "%PROJECTDIR%\%LINKDIR2%"
 	if not !ERRORLEVEL! == 1 (
-		rd "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\"
+		rd "%PROJECTDIR%\%LINKDIR2%"
 		echo 未执行MakeLinkForExportDir.bat，请执行bat后再更新仓库
 		explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat" & pause
 	)
@@ -133,9 +136,9 @@ if "%choice%"=="checklink"	(
 	exit
 )
 if "%choice%"=="relink" (
-	rd "%PROJECTDIR%\LetsGo\Content\Feature\StarP\Script\Export\"
-	rd "%PROJECTDIR%\LetsGo\Content\LetsGo\Script\Export\"
-	explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat"
+	rd "%PROJECTDIR%\%LINKDIR1%"
+	rd "%PROJECTDIR%\%LINKDIR2%"
+	rem explorer /select, "%PROJECTDIR%\LetsGo\Tools\FeatureTool\MakeSubDirSymbolicLinks.bat"
 	explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat"
 	echo 请在弹出的文件夹中执行bat后再更新仓库 & pause
 )
