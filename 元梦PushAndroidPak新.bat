@@ -5,7 +5,8 @@ set CONSOLETOOLS=C:\goldapps\ConsoleTools.exe
 set ZIPTOOLS=D:\Tools\Compress\Compressor\7-Zip\7z.exe
 
 %CONSOLETOOLS% IsPathHasUnicodeChar "%~1"
-if %ERRORLEVEL%==1 echo 路径中不能包含中文! & pause & exit
+rem 路径中绝对不能包含括号等, 会导致zip解压失败
+rem if not %ERRORLEVEL%==0 echo 路径中不能包含中文! & pause & exit
 
 set UNZIP_DIR=%~dp1%~n1\
 set SRC_DIR=%UNZIP_DIR%LetsGo\Content\Paks\
@@ -16,6 +17,7 @@ if not exist "%SRC_DIR%" (
 
 %CONSOLETOOLS% GetADBDeviceID	
 for /f %%i in (c:\templog\envvar.txt)  Do set %%i
+echo 即将复制到机器: %ADBDEVICEID%
 
 set DEST_DIR=/storage/emulated/0/Android/data/com.tencent.letsgo/files/UE4Game/LetsGo/LetsGo/Content/Paks
 

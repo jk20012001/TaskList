@@ -4,8 +4,8 @@ rem 参数2是路径
 setlocal enabledelayedexpansion
 set CONSOLETOOLS=C:\goldapps\ConsoleTools.exe
 
-%CONSOLETOOLS% IsPathHasUnicodeChar "%~2"
-if %ERRORLEVEL%==1 echo 路径中不能包含中文! & pause & exit
+rem %CONSOLETOOLS% IsPathHasUnicodeChar "%~2"
+rem if not %ERRORLEVEL%==0 echo 路径中不能包含中文! & pause & exit
 
 %CONSOLETOOLS% GetADBDeviceID	
 for /f %%i in (c:\templog\envvar.txt)  Do set %%i
