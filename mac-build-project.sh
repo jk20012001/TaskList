@@ -57,6 +57,7 @@ echo openmini:		编辑器打开小包项目
 echo forcedel:		强制删除工程目录
 echo copyipa:		复制流水线包中的资源以便真机调试
 echo cxrqq:			显示CRXQQ工程中的两条命令
+echo xcode16:		修复xcode16中的签名信息路径软链接
 read CHOICE
 
 if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
@@ -65,6 +66,31 @@ if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
 	MINIPROJECTDIR=$RETURNDIR
 	echocolor 34 "小包工程路径为: $MINIPROJECTDIR"
 fi
+
+if [ "$CHOICE" = "xcode16" ]; then
+	# xcode16之后的签名信息文件夹更换了读取位置, 需要软链接, 不能直接拷过去, 拷过去也没文件的
+	# 事实上双击mobileprovision文件之后, 闪一下其实就会生成签名信息到Library/Developer/Xcode/UserData/Provisioning Profiles下
+	if [ ! -d ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ ]; then
+		echo 文件夹不存在~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/
+	elif [ ! -d ~/Library/MobileDevice/Provisioning\ Profiles ]; then
+		echo Make Link For XCode16
+		# 不存在, 直接创建软链接
+		ln -s ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ ~/Library/MobileDevice
+	else
+		LINKPATH=`readlink -f ~/Library/MobileDevice/Provisioning\ Profiles/`
+		SRCPATH=~/Library/MobileDevice/Provisioning\ Profiles
+		# 存在, 那要看下是不是已经创建过软链接了
+		if [ "$LINKPATH" = "$SRCPATH" ]; then
+			echo Make Link For XCode16
+			rm -r ~/Library/MobileDevice/Provisioning\ Profiles/
+			ln -s ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ ~/Library/MobileDevice
+		else
+			echo Xcode Certification Folder-Link OK
+		fi
+	fi
+	read
+fi
+
 
 if [ "$CHOICE" = "init" ]; then
 	# 有时候需要这样set PATH, 否则无法调用GenerateProjectFiles.sh
