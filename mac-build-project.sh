@@ -56,9 +56,15 @@ echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
 echo forcedel:		强制删除工程目录
 echo copyipa:		复制流水线包中的资源以便真机调试
+echo copyipabuild:	复制流水线包中的资源到Saved下并生成以便真机调试
 echo cxrqq:			显示CRXQQ工程中的两条命令
 echo xcode16:		修复xcode16中的签名信息路径软链接
+echo test:			测试
 read CHOICE
+
+if [ "$CHOICE" = "test" ]; then
+	read
+fi
 
 if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
 	echo 先用编辑器新建一个C++项目
@@ -90,7 +96,6 @@ if [ "$CHOICE" = "xcode16" ]; then
 	fi
 	read
 fi
-
 
 if [ "$CHOICE" = "init" ]; then
 	# 有时候需要这样set PATH, 否则无法调用GenerateProjectFiles.sh
@@ -158,7 +163,22 @@ elif [ "$CHOICE" = "forcedel" ]; then
 	sudo rm -rf $WORKDIR/
 	exit
 
-elif [ "$CHOICE" = "copyipa" ]; then
+elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
+	APPDIR=$WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
+	if [ "$CHOICE" = "copyipabuild" ]; then
+		APPDIR=$WORKDIR/LetsGo/Saved/StagedBuilds/IOSClient/
+		SHFILE=$BATPATH/MoeDev/local_ios_pack.sh
+		SHMAINFILE=`basename "$SHFILE" .sh`
+		mkdir -p $APPDIR
+		if [ -f $SHFILE ]; then
+			cp $SHFILE $WORKDIR/
+		else
+			echo 错误!未找到$SHFILE
+		fi
+	fi
+	DESTDIR=$APPDIR"cookeddata/"
+	echo 目标路径$DESTDIR
+	echo SH文件$SHFILE
 	echocolor 32 "1. 请参考open命令后显示的设置事项保证Build和Run都能成功"
 	echo "2. 请将ipa文件拖到此处并回车:"
 	read IPAFILE
@@ -169,18 +189,32 @@ elif [ "$CHOICE" = "copyipa" ]; then
 	mv $IPAFILE $ZIPFILE
 	unzip -d $ZIPPATH/ $ZIPFILE
 	mv $ZIPFILE $IPAFILE
-	if [ -e $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/ ]; then
-		echo 删除$WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/文件夹, 请输入登录密码
-		sudo rm -rf $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/
+
+	if [ -e $DESTDIR ]; then
+		echo 删除 $DESTDIR  请输入登录密码
+		sudo rm -rf $DESTDIR
 	fi
-	if [ -e $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/cookeddata/ ]; then
+	if [ -e $DESTDIR ]; then
 		echo 删除失败, 请手动删除LetsGoClient.app/cookeddata文件夹
 		read
 		open $WORKDIR/LetsGo/Binaries/IOS/Payload/
 	fi
-	cp -r $ZIPPATH/Payload/LetsGoClient.app/cookeddata $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
-	cp -r $ZIPPATH/Payload/LetsGoClient.app/Manifest_NonUFSFiles_IOS.txt $WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/	
+	cp -r $ZIPPATH/Payload/LetsGoClient.app/cookeddata $APPDIR
+	cp -r $ZIPPATH/Payload/LetsGoClient.app/Manifest_NonUFSFiles_IOS.txt $APPDIR
 	sudo rm -rf $ZIPPATH/
+	# 执行local_ios_pack.sh
+	if [ ! -z "$SHFILE" ]; then
+		echo 执行sh文件...可以修改$WORKDIR/$SHMAINFILE中的构建类型 Develop/Test/Shipping 等
+		cd $WORKDIR/
+		sh $SHMAINFILE.sh
+		FINDRET=`echo $IPANAME | grep 'Shipping'`
+		if [ ! 	-z "$FINDRET" ]; then
+			echocolor 32 Shipping包下, 还需要注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住
+			open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
+			read
+		fi
+		echocolor 32 现在可以用XCode修改代码并Run启动真机调试了, 注意要去掉启动参数, 否则启动会卡住
+	fi
 	exit
 	
 elif [ "$CHOICE" = "cxrqq" ]; then
