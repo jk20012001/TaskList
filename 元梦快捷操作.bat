@@ -9,9 +9,10 @@
 @echo renderdoc:		修改本地代码以便安卓打包抓帧, 启动com.tencent.letsgo/com.epicgames.ue4.GameActivityExt
 @echo console:		发送控制台命令到安卓手机, 分号分隔
 @echo runui:			选择Trace的CommandLine并执行UnrealInsight
-@echo ios:			修改IOS的DefaultEngine, 需要将ini拷到%~dp0下, 拷完无需重新Generate工程, 直接编译即可
+@echo ios:			修改IOS的DefaultEngine等, 需要将ini等文件拷到%~dp0下, 拷完无需重新Generate工程, 直接编译即可
 @echo android:		安卓打小包相应的工程设置, 需要将工程文件夹拖到bat上
 @echo initandroid:		添加VS编译生成安卓apk所需的环境变量
+@echo pcbuild:		PC打小包, 需要将工程文件夹拖到bat上
 @echo dumplog:		dump安卓log
 @echo editor:			启动编辑器和工程, 需要将工程文件夹拖到bat上
 @echo runcook:		Push安卓本地cook的资源和三个固定LUA脚本到手机, 并启动游戏, 需要将工程文件夹拖到bat上
@@ -40,7 +41,7 @@ if "%choice%"=="lua3"		call %EXEC% UEMobilePushStarPLUAScriptsForDebug 1 & pause
 if "%choice%"=="cmdline"	call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & pause & exit
 if "%choice%"=="console"	call %EXEC% UESendConsoleString 0 & pause & exit  rem r.MeshDrawCommands.UseCachedCommands 0
 if "%choice%"=="runui"		call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & call %EXEC% UEMobileExecUnrealInsight & pause & exit
-if "%choice%"=="ios"		call %EXEC% UEModifyDefaultEngineIOSRuntime %~dp0DefaultEngine.ini & pause & exit
+if "%choice%"=="ios"		call %EXEC% UEModifyDefaultEngineIOSRuntime %~dp0DefaultEngine.ini %~dp0LetsGoClient.Target.cs & pause & exit
 if "%choice%"=="resetgame"	call %EXEC% toolAndroidResetForegroundApp & pause & exit
 if "%choice%"=="initandroid"	(
 	%EXEC% toolSetUserEnvironmentValue AGDE_JAVA_HOME "C:\Program Files\Java\jdk-20\"
@@ -83,6 +84,12 @@ call %CONSOLETOOLS% echocolor ff0000ff "当前选择的项目文件夹为%PROJECTDIR%"
 if "%choice%"=="android"	call %EXEC% StarPAndroidLittlePackageSettings "%PROJECTDIR%" & pause & exit
 if "%choice%"=="shipping"	call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="renderdoc"	call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="pcbuild"	(
+	set /p XBPATH=请将小包路径拖到此处:
+	rem -project和-archivedirectory两个路径有可能需要将\转为/
+	%PROJECTDIR%\ue4_tracking_rdcsp\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -nocompileeditor -nop4 -client -noserver -project=%PROJECTDIR%\LetsGo\LetsGo.uproject -cook -pak -stage -archive -archivedirectory=%XBPATH% -package -ue4exe=%PROJECTDIR%\ue4_tracking_rdcsp\Engine\Binaries\Win64\UE4Editor-Cmd.exe -SkipCookingEditorContent -ddc=DerivedDataBackendGraph -targetplatform=Win64 -build -CrashReporter -clientconfig=Development -compile
+	pause &	exit
+)
 if "%choice%"=="xlspath"	(
 	rem if exist "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\" (
 	rem 	explorer "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\"
