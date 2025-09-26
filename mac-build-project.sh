@@ -67,7 +67,7 @@ if [ "$CHOICE" = "test" ]; then
 fi
 
 if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
-	echo 先用编辑器新建一个C++项目
+	echo "先用编辑器新建一个C++项目"
 	LocateFolder "$2" 小包工程路径 $TEMPFILE2
 	MINIPROJECTDIR=$RETURNDIR
 	echocolor 34 "小包工程路径为: $MINIPROJECTDIR"
@@ -77,9 +77,9 @@ if [ "$CHOICE" = "xcode16" ]; then
 	# xcode16之后的签名信息文件夹更换了读取位置, 需要软链接, 不能直接拷过去, 拷过去也没文件的
 	# 事实上双击mobileprovision文件之后, 闪一下其实就会生成签名信息到Library/Developer/Xcode/UserData/Provisioning Profiles下
 	if [ ! -d ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ ]; then
-		echo 文件夹不存在~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/
+		echo "文件夹不存在~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/"
 	elif [ ! -d ~/Library/MobileDevice/Provisioning\ Profiles ]; then
-		echo Make Link For XCode16
+		echo "Make Link For XCode16"
 		# 不存在, 直接创建软链接
 		ln -s ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ ~/Library/MobileDevice
 	else
@@ -87,11 +87,11 @@ if [ "$CHOICE" = "xcode16" ]; then
 		SRCPATH=~/Library/MobileDevice/Provisioning\ Profiles
 		# 存在, 那要看下是不是已经创建过软链接了
 		if [ "$LINKPATH" = "$SRCPATH" ]; then
-			echo Make Link For XCode16
+			echo "Make Link For XCode16"
 			rm -r ~/Library/MobileDevice/Provisioning\ Profiles/
 			ln -s ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ ~/Library/MobileDevice
 		else
-			echo Xcode Certification Folder-Link OK
+			echo "Xcode Certification Folder-Link OK"
 		fi
 	fi
 	read
@@ -104,10 +104,10 @@ if [ "$CHOICE" = "init" ]; then
 	# 玩法隔离软链接
 	ln -s -f $WORKDIR/letsgo_common/clientTools/Feature/StarP/Export $WORKDIR/LetsGo/Content/Feature/StarP/Script/Export
 	
-	echo 如果Clone出Cant Write LFS的错, 要在完整访问所有磁盘的权限中添加ugit, 另外ugit设置-高级-LFS并发改为8
-	echo 保证系统设置-网络-防火墙已关掉, 不然下载Dependencies时会连不上cdn.unrealengine.com
-	echo 保证系统设置-隐私与安全性-完全磁盘访问权限中的XCode已打开
-	echo 修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按回车键继续...
+	echo "如果Clone出Cant Write LFS的错, 要在完整访问所有磁盘的权限中添加ugit, 另外ugit设置-高级-LFS并发改为8"
+	echo "保证系统设置-网络-防火墙已关掉, 不然下载Dependencies时会连不上cdn.unrealengine.com"
+	echo "保证系统设置-隐私与安全性-完全磁盘访问权限中的XCode已打开"
+	echo "修改LetsGo/Config/DefaultEngine.ini加签名信息后, 按回车键继续..."
 	open -R $WORKDIR/LetsGo/Config/DefaultEngine.ini
 	read
 	sh $WORKDIR/ue4_tracking_rdcsp/Setup.sh --force
@@ -116,7 +116,7 @@ if [ "$CHOICE" = "init" ]; then
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 
 elif [ "$CHOICE" = "reset" ]; then
-	echo 修改LetsGo/Config/DefaultEngine.ini加ios签名信息后, 按回车键继续...
+	echo "修改LetsGo/Config/DefaultEngine.ini加ios签名信息后, 按回车键继续..."
 	open -R $WORKDIR/LetsGo/Config/DefaultEngine.ini
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
@@ -124,23 +124,23 @@ elif [ "$CHOICE" = "reset" ]; then
 
 elif [ "$CHOICE" = "mini" ]; then
 	if [ -d "$MINIPROJECTDIR/Plugins/MoeMSDK" ]; then
-		echo MoeMSDK文件夹已存在, 忽略拷贝
+		echo "MoeMSDK文件夹已存在, 忽略拷贝"
 	else
 		mkdir "$MINIPROJECTDIR/Plugins"
 		if [ -d "$BATPATH/MoeMSDK" ]; then
 			cp -r $BATPATH/MoeMSDK $MINIPROJECTDIR/Plugins/
 		else
-			echo 当前目录下未找到MoeMSDK文件夹, 只能自行拷贝到$MINIPROJECTDIR/Plugins下
+			echo "当前目录下未找到MoeMSDK文件夹, 只能自行拷贝到$MINIPROJECTDIR/Plugins下"
 			read
 		fi
 	fi
-	echo 修改Config/DefaultEngine.ini加ios签名信息后, 按回车键继续...
+	echo "修改Config/DefaultEngine.ini加ios签名信息后, 按回车键继续..."
 	open -R $MINIPROJECTDIR/Config/DefaultEngine.ini
 	read	
 	PROJECTNAME=${MINIPROJECTDIR##*/}
 	echocolor 34 "工程名为: $PROJECTNAME, 即将生成此工程的XCode WorkSpace"
 	echocolor 31 "如果后续XCode生成时报错找不到GVoice / MSDKAdjust / TDM等等一大堆模块, 可以根据提示从$MINIPROJECTDIR/Plugins/MoeMSDK/下的MoeMSDK.Build.cs和MoeMSDK.uplugin中统统注释掉, 全部删光一个不留都没关系"
-	echo 按回车键继续...
+	echo "按回车键继续..."
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$MINIPROJECTDIR/$PROJECTNAME.uproject" -game -engine
 	XCODEPROJECT=$MINIPROJECTDIR/$PROJECTNAME.xcworkspace
@@ -173,12 +173,12 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 		if [ -f $SHFILE ]; then
 			cp $SHFILE $WORKDIR/
 		else
-			echo 错误!未找到$SHFILE
+			echo "错误!未找到$SHFILE"
 		fi
 	fi
 	DESTDIR=$APPDIR"cookeddata/"
-	echo 目标路径$DESTDIR
-	echo SH文件$SHFILE
+	echo "目标路径$DESTDIR"
+	echo "SH文件$SHFILE"
 	echocolor 32 "1. 请参考open命令后显示的设置事项保证Build和Run都能成功"
 	echo "2. 请将ipa文件拖到此处并回车:"
 	read IPAFILE
@@ -191,11 +191,11 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 	mv $ZIPFILE $IPAFILE
 
 	if [ -e $DESTDIR ]; then
-		echo 删除 $DESTDIR  请输入登录密码
+		echo "删除 $DESTDIR 请输入登录密码"
 		sudo rm -rf $DESTDIR
 	fi
 	if [ -e $DESTDIR ]; then
-		echo 删除失败, 请手动删除LetsGoClient.app/cookeddata文件夹
+		echo "删除失败, 请手动删除LetsGoClient.app/cookeddata文件夹"
 		read
 		open $WORKDIR/LetsGo/Binaries/IOS/Payload/
 	fi
@@ -204,16 +204,16 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 	sudo rm -rf $ZIPPATH/
 	# 执行local_ios_pack.sh
 	if [ ! -z "$SHFILE" ]; then
-		echo 执行sh文件...可以修改$WORKDIR/$SHMAINFILE中的构建类型 Develop/Test/Shipping 等
+		echo "执行sh文件...可以修改$WORKDIR/$SHMAINFILE中的构建类型 Develop/Test/Shipping 等"
 		cd $WORKDIR/
 		sh $SHMAINFILE.sh
 		FINDRET=`echo $IPANAME | grep 'Shipping'`
 		if [ ! 	-z "$FINDRET" ]; then
-			echocolor 32 Shipping包下, 还需要注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住
+			echocolor 34 "Shipping包下, 还需要注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住"
 			open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
 			read
 		fi
-		echocolor 32 现在可以用XCode修改代码并Run启动真机调试了, 注意要去掉启动参数, 否则启动会卡住
+		echocolor 34 "现在可以用XCode修改代码并Run启动真机调试了, 注意要去掉启动参数, 否则启动会卡住"
 	fi
 	exit
 	

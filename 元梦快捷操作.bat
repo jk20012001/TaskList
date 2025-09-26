@@ -12,7 +12,8 @@
 @echo ios:			修改IOS的DefaultEngine等, 需要将ini等文件拷到%~dp0下, 拷完无需重新Generate工程, 直接编译即可
 @echo android:		安卓打小包相应的工程设置, 需要将工程文件夹拖到bat上
 @echo initandroid:		添加VS编译生成安卓apk所需的环境变量
-@echo pcbuild:		PC打小包, 需要将工程文件夹拖到bat上
+@echo pcbuild:		PC打小包, 必须保证编辑器的BuildTarget是LetsGoClient, 需要将工程文件夹拖到bat上
+@echo pcdebug:		PC编出来的拷到资源文件夹运行
 @echo dumplog:		dump安卓log
 @echo editor:			启动编辑器和工程, 需要将工程文件夹拖到bat上
 @echo runcook:		Push安卓本地cook的资源和三个固定LUA脚本到手机, 并启动游戏, 需要将工程文件夹拖到bat上
@@ -88,6 +89,12 @@ if "%choice%"=="pcbuild"	(
 	set /p XBPATH=请将小包路径拖到此处:
 	rem -project和-archivedirectory两个路径有可能需要将\转为/
 	%PROJECTDIR%\ue4_tracking_rdcsp\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -nocompileeditor -nop4 -client -noserver -project=%PROJECTDIR%\LetsGo\LetsGo.uproject -cook -pak -stage -archive -archivedirectory=%XBPATH% -package -ue4exe=%PROJECTDIR%\ue4_tracking_rdcsp\Engine\Binaries\Win64\UE4Editor-Cmd.exe -SkipCookingEditorContent -ddc=DerivedDataBackendGraph -targetplatform=Win64 -build -CrashReporter -clientconfig=Development -compile
+	pause &	exit
+)
+if "%choice%"=="pcdebug"	(
+	taskkill /F /IM LetsGoClient.exe
+	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.exe I:\Downloads\1511dailyPC\LetsGo\Binaries\Win64\
+	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb I:\Downloads\1511dailyPC\LetsGo\Binaries\Win64\
 	pause &	exit
 )
 if "%choice%"=="xlspath"	(
