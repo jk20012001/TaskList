@@ -9,8 +9,8 @@
 @echo renderdoc:		修改本地代码以便安卓打包抓帧, 启动com.tencent.letsgo/com.epicgames.ue4.GameActivityExt
 @echo console:		发送控制台命令到安卓手机, 分号分隔
 @echo runui:			选择Trace的CommandLine并执行UnrealInsight
-@echo ios:			修改IOS的DefaultEngine等, 需要将ini等文件拷到%~dp0下, 拷完无需重新Generate工程, 直接编译即可
-@echo android:		安卓打小包相应的工程设置, 需要将工程文件夹拖到bat上
+@echo ios:			修改IOS的DefaultEngine等, 需要将ini等文件拷到%~dp0下, 拷完无需Generate工程, 直接编译即可
+@echo android:		安卓对元梦指定地图打小包相应的工程设置, 需要将工程文件夹拖到bat上
 @echo initandroid:		添加VS编译生成安卓apk所需的环境变量
 @echo pcbuild:		PC打小包, 必须保证编辑器的BuildTarget是LetsGoClient, 需要将工程文件夹拖到bat上
 @echo pcdebug:		PC编出来的拷到资源文件夹运行
