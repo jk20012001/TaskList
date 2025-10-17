@@ -82,7 +82,7 @@ if not exist "%PROJECTDIR%" (
 echo %PROJECTDIR% >"%RECORDFILE%"
 call %CONSOLETOOLS% echocolor ff0000ff "当前选择的项目文件夹为%PROJECTDIR%"
 
-if "%choice%"=="android"	call %EXEC% StarPAndroidLittlePackageSettings "%PROJECTDIR%" & pause & exit
+if "%choice%"=="android"	call %EXEC% StarPAndroidLittlePackageSettings "%PROJECTDIR%" & echo 有可能需要performance分支,否则打出来的apk会卡在logo界面 & pause & exit
 if "%choice%"=="shipping"	call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="renderdoc"	call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="pcbuild"	(

@@ -55,7 +55,7 @@ echo open:			打开编辑器和主项目
 echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
 echo forcedel:		强制删除工程目录
-echo copyipa:		复制流水线包中的资源以便真机调试(旧)
+echo copyipa:		复制流水线包中的资源以便真机调试（旧）
 echo copyipabuild:	复制流水线包中的资源到Saved下并生成以便真机调试
 echo cxrqq:			显示CRXQQ工程中的两条命令
 echo xcode16:		修复xcode16中的签名信息路径软链接, 仅需执行一次
