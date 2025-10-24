@@ -112,7 +112,10 @@ if [ "$CHOICE" = "init" ]; then
 	read
 	sh $WORKDIR/ue4_tracking_rdcsp/Setup.sh --force
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
-	
+
+	echo "修改LetsGo/Intermediate/ProjectFiles/LetsGo.xcodeproj/project.pbxproj去掉entitlements后, 忽略此步骤的话需要在XCode中手动删除, 按回车键继续..."
+	open -R $WORKDIR/LetsGo/Intermediate/ProjectFiles/LetsGo.xcodeproj/project.pbxproj
+	read
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 
 elif [ "$CHOICE" = "reset" ]; then
@@ -120,6 +123,9 @@ elif [ "$CHOICE" = "reset" ]; then
 	open -R $WORKDIR/LetsGo/Config/DefaultEngine.ini
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$WORKDIR/LetsGo/LetsGo.uproject" -game -engine
+	echo "修改LetsGo/Intermediate/ProjectFiles/LetsGo.xcodeproj/project.pbxproj去掉entitlements后, 忽略此步骤的话需要在XCode中手动删除, 按回车键继续..."
+	open -R $WORKDIR/LetsGo/Intermediate/ProjectFiles/LetsGo.xcodeproj/project.pbxproj
+	read
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 
 elif [ "$CHOICE" = "mini" ]; then
@@ -209,7 +215,7 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 		sh $SHMAINFILE.sh
 		FINDRET=`echo $IPANAME | grep 'Shipping'`
 		if [ ! 	-z "$FINDRET" ]; then
-			echocolor 34 "Shipping包下, 还需要注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住"
+			echocolor 34 "Shipping包下, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住"
 			open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
 			read
 		fi

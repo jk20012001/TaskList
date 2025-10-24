@@ -1,5 +1,5 @@
 @echo off
-@echo 请选择:
+@echo 请选择(LocalDS启动后可以搜索Console窗口是否有OnDSHealthCheck来判断启动完毕):
 @echo lua:			Push LUA脚本以调试元梦手机包, 需要先复制需要推送的文件列表到剪贴板(非文件名)
 @echo luapc:			Push LUA脚本以调试元梦PC端包, 需要先复制需要推送的文件列表到剪贴板(非文件名)
 @echo lua3:			修改并Push三个固定LUA脚本到手机以运行本地Cook的包
@@ -42,7 +42,7 @@ if "%choice%"=="lua3"		call %EXEC% UEMobilePushStarPLUAScriptsForDebug 1 & pause
 if "%choice%"=="cmdline"	call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & pause & exit
 if "%choice%"=="console"	call %EXEC% UESendConsoleString 0 & pause & exit  rem r.MeshDrawCommands.UseCachedCommands 0
 if "%choice%"=="runui"		call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & call %EXEC% UEMobileExecUnrealInsight & pause & exit
-if "%choice%"=="ios"		call %EXEC% UEModifyDefaultEngineIOSRuntime %~dp0DefaultEngine.ini %~dp0LetsGoClient.Target.cs & pause & exit
+if "%choice%"=="ios"		call %EXEC% UEModifyDefaultEngineIOSRuntime %~dp0DefaultEngine.ini %~dp0project.pbxproj %~dp0LetsGoClient.Target.cs & echo 有可能需要随便改下代码触发重编才能正常断点 & pause & exit
 if "%choice%"=="resetgame"	call %EXEC% toolAndroidResetForegroundApp & pause & exit
 if "%choice%"=="initandroid"	(
 	%EXEC% toolSetUserEnvironmentValue AGDE_JAVA_HOME "C:\Program Files\Java\jdk-20\"
