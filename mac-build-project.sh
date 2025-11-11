@@ -9,6 +9,9 @@ TEMPFILE2=$TMPDIR/mac-build-project/ARG2.txt
 BATPATH=`dirname "$0"`
 echo 当前路径为$PWD
 
+WINPC_IP=30.19.58.20
+WINPC_PORT=8037
+
 # 参数为: 命令行传入的路径, 提示名, 记录路径的临时文件
 function LocateFolder() {
 	RETURNDIR=""
@@ -59,6 +62,7 @@ echo copyipa:		复制流水线包中的资源以便真机调试（旧）
 echo copyipabuild:	复制流水线包中的资源到Saved下并生成以便真机调试
 echo cxrqq:			显示CRXQQ工程中的两条命令
 echo xcode16:		修复xcode16中的签名信息路径软链接, 仅需执行一次
+echo memstats:		上传MemoryStatsViewer所需的符号
 echo test:			测试
 read CHOICE
 
@@ -168,6 +172,12 @@ elif [ "$CHOICE" = "openmini" ]; then
 elif [ "$CHOICE" = "forcedel" ]; then
 	sudo rm -rf $WORKDIR/
 	exit
+	
+elif [ "$CHOICE" = "memstats" ]; then
+	cd $WORKDIR/LetsGo/Tools/MemoryStats/Scripts
+	python3 Task_UploadSymbol.py $WORKDIR/LetsGo/Binaries/IOS
+	exit
+
 
 elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 	APPDIR=$WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
@@ -198,6 +208,7 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 
 	if [ -e $DESTDIR ]; then
 		echo "删除 $DESTDIR 请输入登录密码"
+		echo 请在mac上输入登录密码|nc -w 1 $WINPC_IP $WINPC_PORT
 		sudo rm -rf $DESTDIR
 	fi
 	if [ -e $DESTDIR ]; then
@@ -220,6 +231,7 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 			read
 		fi
 		echocolor 34 "现在可以用XCode修改代码并Run启动真机调试了, 注意要去掉启动参数, 否则启动会卡住"
+		echo ipabuild结束|nc -w 1 $WINPC_IP $WINPC_PORT
 	fi
 	exit
 	

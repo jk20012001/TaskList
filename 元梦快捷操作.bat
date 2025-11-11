@@ -14,6 +14,7 @@
 @echo initandroid:		添加VS编译生成安卓apk所需的环境变量
 @echo pcbuild:		PC打小包, 必须保证编辑器的BuildTarget是LetsGoClient, 需要将工程文件夹拖到bat上
 @echo pcdebug:		PC编出来的拷到资源文件夹运行
+@echo memstats:		静总的真机内存Profile工具
 @echo dumplog:		dump安卓log
 @echo editor:			启动编辑器和工程, 需要将工程文件夹拖到bat上
 @echo runcook:		Push安卓本地cook的资源和三个固定LUA脚本到手机, 并启动游戏, 需要将工程文件夹拖到bat上
@@ -42,8 +43,14 @@ if "%choice%"=="lua3"		call %EXEC% UEMobilePushStarPLUAScriptsForDebug 1 & pause
 if "%choice%"=="cmdline"	call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & pause & exit
 if "%choice%"=="console"	call %EXEC% UESendConsoleString 0 & pause & exit  rem r.MeshDrawCommands.UseCachedCommands 0
 if "%choice%"=="runui"		call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & call %EXEC% UEMobileExecUnrealInsight & pause & exit
-if "%choice%"=="ios"		call %EXEC% UEModifyDefaultEngineIOSRuntime %~dp0DefaultEngine.ini %~dp0project.pbxproj %~dp0LetsGoClient.Target.cs & echo 有可能需要随便改下代码触发重编才能正常断点 & pause & exit
 if "%choice%"=="resetgame"	call %EXEC% toolAndroidResetForegroundApp & pause & exit
+if "%choice%"=="ios"		(
+	set /p TIPS=需要使用MemoryStats工具吗（y / n）：
+	set USEMEMSTATS=0
+	if "!TIPS!"=="y" set USEMEMSTATS=1
+	echo !USEMEMSTATS!
+	call %EXEC% UEModifyDefaultEngineIOSRuntime !USEMEMSTATS! %~dp0DefaultEngine.ini %~dp0project.pbxproj %~dp0LetsGoClient.Target.cs & echo 不使用MemoryStats的情况下才能断点,而且可能需要随便改下代码触发重编才能正常断点 & pause & exit
+)
 if "%choice%"=="initandroid"	(
 	%EXEC% toolSetUserEnvironmentValue AGDE_JAVA_HOME "C:\Program Files\Java\jdk-20\"
 	%EXEC% toolSetUserEnvironmentValue ANDROID_HOME C:\Users\eugenejin\AppData\Local\Android\Sdk
@@ -97,6 +104,15 @@ if "%choice%"=="pcdebug"	(
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb I:\Downloads\1511dailyPC\LetsGo\Binaries\Win64\
 	pause &	exit
 )
+if "%choice%"=="memstats"	(
+	rem call %EXEC% UEMobilePushCommandLine "-memorystats -minmallocsize=16 -msfilesuffix=eugenejin" %PackageName% %ProjectName%
+	echo 请运行IOS游戏, 跑完后点一个解析内存的流水线包(请检查解析内存堆栈步骤的log保证没有错误提示并保证和mac端上传的dSymbol的ID是一致的), 然后在统计工具里刷新 & pause
+	explorer https://devops.woa.com/console/pipeline/letsgo/p-0d29ce1abc8e419baa7d71571368d33c/history
+	if not exist %PROJECTDIR%\LetsGo\Tools\ echo 请先克隆Tools子仓库
+	call %PROJECTDIR%\LetsGo\Tools\MemoryStats\MemoryStatsViewer\MemoryStatsViewer.exe
+	pause & exit
+)
+
 if "%choice%"=="xlspath"	(
 	rem if exist "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\" (
 	rem 	explorer "%PROJECTDIR%\letsgo_common\excel\xls\SPGame\"
