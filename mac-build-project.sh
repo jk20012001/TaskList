@@ -174,6 +174,9 @@ elif [ "$CHOICE" = "forcedel" ]; then
 	exit
 	
 elif [ "$CHOICE" = "memstats" ]; then
+	stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" $WORKDIR/LetsGo/Binaries/IOS/LetsGoClient.dSYM
+	echocolor 34 "请保证显示的文件修改时间和当前时间差不多，否则上传之后流水线解析也会失败，得打开ini中的bGenerateSYM重新生成app"
+	echocolor 33 "如果是Shipping包，请保证流水线启动参数开启了bEnableMemoryStatsInShipping开关"
 	cd $WORKDIR/LetsGo/Tools/MemoryStats/Scripts
 	python3 Task_UploadSymbol.py $WORKDIR/LetsGo/Binaries/IOS
 	exit
@@ -224,14 +227,22 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 		echo "执行sh文件...可以修改$WORKDIR/$SHMAINFILE中的构建类型 Develop/Test/Shipping 等"
 		cd $WORKDIR/
 		sh $SHMAINFILE.sh
+		echo ipabuild结束|nc -w 1 $WINPC_IP $WINPC_PORT
+
 		FINDRET=`echo $IPANAME | grep 'Shipping'`
 		if [ ! 	-z "$FINDRET" ]; then
-			echocolor 34 "Shipping包下, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住"
-			open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
+			echo 检测到ipa是Shipping包, 本地编译会使用Development Client吗（y / n）:
+			read CHOICECLIENT
+			if [ $CHOICECLIENT = "y" ]; then RETURNDIR=$CONTENT; fi
+				echocolor 34 "Shipping包 + Development Client, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住"
+				open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
+			else
+				echocolor 34 "Shipping包 + Shipping Client, 还需要用自动工具删掉MemoryStats.uplugin文件中BlacklistTargetConfigurations的内容, 否则启动可能会卡住"
+				open -R $WORKDIR/LetsGo/Plugins/MOE/GameFramework/GamePlugins/Performance/MemoryStats/MemoryStats/MemoryStats.uplugin
+			fi
 			read
 		fi
 		echocolor 34 "现在可以用XCode修改代码并Run启动真机调试了, 注意要去掉启动参数, 否则启动会卡住"
-		echo ipabuild结束|nc -w 1 $WINPC_IP $WINPC_PORT
 	fi
 	exit
 	

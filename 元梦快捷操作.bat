@@ -45,11 +45,16 @@ if "%choice%"=="console"	call %EXEC% UESendConsoleString 0 & pause & exit  rem r
 if "%choice%"=="runui"		call %EXEC% UEMobilePushCommandLine 0 %PackageName% %ProjectName% & call %EXEC% UEMobileExecUnrealInsight & pause & exit
 if "%choice%"=="resetgame"	call %EXEC% toolAndroidResetForegroundApp & pause & exit
 if "%choice%"=="ios"		(
-	set /p TIPS=需要使用MemoryStats工具吗（y / n）：
 	set USEMEMSTATS=0
-	if "!TIPS!"=="y" set USEMEMSTATS=1
-	echo !USEMEMSTATS!
-	call %EXEC% UEModifyDefaultEngineIOSRuntime !USEMEMSTATS! %~dp0DefaultEngine.ini %~dp0project.pbxproj %~dp0LetsGoClient.Target.cs & echo 不使用MemoryStats的情况下才能断点,而且可能需要随便改下代码触发重编才能正常断点 & pause & exit
+	if exist %~dp0DefaultEngine.ini (
+		set /p TIPS=需要使用MemoryStats工具吗（y / n）：
+		if "!TIPS!"=="y" set USEMEMSTATS=1
+		echo !USEMEMSTATS!
+	)
+	call %EXEC% UEModifyDefaultEngineIOSRuntime !USEMEMSTATS! %~dp0DefaultEngine.ini %~dp0project.pbxproj %~dp0LetsGoClient.Target.cs %~dp0MemoryStats.uplugin
+	if exist %~dp0DefaultEngine.ini echo 不使用MemoryStats的情况下才能断点,而且可能需要随便改下代码触发重编才能正常断点
+	if exist %~dp0dp0LetsGoClient.Target.cs echo "安卓ShippingClient编译出来的包还得手动添加Disable MemoryStats插件, 否则会挂"
+	pause & exit
 )
 if "%choice%"=="initandroid"	(
 	%EXEC% toolSetUserEnvironmentValue AGDE_JAVA_HOME "C:\Program Files\Java\jdk-20\"
@@ -100,13 +105,16 @@ if "%choice%"=="pcbuild"	(
 )
 if "%choice%"=="pcdebug"	(
 	taskkill /F /IM LetsGoClient.exe
-	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.exe I:\Downloads\1511dailyPC\LetsGo\Binaries\Win64\
-	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb I:\Downloads\1511dailyPC\LetsGo\Binaries\Win64\
+	timeout /T 1 /NOBREAK
+	cd /d I:\Downloads\1511dailyPC\
+	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.exe LetsGo\Binaries\Win64\
+	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb LetsGo\Binaries\Win64\
+	start /B  ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
 	pause &	exit
 )
 if "%choice%"=="memstats"	(
 	rem call %EXEC% UEMobilePushCommandLine "-memorystats -minmallocsize=16 -msfilesuffix=eugenejin" %PackageName% %ProjectName%
-	echo 请运行IOS游戏, 跑完后点一个解析内存的流水线包(请检查解析内存堆栈步骤的log保证没有错误提示并保证和mac端上传的dSymbol的ID是一致的), 然后在统计工具里刷新 & pause
+	echo 请运行IOS游戏，跑完后点一个解析内存的流水线包（请检查解析内存堆栈步骤的log保证没有错误提示并保证和mac端上传的dSymbol的ID是一致的），然后在统计工具里刷新 & pause
 	explorer https://devops.woa.com/console/pipeline/letsgo/p-0d29ce1abc8e419baa7d71571368d33c/history
 	if not exist %PROJECTDIR%\LetsGo\Tools\ echo 请先克隆Tools子仓库
 	call %PROJECTDIR%\LetsGo\Tools\MemoryStats\MemoryStatsViewer\MemoryStatsViewer.exe
