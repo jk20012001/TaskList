@@ -9,7 +9,7 @@ TEMPFILE2=$TMPDIR/mac-build-project/ARG2.txt
 BATPATH=`dirname "$0"`
 echo 当前路径为$PWD
 
-WINPC_IP=30.19.58.20
+WINPC_IP=30.19.58.50
 WINPC_PORT=8037
 
 # 参数为: 命令行传入的路径, 提示名, 记录路径的临时文件
@@ -187,6 +187,7 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 	if [ "$CHOICE" = "copyipabuild" ]; then
 		APPDIR=$WORKDIR/LetsGo/Saved/StagedBuilds/IOSClient/
 		SHFILE=$BATPATH/MoeDev/local_ios_pack.sh
+		SHFILE_SHIPPING=$BATPATH/MoeDev/local_ios_pack_shipping.sh
 		SHMAINFILE=`basename "$SHFILE" .sh`
 		mkdir -p $APPDIR
 		if [ -f $SHFILE ]; then
@@ -194,10 +195,15 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 		else
 			echo "错误!未找到$SHFILE"
 		fi
+		if [ -f $SHFILE_SHIPPING ]; then
+			cp $SHFILE_SHIPPING $WORKDIR/
+		else
+			echo "错误!未找到$SHFILE_SHIPPING"
+		fi
 	fi
 	DESTDIR=$APPDIR"cookeddata/"
 	echo "目标路径$DESTDIR"
-	echo "SH文件$SHFILE"
+	echo "SH文件$SHFILE和$SHFILE_SHIPPING"
 	echocolor 32 "1. 请参考open命令后显示的设置事项保证Build和Run都能成功"
 	echo "2. 请将ipa文件拖到此处并回车:"
 	read IPAFILE
@@ -224,25 +230,26 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 	sudo rm -rf $ZIPPATH/
 	# 执行local_ios_pack.sh
 	if [ ! -z "$SHFILE" ]; then
-		echo "执行sh文件...可以修改$WORKDIR/$SHMAINFILE中的构建类型 Develop/Test/Shipping 等"
-		cd $WORKDIR/
-		sh $SHMAINFILE.sh
-		echo ipabuild结束|nc -w 1 $WINPC_IP $WINPC_PORT
-
 		FINDRET=`echo $IPANAME | grep 'Shipping'`
 		if [ ! 	-z "$FINDRET" ]; then
 			echo 检测到ipa是Shipping包, 本地编译会使用Development Client吗（y / n）:
 			read CHOICECLIENT
-			if [ $CHOICECLIENT = "y" ]; then RETURNDIR=$CONTENT; fi
-				echocolor 34 "Shipping包 + Development Client, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住"
+			if [ $CHOICECLIENT = "y" ]; then
+				echocolor 34 "Shipping包 + Development Client, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住, 按回车键继续"
 				open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
 			else
-				echocolor 34 "Shipping包 + Shipping Client, 还需要用自动工具删掉MemoryStats.uplugin文件中BlacklistTargetConfigurations的内容, 否则启动可能会卡住"
+				echocolor 34 "Shipping包 + Shipping Client, 还需要用自动工具删掉MemoryStats.uplugin文件中BlacklistTargetConfigurations的内容, 否则启动可能会卡住, 按回车键继续"
 				open -R $WORKDIR/LetsGo/Plugins/MOE/GameFramework/GamePlugins/Performance/MemoryStats/MemoryStats/MemoryStats.uplugin
+				SHMAINFILE=`basename "$SHFILE_SHIPPING" .sh`
 			fi
 			read
 		fi
-		echocolor 34 "现在可以用XCode修改代码并Run启动真机调试了, 注意要去掉启动参数, 否则启动会卡住"
+
+		echo "执行$SHMAINFILE.sh...可以修改$WORKDIR/$SHMAINFILE中的构建类型 Develop/Test/Shipping 等"
+		cd $WORKDIR/
+		sh $SHMAINFILE.sh
+		echo ipabuild结束|nc -w 1 $WINPC_IP $WINPC_PORT
+		echocolor 34 "现在可以用XCode修改代码并选择对应的Client配置运行启动真机调试了, 别忘了要去掉启动参数, 否则启动会卡住"
 	fi
 	exit
 	
