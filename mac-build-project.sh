@@ -54,6 +54,7 @@ echocolor 34 "项目根文件夹为: $WORKDIR"
 echo 请选择:
 echo init:			初始化新Clone的引擎及生成项目
 echo reset:			强制更新后重新生成ini及项目
+echo resetwithipa:	强制更新后重新生成ini及真机调试
 echo open:			打开编辑器和主项目
 echo mini:			生成小包项目
 echo openmini:		编辑器打开小包项目
@@ -63,11 +64,19 @@ echo copyipabuild:	复制流水线包中的资源到Saved下并生成以便真�
 echo cxrqq:			显示CRXQQ工程中的两条命令
 echo xcode16:		修复xcode16中的签名信息路径软链接, 仅需执行一次
 echo memstats:		上传MemoryStatsViewer所需的符号
+echo fixindexing:	修复Indexing无限转圈, 会失去代码提示
 echo test:			测试
 read CHOICE
 
 if [ "$CHOICE" = "test" ]; then
 	read
+fi
+
+if [ "$CHOICE" = "fixindexing" ]; then
+	defaults write com.apple.dt.Xcode IDEIndexDisable -bool true
+	echocolor 34 "命令最后的true改为false可以恢复"
+	read
+	exit
 fi
 
 if [ "$CHOICE" = "mini" ] || [ "$CHOICE" = "openmini" ]; then
@@ -79,7 +88,7 @@ fi
 
 if [ "$CHOICE" = "xcode16" ]; then
 	# xcode16之后的签名信息文件夹更换了读取位置, 需要软链接, 不能直接拷过去, 拷过去也没文件的
-	# 事实上双击mobileprovision文件之后, 闪一下其实就会生成签名信息到Library/Developer/Xcode/UserData/Provisioning Profiles下
+	# 事实上双击mobileprovision文件之后, 闪一下其实就会生成签名信息到~/Library/MobileDevice/Provisioning\ Profiles下, 查看新生成的文件名即签名id, 然后DefaultEngine.ini中的MobileProvision必须要跟此文件名匹配, 所以每次更新provision文件就要改ini内容
 	if [ ! -d ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/ ]; then
 		echo "文件夹不存在~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/"
 	elif [ ! -d ~/Library/MobileDevice/Provisioning\ Profiles ]; then
@@ -121,8 +130,9 @@ if [ "$CHOICE" = "init" ]; then
 	open -R $WORKDIR/LetsGo/Intermediate/ProjectFiles/LetsGo.xcodeproj/project.pbxproj
 	read
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
+fi
 
-elif [ "$CHOICE" = "reset" ]; then
+if [ "$CHOICE" = "reset" ] || [ "$CHOICE" = "resetwithipa" ]; then
 	echo "修改LetsGo/Config/DefaultEngine.ini加ios签名信息后, 按回车键继续..."
 	open -R $WORKDIR/LetsGo/Config/DefaultEngine.ini
 	read
@@ -131,8 +141,12 @@ elif [ "$CHOICE" = "reset" ]; then
 	open -R $WORKDIR/LetsGo/Intermediate/ProjectFiles/LetsGo.xcodeproj/project.pbxproj
 	read
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
+	if [ "$CHOICE" = "resetwithipa" ]; then
+		CHOICE="copyipabuild"
+	fi
+fi
 
-elif [ "$CHOICE" = "mini" ]; then
+if [ "$CHOICE" = "mini" ]; then
 	if [ -d "$MINIPROJECTDIR/Plugins/MoeMSDK" ]; then
 		echo "MoeMSDK文件夹已存在, 忽略拷贝"
 	else
@@ -154,35 +168,39 @@ elif [ "$CHOICE" = "mini" ]; then
 	read
 	$WORKDIR/ue4_tracking_rdcsp/GenerateProjectFiles.sh -project="$MINIPROJECTDIR/$PROJECTNAME.uproject" -game -engine
 	XCODEPROJECT=$MINIPROJECTDIR/$PROJECTNAME.xcworkspace
+fi
 
-elif [ "$CHOICE" = "open" ]; then
+if [ "$CHOICE" = "open" ]; then
 	cd $WORKDIR/ue4_tracking_rdcsp/Engine/Binaries/Mac/UE4Editor.app/Contents/MacOS
 	echocolor 34 "工程名为: LetsGo, 即将打开$WORKDIR/LetsGo/LetsGo.uproject"
 	# 记住不能用open命令, 会缺参数, 或提示缺dll等各种问题, 要直接执行或用sudo才可以
 	./UE4Editor "$WORKDIR/LetsGo/LetsGo.uproject"
 	exit
+fi
 
-elif [ "$CHOICE" = "openmini" ]; then
+if [ "$CHOICE" = "openmini" ]; then
 	PROJECTNAME=${MINIPROJECTDIR##*/}
 	echocolor 34 "工程名为: $PROJECTNAME, 即将打开$MINIPROJECTDIR/$PROJECTNAME.uproject"
 	cd $WORKDIR/ue4_tracking_rdcsp/Engine/Binaries/Mac/UE4Editor.app/Contents/MacOS
 	./UE4Editor $MINIPROJECTDIR/$PROJECTNAME.uproject
 	exit
+fi
 
-elif [ "$CHOICE" = "forcedel" ]; then
+if [ "$CHOICE" = "forcedel" ]; then
 	sudo rm -rf $WORKDIR/
 	exit
+fi
 	
-elif [ "$CHOICE" = "memstats" ]; then
+if [ "$CHOICE" = "memstats" ]; then
 	stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" $WORKDIR/LetsGo/Binaries/IOS/LetsGoClient.dSYM
 	echocolor 34 "请保证显示的文件修改时间和当前时间差不多，否则上传之后流水线解析也会失败，得打开ini中的bGenerateSYM重新生成app"
 	echocolor 33 "如果是Shipping包，请保证流水线启动参数开启了bEnableMemoryStatsInShipping开关"
 	cd $WORKDIR/LetsGo/Tools/MemoryStats/Scripts
 	python3 Task_UploadSymbol.py $WORKDIR/LetsGo/Binaries/IOS
 	exit
+fi
 
-
-elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
+if [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 	APPDIR=$WORKDIR/LetsGo/Binaries/IOS/Payload/LetsGoClient.app/
 	if [ "$CHOICE" = "copyipabuild" ]; then
 		APPDIR=$WORKDIR/LetsGo/Saved/StagedBuilds/IOSClient/
@@ -211,13 +229,26 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 	IPANAME=`basename "$IPAFILE" .ipa`
 	ZIPFILE="$IPAPATH/$IPANAME.zip"
 	ZIPPATH="$IPAPATH/$IPANAME"
-	mv $IPAFILE $ZIPFILE
-	unzip -d $ZIPPATH/ $ZIPFILE
-	mv $ZIPFILE $IPAFILE
 
+	# Shipping包的特殊处理
+	FINDRET=`echo $IPANAME | grep 'Shipping'`
+	if [ ! 	-z "$FINDRET" ]; then
+		echo 检测到ipa是Shipping包, 本地编译会使用Development Client吗（y / n）:
+		read CHOICECLIENT
+		if [ $CHOICECLIENT = "y" ]; then
+			echocolor 34 "Shipping包 + Development Client, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住, 按回车键继续"
+			open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
+		else
+			echocolor 34 "Shipping包 + Shipping Client, 还需要用自动工具删掉MemoryStats.uplugin文件中BlacklistTargetConfigurations的内容, 否则启动可能会卡住, 按回车键继续"
+			open -R $WORKDIR/LetsGo/Plugins/MOE/GameFramework/GamePlugins/Performance/MemoryStats/MemoryStats/MemoryStats.uplugin
+			SHMAINFILE=`basename "$SHFILE_SHIPPING" .sh`
+		fi
+		read
+	fi
+
+	# 处理解压和拷贝
 	if [ -e $DESTDIR ]; then
 		echo "删除 $DESTDIR 请输入登录密码"
-		echo 请在mac上输入登录密码|nc -w 1 $WINPC_IP $WINPC_PORT
 		sudo rm -rf $DESTDIR
 	fi
 	if [ -e $DESTDIR ]; then
@@ -225,26 +256,16 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 		read
 		open $WORKDIR/LetsGo/Binaries/IOS/Payload/
 	fi
+
+	mv $IPAFILE $ZIPFILE
+	unzip -d $ZIPPATH/ $ZIPFILE
+	mv $ZIPFILE $IPAFILE
 	cp -r $ZIPPATH/Payload/LetsGoClient.app/cookeddata $APPDIR
 	cp -r $ZIPPATH/Payload/LetsGoClient.app/Manifest_NonUFSFiles_IOS.txt $APPDIR
 	sudo rm -rf $ZIPPATH/
+	
 	# 执行local_ios_pack.sh
 	if [ ! -z "$SHFILE" ]; then
-		FINDRET=`echo $IPANAME | grep 'Shipping'`
-		if [ ! 	-z "$FINDRET" ]; then
-			echo 检测到ipa是Shipping包, 本地编译会使用Development Client吗（y / n）:
-			read CHOICECLIENT
-			if [ $CHOICECLIENT = "y" ]; then
-				echocolor 34 "Shipping包 + Development Client, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住, 按回车键继续"
-				open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
-			else
-				echocolor 34 "Shipping包 + Shipping Client, 还需要用自动工具删掉MemoryStats.uplugin文件中BlacklistTargetConfigurations的内容, 否则启动可能会卡住, 按回车键继续"
-				open -R $WORKDIR/LetsGo/Plugins/MOE/GameFramework/GamePlugins/Performance/MemoryStats/MemoryStats/MemoryStats.uplugin
-				SHMAINFILE=`basename "$SHFILE_SHIPPING" .sh`
-			fi
-			read
-		fi
-
 		echo "执行$SHMAINFILE.sh...可以修改$WORKDIR/$SHMAINFILE中的构建类型 Develop/Test/Shipping 等"
 		cd $WORKDIR/
 		sh $SHMAINFILE.sh
@@ -252,8 +273,9 @@ elif [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 		echocolor 34 "现在可以用XCode修改代码并选择对应的Client配置运行启动真机调试了, 别忘了要去掉启动参数, 否则启动会卡住"
 	fi
 	exit
-	
-elif [ "$CHOICE" = "cxrqq" ]; then
+fi
+
+if [ "$CHOICE" = "cxrqq" ]; then
 	echo "先保证已将ipa文件下载到$WORKDIR/../ReCodesignQQ/APP/下并已经用xcode打开ReCodesignQQ工程"
 	echo "1. 请将下载并解压好的dSYM文件拖到此处并回车:"
 	read DSYMFILE

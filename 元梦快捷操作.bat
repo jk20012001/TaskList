@@ -12,6 +12,7 @@
 @echo ios:			修改IOS的DefaultEngine等, 需要将ini等文件拷到%~dp0下, 拷完无需Generate工程, 直接编译即可
 @echo android:		安卓对元梦指定地图打小包相应的工程设置, 需要将工程文件夹拖到bat上
 @echo initandroid:		添加VS编译生成安卓apk所需的环境变量
+@echo cleanandroid:		安卓如果提示failed with args /c rungradle.bat :app:assembleDebug就需要清理intermediate\android
 @echo pcbuild:		PC打小包, 必须保证编辑器的BuildTarget是LetsGoClient, 需要将工程文件夹拖到bat上
 @echo pcdebug:		PC编出来的拷到资源文件夹运行
 @echo memstats:		静总的真机内存Profile工具
@@ -94,9 +95,10 @@ if not exist "%PROJECTDIR%" (
 echo %PROJECTDIR% >"%RECORDFILE%"
 call %CONSOLETOOLS% echocolor ff0000ff "当前选择的项目文件夹为%PROJECTDIR%"
 
-if "%choice%"=="android"	call %EXEC% StarPAndroidLittlePackageSettings "%PROJECTDIR%" & echo 有可能需要performance分支,否则打出来的apk会卡在logo界面,或尝试更改LetsGoClient.Target.cs或MemoryStats.uplugin & pause & exit
-if "%choice%"=="shipping"	call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
-if "%choice%"=="renderdoc"	call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="android"		call %EXEC% StarPAndroidLittlePackageSettings "%PROJECTDIR%" & echo 有可能需要performance分支,否则打出来的apk会卡在logo界面,或尝试更改LetsGoClient.Target.cs或MemoryStats.uplugin & pause & exit
+if "%choice%"=="cleanandroid"	call %EXEC% toolMoveFastAndDeleteFolder "%PROJECTDIR%\LetsGo\Intermediate\Android\" & pause & exit
+if "%choice%"=="shipping"		call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="renderdoc"		call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="pcbuild"	(
 	set /p XBPATH=请将小包路径拖到此处:
 	rem -project和-archivedirectory两个路径有可能需要将\转为/
