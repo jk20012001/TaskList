@@ -13,6 +13,7 @@
 @echo android:		安卓对元梦指定地图打小包相应的工程设置, 需要将工程文件夹拖到bat上
 @echo initandroid:		添加VS编译生成安卓apk所需的环境变量
 @echo cleanandroid:		安卓如果提示failed with args /c rungradle.bat :app:assembleDebug就需要清理intermediate\android
+@echo toggleandroid:	切换编译UE4安卓和automationtool
 @echo pcbuild:		PC打小包, 必须保证编辑器的BuildTarget是LetsGoClient, 需要将工程文件夹拖到bat上
 @echo pcdebug:		PC编出来的拷到资源文件夹运行
 @echo memstats:		静总的真机内存Profile工具
@@ -99,6 +100,15 @@ if "%choice%"=="android"		call %EXEC% StarPAndroidLittlePackageSettings "%PROJEC
 if "%choice%"=="cleanandroid"	call %EXEC% toolMoveFastAndDeleteFolder "%PROJECTDIR%\LetsGo\Intermediate\Android\" & pause & exit
 if "%choice%"=="shipping"		call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="renderdoc"		call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="toggleandroid"	(
+	set /p CompileUE4=编译UE4安卓包吗？（y/n）
+	if "!CompileUE4!"=="y" (
+		move "%AppData%\..\Local\Android\Sdk\platforms\android-33" "%AppData%\..\Local\Android\Sdk\platforms\android-33_"
+	) else (
+		move "%AppData%\..\Local\Android\Sdk\platforms\android-33_" "%AppData%\..\Local\Android\Sdk\platforms\android-33"
+	)
+	pause &	exit
+)
 if "%choice%"=="pcbuild"	(
 	set /p XBPATH=请将小包路径拖到此处:
 	rem -project和-archivedirectory两个路径有可能需要将\转为/

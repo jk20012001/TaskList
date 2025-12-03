@@ -143,6 +143,7 @@ if [ "$CHOICE" = "reset" ] || [ "$CHOICE" = "resetwithipa" ]; then
 	XCODEPROJECT=$WORKDIR/LetsGo/LetsGo.xcworkspace
 	if [ "$CHOICE" = "resetwithipa" ]; then
 		CHOICE="copyipabuild"
+		open /Applications/XCode.app $XCODEPROJECT
 	fi
 fi
 
@@ -236,10 +237,12 @@ if [ "$CHOICE" = "copyipa" ] || [ "$CHOICE" = "copyipabuild" ]; then
 		echo 检测到ipa是Shipping包, 本地编译会使用Development Client吗（y / n）:
 		read CHOICECLIENT
 		if [ $CHOICECLIENT = "y" ]; then
-			echocolor 34 "Shipping包 + Development Client, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住, 按回车键继续"
+			echocolor 34 "Shipping包 + Development Client, 还需要用自动工具注释掉LetsGoClient.Target.cs文件从84到90行的if-else部分, 否则启动可能会卡住"
+			echocolor 34 "然后记得复原MemoryStats.uplugin文件, 按回车键继续..."
 			open -R $WORKDIR/LetsGo/Source/LetsGoClient.Target.cs
 		else
-			echocolor 34 "Shipping包 + Shipping Client, 还需要用自动工具删掉MemoryStats.uplugin文件中BlacklistTargetConfigurations的内容, 否则启动可能会卡住, 按回车键继续"
+			echocolor 34 "Shipping包 + Shipping Client, 还需要用自动工具删掉MemoryStats.uplugin文件中BlacklistTargetConfigurations的内容, 否则启动可能会卡住"
+			echocolor 34 "然后记得复原LetsGoClient.Target.cs文件, 按回车键继续..."
 			open -R $WORKDIR/LetsGo/Plugins/MOE/GameFramework/GamePlugins/Performance/MemoryStats/MemoryStats/MemoryStats.uplugin
 			SHMAINFILE=`basename "$SHFILE_SHIPPING" .sh`
 		fi
