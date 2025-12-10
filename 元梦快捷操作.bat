@@ -5,15 +5,16 @@
 @echo lua3:			修改并Push三个固定LUA脚本到手机以运行本地Cook的包
 @echo resetgame:		游戏在前台时直接重启游戏
 @echo cmdline:		选择并Push UE4CommandLine到安卓手机, Insight和renderdoc都需要
-@echo shipping:		修改本地代码以便配合Shipping包资源
 @echo renderdoc:		修改本地代码以便安卓打包抓帧, 启动com.tencent.letsgo/com.epicgames.ue4.GameActivityExt
 @echo console:		发送控制台命令到安卓手机, 分号分隔
 @echo runui:			选择Trace的CommandLine并执行UnrealInsight
 @echo ios:			修改IOS的DefaultEngine等, 需要将ini等文件拷到%~dp0下, 拷完无需Generate工程, 直接编译即可
+@echo shipping:		修改本地代码以便配合Android Shipping包资源
+@echo shippingclient:		修改本地代码以便配合Android ShippingClient的正常运行
 @echo android:		安卓对元梦指定地图打小包相应的工程设置, 需要将工程文件夹拖到bat上
 @echo initandroid:		添加VS编译生成安卓apk所需的环境变量
 @echo cleanandroid:		安卓如果提示failed with args /c rungradle.bat :app:assembleDebug就需要清理intermediate\android
-@echo toggleandroid:	切换编译UE4安卓和automationtool
+@echo toggleandroid:		切换编译UE4安卓和automationtool
 @echo pcbuild:		PC打小包, 必须保证编辑器的BuildTarget是LetsGoClient, 需要将工程文件夹拖到bat上
 @echo pcdebug:		PC编出来的拷到资源文件夹运行
 @echo memstats:		静总的真机内存Profile工具
@@ -55,7 +56,7 @@ if "%choice%"=="ios"		(
 	)
 	call %EXEC% UEModifyDefaultEngineIOSRuntime !USEMEMSTATS! %~dp0DefaultEngine.ini %~dp0project.pbxproj %~dp0LetsGoClient.Target.cs %~dp0MemoryStats.uplugin
 	if exist %~dp0DefaultEngine.ini echo 不使用MemoryStats的情况下才能断点,而且可能需要随便改下代码触发重编才能正常断点
-	if exist %~dp0dp0LetsGoClient.Target.cs echo "安卓ShippingClient编译出来的包还得手动添加Disable MemoryStats插件, 否则会挂"
+	if exist %~dp0dp0LetsGoClient.Target.cs echo "安卓ShippingClient编译出来的包请调用shippingclient功能或手动添加Disable MemoryStats插件, 否则会挂"
 	pause & exit
 )
 if "%choice%"=="initandroid"	(
@@ -96,10 +97,11 @@ if not exist "%PROJECTDIR%" (
 echo %PROJECTDIR% >"%RECORDFILE%"
 call %CONSOLETOOLS% echocolor ff0000ff "当前选择的项目文件夹为%PROJECTDIR%"
 
-if "%choice%"=="android"		call %EXEC% StarPAndroidLittlePackageSettings "%PROJECTDIR%" & echo 有可能需要performance分支,否则打出来的apk会卡在logo界面,或尝试更改LetsGoClient.Target.cs或MemoryStats.uplugin & pause & exit
-if "%choice%"=="cleanandroid"	call %EXEC% toolMoveFastAndDeleteFolder "%PROJECTDIR%\LetsGo\Intermediate\Android\" & pause & exit
-if "%choice%"=="shipping"		call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
-if "%choice%"=="renderdoc"		call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="android"			call %EXEC% StarPAndroidLittlePackageSettings "%PROJECTDIR%" & echo 有可能需要performance分支,否则打出来的apk会卡在logo界面,或尝试更改LetsGoClient.Target.cs或MemoryStats.uplugin & pause & exit
+if "%choice%"=="cleanandroid"		call %EXEC% toolMoveFastAndDeleteFolder "%PROJECTDIR%\LetsGo\Intermediate\Android\" & pause & exit
+if "%choice%"=="shipping"			call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="shippingclient"	call %EXEC% UEMobileModifyCodeForAndroidShippingClient "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="renderdoc"			call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="toggleandroid"	(
 	set /p CompileUE4=编译UE4安卓包吗？（y/n）
 	if "!CompileUE4!"=="y" (
@@ -118,7 +120,8 @@ if "%choice%"=="pcbuild"	(
 if "%choice%"=="pcdebug"	(
 	taskkill /F /IM LetsGoClient.exe
 	timeout /T 1 /NOBREAK
-	cd /d I:\Downloads\1511dailyPC\
+	if exist I:\Downloads\1511dailyPC\ cd /d I:\Downloads\1511dailyPC\
+	if exist I:\Downloads\PC\ cd /d I:\Downloads\PC\
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.exe LetsGo\Binaries\Win64\
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb LetsGo\Binaries\Win64\
 	start /B  ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
