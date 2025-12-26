@@ -52,6 +52,7 @@ echocolor 34 "项目根文件夹为: $WORKDIR"
 
 # 功能提示
 echo 请选择:
+echo installadb:	安装控制iphone的命令行程序
 echo init:			初始化新Clone的引擎及生成项目
 echo reset:			强制更新后重新生成ini及项目
 echo resetwithipa:	强制更新后重新生成ini及真机调试
@@ -62,14 +63,21 @@ echo forcedel:		强制删除工程目录
 echo copyipa:		复制流水线包中的资源以便真机调试（旧）
 echo copyipabuild:	复制流水线包中的资源到Saved下并生成以便真机调试
 echo cxrqq:			显示CRXQQ工程中的两条命令
-echo xcode16:		修复xcode16中的签名信息路径软链接, 仅需执行一次
-echo memstats:		上传MemoryStatsViewer所需的符号
+echo xcode16:		修复xcode16中的签名信息及Platform路径软链接, 仅需执行一次
+echo memstats:		上传MemoryStatsViewer所需的符号, 只要修改代码编译就需要重新上传, 否则流水线报错
 echo fixindexing:	修复Indexing无限转圈, 会失去代码提示
 echo test:			测试
 read CHOICE
 
 if [ "$CHOICE" = "test" ]; then
 	read
+fi
+
+if [ "$CHOICE" = "installadb" ]; then
+	bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	echocolor 34 "刚装好brew需要用新窗口来执行brew install libimobiledevice"
+	osascript -e 'tell application "Terminal" to do script "brew install libimobiledevice"'
+	echo https://github.com/libimobiledevice/libimobiledevice
 fi
 
 if [ "$CHOICE" = "fixindexing" ]; then
@@ -107,6 +115,9 @@ if [ "$CHOICE" = "xcode16" ]; then
 			echo "Xcode Certification Folder-Link OK"
 		fi
 	fi
+	read
+	echo "修正Generate工程时报错ERROR: Invalid SDK MacOSX.sdk, not found in /Library/Developer/CommandLineTools/Platforms/MacOSX"
+	sudo ln -s /Applications/Xcode.app/Contents/Developer/Platforms /Library/Developer/CommandLineTools/Platforms
 	read
 fi
 

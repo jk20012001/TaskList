@@ -30,6 +30,7 @@
 @echo commandlet:		运行commandlet, 需要将工程文件夹拖到bat上
 @echo rockhlod:		需要将工程文件夹拖到bat上
 @echo pso:			需要将工程文件夹拖到bat上
+@echo pthread:		需要将没问题的工程文件夹拖到bat上, 然后打开对应的文件夹并复制三个文件到出问题的工程文件夹中
 set /p choice=请输入:
 
 
@@ -102,6 +103,7 @@ if "%choice%"=="cleanandroid"		call %EXEC% toolMoveFastAndDeleteFolder "%PROJECT
 if "%choice%"=="shipping"			call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="shippingclient"	call %EXEC% UEMobileModifyCodeForAndroidShippingClient "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="renderdoc"			call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="pthread"			explorer /select,"%PROJECTDIR%\LetsGo\Plugins\MOE\PlatformSDKs\GCloudSDK\MSDKPIXCore\Source\MSDKPIXCore\Public\pthread.h" & pause & exit
 if "%choice%"=="toggleandroid"	(
 	set /p CompileUE4=编译UE4安卓包吗？（y/n）
 	if "!CompileUE4!"=="y" (
@@ -120,8 +122,8 @@ if "%choice%"=="pcbuild"	(
 if "%choice%"=="pcdebug"	(
 	taskkill /F /IM LetsGoClient.exe
 	timeout /T 1 /NOBREAK
-	if exist I:\Downloads\1511dailyPC\ cd /d I:\Downloads\1511dailyPC\
 	if exist I:\Downloads\PC\ cd /d I:\Downloads\PC\
+	if not exist LetsGo\Binaries\Win64\LetsGoClient.exe echo 请不要用Shipping包的资源来调试 & pause & exit
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.exe LetsGo\Binaries\Win64\
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb LetsGo\Binaries\Win64\
 	start /B  ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
