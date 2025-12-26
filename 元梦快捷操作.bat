@@ -21,6 +21,7 @@
 @echo dumplog:		dump安卓log
 @echo editor:			启动编辑器和工程, 需要将工程文件夹拖到bat上
 @echo runcook:		Push安卓本地cook的资源和三个固定LUA脚本到手机, 并启动游戏, 需要将工程文件夹拖到bat上
+@echo generatesln:	生成项目sln, 用于取代Switch Unreal Engine Version功能, 如果该功能报错的话可以这样生成, 需要将工程文件夹拖到bat上
 @echo initproj:		元梦新工程初始化, 需要将工程文件夹拖到bat上
 @echo checklink:		检查工程是否已经运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
 @echo relink:			强制运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
@@ -103,7 +104,9 @@ if "%choice%"=="cleanandroid"		call %EXEC% toolMoveFastAndDeleteFolder "%PROJECT
 if "%choice%"=="shipping"			call %EXEC% UEMobileModifyCodeForShippingPak "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="shippingclient"	call %EXEC% UEMobileModifyCodeForAndroidShippingClient "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="renderdoc"			call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
+if "%choice%"=="pso"				call %EXEC% StarPPSOPrepare %PROJECTDIR%\ & pause & exit
 if "%choice%"=="pthread"			explorer /select,"%PROJECTDIR%\LetsGo\Plugins\MOE\PlatformSDKs\GCloudSDK\MSDKPIXCore\Source\MSDKPIXCore\Public\pthread.h" & pause & exit
+if "%choice%"=="linktool"			mklink /J %PROJECTDIR%\LetsGo\Plugins\GoldfxTool F:\SysApps\UEPlugins\GoldfxTool\
 if "%choice%"=="toggleandroid"	(
 	set /p CompileUE4=编译UE4安卓包吗？（y/n）
 	if "!CompileUE4!"=="y" (
@@ -164,6 +167,12 @@ if "%choice%"=="editor"	(
 	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\Engine\Binaries\Win64
 	start "" UE4Editor "%PROJECTDIR%\LetsGo\LetsGo.uproject" -skipcompile
 )
+if "%choice%"=="generatesln"	(
+	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\
+	GenerateProjectFiles.bat -project="$WORKDIR\LetsGo\LetsGo.uproject" -game -engine
+	pause
+)
+
 if "%choice%"=="initproj"	(
 	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\
 	call setup.bat --threads=16 --cache=E:\ue4_caches
@@ -201,9 +210,7 @@ if "%choice%"=="relink" (
 	explorer /select, "%PROJECTDIR%\LetsGo\MakeLinkForExportDir.bat"
 	echo 请在弹出的文件夹中执行bat后再更新仓库 & pause
 )
-if "%choice%"=="linktool" (
-	mklink /J %PROJECTDIR%\LetsGo\Plugins\GoldfxTool F:\SysApps\UEPlugins\GoldfxTool\
-)
+
 if "%choice%"=="cleanproj" (
 	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\Engine
 	if exist Intermediate rd /s /q Intermediate
@@ -220,6 +227,7 @@ if "%choice%"=="commandlet" (
 	set /p COMMANDLET=输入命令行: 
 	%PROJECTDIR%\ue4_tracking_rdcsp\Engine\Binaries\Win64\UE4Editor.exe %PROJECTDIR%\LetsGo\LetsGo.uproject -skipcompile %COMMANDLET%
 )
+
 set CMDLETEXEC=%PROJECTDIR%\ue4_tracking_rdcsp\Engine\Binaries\Win64\UE4Editor.exe %PROJECTDIR%\LetsGo\LetsGo.uproject -skipcompile
 set ROCKDIR=%PROJECTDIR%\LetsGo\Content\Feature\StarP\Scenes\StarP_Runtime\Rock\
 if "%choice%"=="rockhlod" (
@@ -231,5 +239,3 @@ if "%choice%"=="rockhlod" (
 	%CMDLETEXEC% -run=HlodCommandlet BuildRockHlod /Game/Feature/StarP/Scenes/StarP_Runtime/StarP_Optimize StarP -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
 	%CMDLETEXEC% -run=HlodCommandlet BuildRockFarProxy /Game/Feature/StarP/Scenes/StarP_Runtime/StarP_Optimize -graphicsadapter=0 -RunningUnattendedScript -Unattended -AllowCommandletRendering
 )
-
-if "%choice%"=="pso" %EXEC% StarPPSOPrepare %PROJECTDIR%\
