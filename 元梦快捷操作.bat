@@ -25,7 +25,7 @@
 @echo initproj:		元梦新工程初始化, 需要将工程文件夹拖到bat上
 @echo checklink:		检查工程是否已经运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
 @echo relink:			强制运行了两个软链接bat(包括玩法隔离), 需要将工程文件夹拖到bat上
-@echo linktool:			为工程link自定义工具插件
+@echo goldtool:			为工程link自定义工具插件
 @echo cleanproj:		清理工程释放空间, 需要将工程文件夹拖到bat上
 @echo xlspath:		打开配表目录, 修改完还要执行bat重新打表生成pbin, 需要将工程文件夹拖到bat上
 @echo commandlet:		运行commandlet, 需要将工程文件夹拖到bat上
@@ -57,7 +57,7 @@ if "%choice%"=="ios"		(
 		echo !USEMEMSTATS!
 	)
 	call %EXEC% UEModifyDefaultEngineIOSRuntime !USEMEMSTATS! %~dp0DefaultEngine.ini %~dp0project.pbxproj %~dp0LetsGoClient.Target.cs %~dp0MemoryStats.uplugin
-	if exist %~dp0DefaultEngine.ini echo 不使用MemoryStats的情况下才能断点,而且可能需要随便改下代码触发重编才能正常断点
+	if exist %~dp0DefaultEngine.ini echo "注意! 不使用MemoryStats的情况下才能断点,而且可能需要随便改下代码触发重编才能正常断点"
 	if exist %~dp0dp0LetsGoClient.Target.cs echo "安卓ShippingClient编译出来的包请调用shippingclient功能或手动添加Disable MemoryStats插件, 否则会挂"
 	pause & exit
 )
@@ -106,7 +106,7 @@ if "%choice%"=="shippingclient"	call %EXEC% UEMobileModifyCodeForAndroidShipping
 if "%choice%"=="renderdoc"			call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="pso"				call %EXEC% StarPPSOPrepare %PROJECTDIR%\ & pause & exit
 if "%choice%"=="pthread"			explorer /select,"%PROJECTDIR%\LetsGo\Plugins\MOE\PlatformSDKs\GCloudSDK\MSDKPIXCore\Source\MSDKPIXCore\Public\pthread.h" & pause & exit
-if "%choice%"=="linktool"			mklink /J %PROJECTDIR%\LetsGo\Plugins\GoldfxTool F:\SysApps\UEPlugins\GoldfxTool\
+if "%choice%"=="goldtool"			mklink /J %PROJECTDIR%\LetsGo\Plugins\GoldfxTool F:\SysApps\UEPlugins\GoldfxTool\
 if "%choice%"=="toggleandroid"	(
 	set /p CompileUE4=编译UE4安卓包吗？（y/n）
 	if "!CompileUE4!"=="y" (
@@ -168,8 +168,10 @@ if "%choice%"=="editor"	(
 	start "" UE4Editor "%PROJECTDIR%\LetsGo\LetsGo.uproject" -skipcompile
 )
 if "%choice%"=="generatesln"	(
+	echo 可以直接用项目批处理生成, 也可以编一个UnrealVersionSelector, 覆盖到%ProgramFiles%\Epic Games\Launcher\Engine\Binaries\Win64\UnrealVersionSelector.exe
+	echo 参考https://forums.unrealengine.com/t/missing-unrealbuildtool-exe-after-build/2674046/11
 	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\
-	GenerateProjectFiles.bat -project="$WORKDIR\LetsGo\LetsGo.uproject" -game -engine
+	GenerateProjectFiles.bat -project="%PROJECTDIR%\LetsGo\LetsGo.uproject" -game -engine
 	pause
 )
 
