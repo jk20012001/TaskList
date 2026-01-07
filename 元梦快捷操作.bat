@@ -9,7 +9,7 @@
 @echo console:		发送控制台命令到安卓手机, 分号分隔
 @echo runui:			选择Trace的CommandLine并执行UnrealInsight
 @echo ios:			修改IOS的DefaultEngine等, 需要将ini等文件拷到%~dp0下, 拷完无需Generate工程, 直接编译即可
-@echo shipping:		修改本地代码以便配合Android Shipping包资源
+@echo shipping:		修改本地代码以便配合Android Shipping包资源, 否则会闪退, 此修改也可以兼容普通Dev包
 @echo shippingclient:		修改本地代码以便配合Android ShippingClient的正常运行
 @echo android:		安卓对元梦指定地图打小包相应的工程设置, 需要将工程文件夹拖到bat上
 @echo initandroid:		添加VS编译生成安卓apk所需的环境变量
@@ -105,8 +105,11 @@ if "%choice%"=="shipping"			call %EXEC% UEMobileModifyCodeForShippingPak "%PROJE
 if "%choice%"=="shippingclient"	call %EXEC% UEMobileModifyCodeForAndroidShippingClient "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="renderdoc"			call %EXEC% UEMobileModifyCodeForRenderDoc "%PROJECTDIR%" & echo 修改完成, 需要重新编译工程 & pause & exit
 if "%choice%"=="pso"				call %EXEC% StarPPSOPrepare %PROJECTDIR%\ & pause & exit
-if "%choice%"=="pthread"			explorer /select,"%PROJECTDIR%\LetsGo\Plugins\MOE\PlatformSDKs\GCloudSDK\MSDKPIXCore\Source\MSDKPIXCore\Public\pthread.h" & pause & exit
 if "%choice%"=="goldtool"			mklink /J %PROJECTDIR%\LetsGo\Plugins\GoldfxTool F:\SysApps\UEPlugins\GoldfxTool\
+if "%choice%"=="pthread"		(
+	if exist "%PROJECTDIR%\LetsGo\Plugins\MOE\PlatformSDKs\GCloudSDK\MSDKPIXCore\Source\MSDKPIXCore\Public\pthread.h" 	explorer /select,"%PROJECTDIR%\LetsGo\Plugins\MOE\PlatformSDKs\GCloudSDK\MSDKPIXCore\Source\MSDKPIXCore\Public\pthread.h" & pause & exit
+	echo 需要指定一个有pthread.h的工程! & pause & exit
+)
 if "%choice%"=="toggleandroid"	(
 	set /p CompileUE4=编译UE4安卓包吗？（y/n）
 	if "!CompileUE4!"=="y" (

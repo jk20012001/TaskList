@@ -12,7 +12,7 @@ set UNZIP_DIR=%~dp1%~n1\
 set SRC_DIR=%UNZIP_DIR%LetsGo\Content\Paks\
 if not exist "%SRC_DIR%" (
 	%ZIPTOOLS% x -y "%~1" -o"%UNZIP_DIR%" -bso0
-	%ZIPTOOLS% x -y %UNZIP_DIR%assets\main.obb.png -o"%UNZIP_DIR%" -bso0
+	%ZIPTOOLS% x -y "%UNZIP_DIR%assets\main.obb.png" -o"%UNZIP_DIR%" -bso0
 )
 
 %CONSOLETOOLS% GetADBDeviceID	
