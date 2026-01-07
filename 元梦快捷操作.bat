@@ -171,8 +171,8 @@ if "%choice%"=="editor"	(
 	start "" UE4Editor "%PROJECTDIR%\LetsGo\LetsGo.uproject" -skipcompile
 )
 if "%choice%"=="generatesln"	(
-	echo 可以直接用项目批处理生成, 也可以编一个UnrealVersionSelector, 覆盖到%ProgramFiles%\Epic Games\Launcher\Engine\Binaries\Win64\UnrealVersionSelector.exe
-	echo 参考https://forums.unrealengine.com/t/missing-unrealbuildtool-exe-after-build/2674046/11
+	echo "可以直接用项目批处理生成, 也可以编一个UnrealVersionSelector, 覆盖到%ProgramFiles%\Epic Games\Launcher\Engine\Binaries\Win64\UnrealVersionSelector.exe"
+	echo "参考https://forums.unrealengine.com/t/missing-unrealbuildtool-exe-after-build/2674046/11"
 	cd /d %PROJECTDIR%\ue4_tracking_rdcsp\
 	GenerateProjectFiles.bat -project="%PROJECTDIR%\LetsGo\LetsGo.uproject" -game -engine
 	pause
