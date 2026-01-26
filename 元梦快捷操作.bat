@@ -17,6 +17,7 @@
 @echo toggleandroid:		切换编译UE4安卓和automationtool
 @echo pcbuild:		PC打小包, 必须保证编辑器的BuildTarget是LetsGoClient, 需要将工程文件夹拖到bat上
 @echo pcdebug:		PC编出来的拷到资源文件夹运行
+@echo pcrun:		PC包直接运行
 @echo memstats:		静总的真机内存Profile工具
 @echo dumplog:		dump安卓log
 @echo editor:			启动编辑器和工程, 需要将工程文件夹拖到bat上
@@ -134,6 +135,18 @@ if "%choice%"=="pcdebug"	(
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb LetsGo\Binaries\Win64\
 	start /B  ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
 	pause &	exit
+)
+if "%choice%"=="pcrun"	(
+	if exist I:\Downloads\PC\ cd /d I:\Downloads\PC\
+	pause
+	if exist LetsGo\Binaries\Win64\LetsGoClient.exe (
+		start /B ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
+	) else if exist LetsGo\Binaries\Win64\LetsGoClient-Win64-Shipping.exe (
+		start /B ./LetsGo/Binaries/Win64/LetsGoClient-Win64-Shipping.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
+	) else (
+		echo 未找到exe!
+	)
+	exit
 )
 if "%choice%"=="memstats"	(
 	rem call %EXEC% UEMobilePushCommandLine "-memorystats -minmallocsize=16 -msfilesuffix=eugenejin" %PackageName% %ProjectName%
