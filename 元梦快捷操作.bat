@@ -128,13 +128,13 @@ if "%choice%"=="pcbuild"	(
 )
 if "%choice%"=="pcdebug"	(
 	taskkill /F /IM LetsGoClient.exe
-	timeout /T 1 /NOBREAK
+	if !ERRORLEVEL!==0 timeout /T 3 /NOBREAK
 	if exist I:\Downloads\PC\ cd /d I:\Downloads\PC\
 	if not exist LetsGo\Binaries\Win64\LetsGoClient.exe echo 请不要用Shipping包的资源来调试 & pause & exit
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.exe LetsGo\Binaries\Win64\
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb LetsGo\Binaries\Win64\
 	start /B  ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
-	pause &	exit
+	rem pause &	exit
 )
 if "%choice%"=="pcrun"	(
 	if exist I:\Downloads\PC\ cd /d I:\Downloads\PC\
