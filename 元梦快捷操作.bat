@@ -18,6 +18,9 @@
 @echo pcbuild:		PC打小包, 必须保证编辑器的BuildTarget是LetsGoClient, 需要将工程文件夹拖到bat上
 @echo pcdebug:		PC编出来的拷到资源文件夹运行
 @echo pcrun:		PC包直接运行
+@echo gmandroid:	GM指令历史信息文件的读取和保存
+@echo gmpc:			GM指令历史信息文件的读取和保存
+@echo gmeditor:		GM指令历史信息文件的读取和保存, 需要将工程文件夹拖到bat上
 @echo memstats:		静总的真机内存Profile工具
 @echo dumplog:		dump安卓log
 @echo editor:			启动编辑器和工程, 需要将工程文件夹拖到bat上
@@ -41,6 +44,7 @@ set PackageName=com.tencent.letsgo
 set ProjectName=LetsGo
 set EXEC=C:\goldapps\DLLFunc.exe goldfx.dll
 set CONSOLETOOLS=C:\goldapps\ConsoleTools.exe
+if exist I:\Downloads\PC\ set PCDIR=I:\Downloads\PC\
 
 :Start
 if "%choice%"=="lua"		call %EXEC% UEPushStarPLUAScriptsInClipboard %PackageName% & pause & exit
@@ -85,6 +89,48 @@ if "%choice%"=="dumplog"	(
 	pause & goto Start
 )
 
+if "%choice%"=="gmandroid" set /p bBackup=备份y还是恢复n?
+if "%choice%"=="gmpc" set /p bBackup=备份y还是恢复n?
+if "%choice%"=="gmeditor" set /p bBackup=备份y还是恢复n?
+if "%choice%"=="gmandroid"	(
+	%CONSOLETOOLS% GetADBDeviceID
+	for /f %%i in (c:\templog\envvar.txt)  Do set %%i
+	set DEST_DIR=/storage/emulated/0/Android/data/%PackageName%/files/
+	set BACKUP_DIR=C:\Templog\SPSaved\
+	if "!bBackup!"=="y" (
+		md "!BACKUP_DIR!" >nul 2>nul
+		adb -s !ADBDEVICEID! pull "!DEST_DIR!GmPrivateConfig.txt" "!BACKUP_DIR!Android_GmPrivateConfig.txt"
+	) else (
+		adb -s !ADBDEVICEID! shell "mkdir -p !DEST_DIR!"
+		adb -s !ADBDEVICEID! push "!BACKUP_DIR!Android_GmPrivateConfig.txt" "!DEST_DIR!"
+	)
+	pause && exit
+)
+if "%choice%"=="gmpc"	(
+	if not defined PCDIR echo 未找到PC包路径！& pause & exit
+	set DEST_DIR=%PCDIR%\LetsGo\Saved\PersistentDownloadDir\
+	set BACKUP_DIR=C:\Templog\SPSaved\
+	if "!bBackup!"=="y" (
+		md "!BACKUP_DIR!" >nul 2>nul
+		copy /y "!DEST_DIR!GmPrivateConfig.txt" "!BACKUP_DIR!PC_GmPrivateConfig.txt"
+	) else (
+		md "!DEST_DIR!" >nul 2>nul
+		copy /y "!BACKUP_DIR!PC_GmPrivateConfig.txt" "!DEST_DIR!GmPrivateConfig.txt"
+	)
+	pause && exit
+)
+if "%choice%"=="pcrun"	(
+	if not defined PCDIR echo 未找到PC包路径！& pause & exit
+	cd /d "%PCDIR%"
+	if exist LetsGo\Binaries\Win64\LetsGoClient.exe (
+		start /B ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
+	) else if exist LetsGo\Binaries\Win64\LetsGoClient-Win64-Shipping.exe (
+		start /B ./LetsGo/Binaries/Win64/LetsGoClient-Win64-Shipping.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
+	) else (
+		echo 未找到exe!
+	)
+	exit
+)
 rem 以下都是需要提供引擎路径的
 set RECORDFILE=%temp%\starpengine.txt
 set PROJECTDIR=%1
@@ -127,27 +173,29 @@ if "%choice%"=="pcbuild"	(
 	pause &	exit
 )
 if "%choice%"=="pcdebug"	(
+	if not defined PCDIR echo 未找到PC包路径！& pause & exit
 	taskkill /F /IM LetsGoClient.exe
 	if !ERRORLEVEL!==0 timeout /T 3 /NOBREAK
-	if exist I:\Downloads\PC\ cd /d I:\Downloads\PC\
+	cd /d "%PCDIR%"
 	if not exist LetsGo\Binaries\Win64\LetsGoClient.exe echo 请不要用Shipping包的资源来调试 & pause & exit
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.exe LetsGo\Binaries\Win64\
 	copy /y %PROJECTDIR%\LetsGo\Binaries\Win64\LetsGoClient.pdb LetsGo\Binaries\Win64\
 	start /B  ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
 	rem pause &	exit
 )
-if "%choice%"=="pcrun"	(
-	if exist I:\Downloads\PC\ cd /d I:\Downloads\PC\
-	pause
-	if exist LetsGo\Binaries\Win64\LetsGoClient.exe (
-		start /B ./LetsGo/Binaries/Win64/LetsGoClient.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
-	) else if exist LetsGo\Binaries\Win64\LetsGoClient-Win64-Shipping.exe (
-		start /B ./LetsGo/Binaries/Win64/LetsGoClient-Win64-Shipping.exe -featureleveles31 -resx=1920 -resy=1080 -windowed
+if "%choice%"=="gmeditor"	(
+	set DEST_DIR=%PROJECTDIR%\LetsGo\Saved\PersistentDownloadDir\GmPrivateConfig.txt
+	set BACKUP_DIR=C:\Templog\SPSaved\
+	if "!bBackup!"=="y" (
+		md "!BACKUP_DIR!" >nul 2>nul
+		copy /y "!DEST_DIR!GmPrivateConfig.txt" "!BACKUP_DIR!Editor_GmPrivateConfig.txt"
 	) else (
-		echo 未找到exe!
+		md "!DEST_DIR!" >nul 2>nul
+		copy /y "!BACKUP_DIR!Editor_GmPrivateConfig.txt" "!DEST_DIR!GmPrivateConfig.txt"
 	)
-	exit
+	pause && exit
 )
+
 if "%choice%"=="memstats"	(
 	rem call %EXEC% UEMobilePushCommandLine "-memorystats -minmallocsize=16 -msfilesuffix=eugenejin" %PackageName% %ProjectName%
 	echo 请运行IOS游戏，跑完后点一个解析内存的流水线包（请检查解析内存堆栈步骤的log保证没有错误提示并保证和mac端上传的dSymbol的ID是一致的），然后在统计工具里刷新 & pause
