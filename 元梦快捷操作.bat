@@ -1,7 +1,7 @@
 @echo off
 @echo 请选择(LocalDS启动后可以搜索Console窗口是否有OnDSHealthCheck来判断启动完毕):
-@echo lua:			Push LUA脚本以调试元梦手机包, 需要先复制需要推送的文件列表到剪贴板(非文件名)
-@echo luapc:			Push LUA脚本以调试元梦PC端包, 需要先复制需要推送的文件列表到剪贴板(非文件名)
+@echo lua:			Push LUA脚本以调试元梦手机包, 需要先复制需要推送的文件列表到剪贴板(非文本路径)
+@echo luapc:			Push LUA脚本以调试元梦PC端包, 需要先复制需要推送的文件列表到剪贴板(非文本路径)
 @echo lua3:			修改并Push三个固定LUA脚本到手机以运行本地Cook的包
 @echo resetgame:		游戏在前台时直接重启游戏
 @echo cmdline:		选择并Push UE4CommandLine到安卓手机, Insight和renderdoc都需要
@@ -101,8 +101,10 @@ if "%choice%"=="gmandroid"	(
 		md "!BACKUP_DIR!" >nul 2>nul
 		adb -s !ADBDEVICEID! pull "!DEST_DIR!GmPrivateConfig.txt" "!BACKUP_DIR!Android_GmPrivateConfig.txt"
 	) else (
+		copy /y "!BACKUP_DIR!Android_GmPrivateConfig.txt" "!BACKUP_DIR!GmPrivateConfig.txt"
 		adb -s !ADBDEVICEID! shell "mkdir -p !DEST_DIR!"
-		adb -s !ADBDEVICEID! push "!BACKUP_DIR!Android_GmPrivateConfig.txt" "!DEST_DIR!"
+		adb -s !ADBDEVICEID! push "!BACKUP_DIR!GmPrivateConfig.txt" "!DEST_DIR!"
+		del "!BACKUP_DIR!GmPrivateConfig.txt"
 	)
 	pause && exit
 )
