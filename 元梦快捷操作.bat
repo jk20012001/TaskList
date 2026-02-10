@@ -186,7 +186,7 @@ if "%choice%"=="pcdebug"	(
 	rem pause &	exit
 )
 if "%choice%"=="gmeditor"	(
-	set DEST_DIR=%PROJECTDIR%\LetsGo\Saved\PersistentDownloadDir\GmPrivateConfig.txt
+	set DEST_DIR=%PROJECTDIR%\LetsGo\Saved\PersistentDownloadDir\
 	set BACKUP_DIR=C:\Templog\SPSaved\
 	if "!bBackup!"=="y" (
 		md "!BACKUP_DIR!" >nul 2>nul
